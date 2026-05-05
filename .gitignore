@@ -25,5 +25,4 @@ faiss/python/swigfaiss_sve.swig
 benchs/*.tsv
 venv/
 report/
-report1.pdf
 faiss_indexes.json
