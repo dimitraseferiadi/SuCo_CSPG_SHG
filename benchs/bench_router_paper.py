@@ -26,8 +26,6 @@ Benchmarks:
   latency_tail        — p50/p95/p99/p99.9 per-query latency at recall {0.90,0.95,0.99}
   cold_warm           — first-query/cold-cache vs warm-cache latency
   mre                 — mean relative error at recall {0.90,0.95,0.99}
-  thread_scaling      — QPS / speedup / efficiency at threads ∈ {1,2,4,8,16}
-                        at recall ∈ {0.90, 0.95}, k=10
   pareto              — derived Pareto upper envelope from recall_k* curves
   time_at_recall      — interpolated ms/query at recall {0.80,0.90,0.95,0.99}
                         + speedup-at-recall vs HNSW32 baseline
@@ -129,31 +127,31 @@ SPEEDUP_BASELINE_LABEL = "HNSW32"   # denominator for speedup ratios
 # MRE evaluation.
 MRE_K = 20
 
-# Thread-scaling: sweep faiss.omp_set_num_threads at fixed recall targets.
-THREAD_COUNTS = (1, 2, 4, 8, 16)
-THREAD_RECALL_TARGETS = (0.90, 0.95)
-THREAD_K = 10                       # measure recall@k=10 throughput
-
 ALL_DATASETS = [
     "sift1m", "sift10m", "gist1m",
     "deep1m", "deep10m",
     "spacev10m",
     "msong", "enron", "openai1m",
     "msturing10m", "uqv",
-    # SIFT size sweep (subsamples from SIFT10M source, comparable across sizes).
-    "sift100k", "sift200k", "sift500k", "sift2m", "sift5m",
 ]
 
-# SIFT size-sweep configuration: every entry subsamples from SIFT10Mfeatures.mat
-# so curves at different n are directly comparable. sift1m / sift10m remain the
-# paper-default loaders untouched; sift1m_sub is the matching point on this sweep.
-SIFT_SIZE_SWEEP = {
-    "sift100k": 100_000,
-    "sift200k": 200_000,
-    "sift500k": 500_000,
-    "sift2m":   2_000_000,
-    "sift5m":   5_000_000,
+# Bigann-scaling family: same data source (sift100M/bigann_*) with the first n
+# vectors of bigann_base_100M.bvecs as the base. Ground truth files in
+# sift100M/gnd/ are provided by the dataset authors for n ≥ 1M; for the
+# 100K/200K/500K subsets we compute and cache GT on first run.
+BIGANN_SIZES = {
+    "bigann100k":   100_000,
+    "bigann200k":   200_000,
+    "bigann500k":   500_000,
+    "bigann1m":   1_000_000,
+    "bigann2m":   2_000_000,
+    "bigann5m":   5_000_000,
+    "bigann10m": 10_000_000,
+    "bigann20m": 20_000_000,
+    "bigann50m": 50_000_000,
+    "bigann100m":100_000_000,
 }
+BIGANN_SCALING_DATASETS = list(BIGANN_SIZES.keys())
 ALL_BENCHMARKS = [
     "construction",
     "features",
@@ -164,7 +162,6 @@ ALL_BENCHMARKS = [
     "latency_tail",
     "cold_warm",
     "mre",
-    "thread_scaling",
     "pareto",
     "time_at_recall",
 ]
@@ -173,7 +170,6 @@ PER_INDEX_BENCHMARKS = {
     "construction",
     "robustness", "hard_robustness",
     "latency_tail", "cold_warm", "mre",
-    "thread_scaling",
     *(f"recall_k{k}" for k in RECALL_KS),
 }
 # Benchmarks computed once per dataset (need rebuild or aggregate over results).
@@ -237,6 +233,18 @@ def read_fbin(path, dtype=np.float32):
 
 def read_ibin(path):
     return read_fbin(path, dtype=np.int32)
+
+
+def read_bvecs(path, n=None):
+    """bvecs: each row is [int32 d][d uint8 values]. Returns float32."""
+    with open(path, "rb") as f:
+        d = struct.unpack("i", f.read(4))[0]
+    row_bytes = 4 + d
+    total = os.path.getsize(path) // row_bytes
+    if n is None or n > total:
+        n = total
+    arr = np.memmap(path, dtype=np.uint8, mode="r")[: n * row_bytes].reshape(n, row_bytes)
+    return np.ascontiguousarray(arr[:, 4:].astype(np.float32))
 
 
 def read_enron(path):
@@ -349,34 +357,56 @@ def load_dataset(name, data_dir):
                 read_fvecs(os.path.join(p, "uqv_query.fvecs")),
                 read_ivecs(os.path.join(p, "uqv_groundtruth.ivecs")))
 
-    if name in SIFT_SIZE_SWEEP:
-        return _load_sift_subsample(data_dir, SIFT_SIZE_SWEEP[name])
+    if name in BIGANN_SIZES:
+        return _load_bigann_subset(data_dir, BIGANN_SIZES[name])
 
     raise ValueError(f"Unknown dataset: {name!r}")
 
 
-def _load_sift_subsample(data_dir, nb, nq=10_000):
-    """Subsample of SIFT10Mfeatures.mat: first `nb` base + 10K queries + size-keyed GT.
+_BIGANN_GT_FILES = {
+    1_000_000:   "idx_1M.ivecs",
+    2_000_000:   "idx_2M.ivecs",
+    5_000_000:   "idx_5M.ivecs",
+    10_000_000:  "idx_10M.ivecs",
+    20_000_000:  "idx_20M.ivecs",
+    50_000_000:  "idx_50M.ivecs",
+    100_000_000: "idx_100M.ivecs",
+}
 
-    Cache key is keyed on nb so each size gets its own GT file. Sharing the source
-    means recall curves across sizes are directly comparable (no distribution shift).
-    """
-    xb, xq = _load_sift_raw(data_dir, nb, nq)
-    cache = os.path.join(data_dir, "SIFT10M", f"sift_{nb}_gt.npy")
-    if os.path.exists(cache):
-        gt = np.load(cache).astype(np.int32)
+
+def _load_bigann_subset(data_dir, n):
+    p = os.path.join(data_dir, "sift100M")
+    base_path = os.path.join(p, "bigann_base_100M.bvecs")
+    if n > 100_000_000:
+        raise ValueError(
+            f"bigann subset n={n} exceeds the 100M base file at {base_path}"
+        )
+    xb = read_bvecs(base_path, n=n)
+    xq = read_bvecs(os.path.join(p, "bigann_query.bvecs"))
+
+    if n in _BIGANN_GT_FILES:
+        gt_path = os.path.join(p, "gnd", _BIGANN_GT_FILES[n])
+        gt = read_ivecs(gt_path)
+        # Provided GT has k=1000; trim to 100 to match SEARCH_K and other datasets.
+        gt = np.ascontiguousarray(gt[:, :100].astype(np.int32))
     else:
-        gt = compute_ground_truth(xb, xq, 100)
-        try:
-            np.save(cache, gt)
-            print(f"  Cached GT to {cache}")
-        except Exception as e:
-            print(f"  Could not cache GT: {e}")
+        cache = os.path.join(p, "gnd", f"computed_gt_{n}_k100.ivecs.npy")
+        if os.path.exists(cache):
+            gt = np.load(cache).astype(np.int32)
+        else:
+            gt = compute_ground_truth(xb, xq, k=100)
+            try:
+                np.save(cache, gt)
+                print(f"  Cached GT to {cache}")
+            except Exception as e:
+                print(f"  Could not cache GT: {e}")
+
+    if gt.shape[0] > xq.shape[0]:
+        gt = gt[: xq.shape[0]]
     return xb, xq, gt
 
 
-def _load_sift_raw(data_dir, nb, nq=10_000):
-    """Load raw (xb, xq) of given sizes from SIFT10Mfeatures.mat. No GT."""
+def _load_sift10m(data_dir, nb=10_000_000, nq=10_000):
     p = os.path.join(data_dir, "SIFT10M", "SIFT10Mfeatures.mat")
     if not os.path.exists(p):
         raise FileNotFoundError(f"SIFT10M features file not found: {p}")
@@ -402,11 +432,7 @@ def _load_sift_raw(data_dir, nb, nq=10_000):
     if raw.shape[1] != 128:
         raw = raw.T
     x = np.ascontiguousarray(raw, dtype=np.float32)
-    return x[:nb], x[nb : nb + nq]
-
-
-def _load_sift10m(data_dir, nb=10_000_000, nq=10_000):
-    xb, xq = _load_sift_raw(data_dir, nb, nq)
+    xb, xq = x[:nb], x[nb : nb + nq]
 
     gt_path = None
     for cand in [
@@ -1024,78 +1050,6 @@ def run_mre(idx, kind, xb, xq, gt, k=MRE_K, recall_curve=None):
     return out
 
 
-def run_thread_scaling(idx, kind, xq, gt, k=THREAD_K, recall_curve=None,
-                       thread_counts=THREAD_COUNTS,
-                       recall_targets=THREAD_RECALL_TARGETS):
-    """Sweep faiss.omp_set_num_threads ∈ thread_counts at each recall target.
-    Reports per-thread QPS, ms/query (batch-amortized), speedup vs t=1 and
-    parallel efficiency (speedup / threads). Restores caller's thread count on exit."""
-    factory, params, _ = SEARCH_FACTORY[kind]
-    if recall_curve is None:
-        recall_curve = recall_time_curve(idx, kind, xq, gt, k, factory, params, n_runs=1)
-
-    try:
-        prev_threads = int(faiss.omp_get_max_threads())
-    except Exception:
-        prev_threads = -1
-
-    nq = int(xq.shape[0])
-    out = {}
-    try:
-        for target in recall_targets:
-            chosen = pick_param_for_recall(recall_curve, target)
-            if chosen is None:
-                continue
-            search_fn = factory(chosen["param"])
-
-            per_target = {
-                "param": chosen["param"],
-                "achieved_recall": chosen["recall"],
-                "target_recall": float(target),
-                "k": int(k),
-                "by_threads": {},
-            }
-            qps_t1 = None
-            for t in thread_counts:
-                try:
-                    faiss.omp_set_num_threads(int(t))
-                except Exception as e:
-                    per_target["by_threads"][str(t)] = {"error": f"omp_set: {e}"}
-                    continue
-                # Warmup at this thread count.
-                for _ in range(2):
-                    search_fn(idx, xq[: min(50, nq)], k)
-
-                t0 = time.perf_counter()
-                _, _ = search_fn(idx, xq, k)
-                elapsed = time.perf_counter() - t0
-                qps = nq / elapsed if elapsed > 0 else 0.0
-                ms_per_q = (elapsed / nq) * 1000.0
-                if t == thread_counts[0]:
-                    qps_t1 = qps
-                speedup = (qps / qps_t1) if (qps_t1 and qps_t1 > 0) else None
-                eff = (speedup / t) if (speedup is not None and t > 0) else None
-                per_target["by_threads"][str(t)] = {
-                    "threads":      int(t),
-                    "qps":          round(float(qps),       2),
-                    "ms_per_query": round(float(ms_per_q),  6),
-                    "speedup_vs_t1":   round(float(speedup), 3) if speedup is not None else None,
-                    "parallel_efficiency": round(float(eff), 3) if eff is not None else None,
-                }
-                print(f"  {kind} threads={t} @recall≥{target}: "
-                      f"qps={qps:.0f} ms/q={ms_per_q:.4f} "
-                      f"speedup={speedup if speedup is None else round(speedup,2)} "
-                      f"eff={eff if eff is None else round(eff,2)}")
-            out[f"r{int(round(target * 100))}"] = per_target
-    finally:
-        if prev_threads > 0:
-            try:
-                faiss.omp_set_num_threads(prev_threads)
-            except Exception:
-                pass
-    return out
-
-
 # ===========================================================================
 # Dataset-level benchmarks
 # ===========================================================================
@@ -1243,7 +1197,6 @@ def run_benchmarks(dataset, benchmarks, index_types, data_dir, index_dir, output
     latency_results    = dict(all_results.get("latency_tail", {}) or {})
     coldwarm_results   = dict(all_results.get("cold_warm", {}) or {})
     mre_results        = dict(all_results.get("mre", {}) or {})
-    thread_results     = dict(all_results.get("thread_scaling", {}) or {})
 
     for kind in index_types:
         if kind not in BUILDERS:
@@ -1360,18 +1313,6 @@ def run_benchmarks(dataset, benchmarks, index_types, data_dir, index_dir, output
                 print(f"  {label} MRE FAILED: {e}")
                 traceback.print_exc()
 
-        if "thread_scaling" in benchmarks:
-            print(f"\n--- {label} thread scaling (threads={list(THREAD_COUNTS)}) ---")
-            try:
-                # Use the recall@k=THREAD_K curve so the recall target matches the metric.
-                tk_curve = recall_curves.get(f"recall_k{THREAD_K}", {}).get(label)
-                thread_results[label] = run_thread_scaling(
-                    idx, kind, xq, gt, k=THREAD_K, recall_curve=tk_curve,
-                )
-            except Exception as e:
-                print(f"  {label} thread_scaling FAILED: {e}")
-                traceback.print_exc()
-
         del idx
         gc.collect()
 
@@ -1393,7 +1334,6 @@ def run_benchmarks(dataset, benchmarks, index_types, data_dir, index_dir, output
     if "latency_tail"      in benchmarks: all_results["latency_tail"]      = latency_results
     if "cold_warm"         in benchmarks: all_results["cold_warm"]         = coldwarm_results
     if "mre"               in benchmarks: all_results["mre"]               = mre_results
-    if "thread_scaling"    in benchmarks: all_results["thread_scaling"]    = thread_results
 
     # Dataset-level benchmarks (last so curves are populated).
     if "unseen_robustness" in benchmarks:
@@ -1435,8 +1375,9 @@ def main():
     ap.add_argument("--data-dir",   default="/Users/dhm/Documents/data")
     ap.add_argument("--index-dir",  default="/Users/dhm/Documents/indices")
     ap.add_argument("--output-dir", default=None)
-    ap.add_argument("--dataset",    default="all",
-                    choices=ALL_DATASETS + ["all"])
+    ap.add_argument("--dataset",    nargs="+", default=["all"],
+                    choices=ALL_DATASETS + BIGANN_SCALING_DATASETS
+                            + ["all", "bigann_scaling"])
     ap.add_argument("--benchmark",  nargs="+", default=["all"],
                     choices=ALL_BENCHMARKS + ["all"])
     ap.add_argument("--index-type", nargs="+", default=DEFAULT_INDEX_TYPES,
@@ -1453,7 +1394,16 @@ def main():
 
     benchmarks  = ALL_BENCHMARKS    if "all" in args.benchmark  else args.benchmark
     index_types = ALL_INDEX_TYPES   if "all" in args.index_type else args.index_type
-    datasets    = ALL_DATASETS      if args.dataset == "all"    else [args.dataset]
+    datasets = []
+    for d in args.dataset:
+        if d == "all":
+            datasets.extend(ALL_DATASETS)
+        elif d == "bigann_scaling":
+            datasets.extend(BIGANN_SCALING_DATASETS)
+        else:
+            datasets.append(d)
+    seen = set()
+    datasets = [d for d in datasets if not (d in seen or seen.add(d))]
 
     os.makedirs(args.index_dir,  exist_ok=True)
     os.makedirs(args.output_dir, exist_ok=True)

@@ -8071,5 +8071,597 @@
         }
       }
     }
+  },
+  "thread_scaling": {
+    "SuCo": {
+      "r90": {
+        "param": 0.002,
+        "achieved_recall": 0.935844,
+        "target_recall": 0.9,
+        "k": 10,
+        "by_threads": {
+          "1": {
+            "threads": 1,
+            "qps": 40.61,
+            "qps_std": 0.33,
+            "ms_per_query": 24.623558,
+            "ms_per_query_std": 0.199635,
+            "n_runs": 3,
+            "speedup_vs_t1": 1.0,
+            "parallel_efficiency": 1.0
+          },
+          "2": {
+            "threads": 2,
+            "qps": 77.05,
+            "qps_std": 0.05,
+            "ms_per_query": 12.978188,
+            "ms_per_query_std": 0.008219,
+            "n_runs": 3,
+            "speedup_vs_t1": 1.897,
+            "parallel_efficiency": 0.949
+          },
+          "4": {
+            "threads": 4,
+            "qps": 116.2,
+            "qps_std": 3.57,
+            "ms_per_query": 8.605982,
+            "ms_per_query_std": 0.264236,
+            "n_runs": 3,
+            "speedup_vs_t1": 2.861,
+            "parallel_efficiency": 0.715
+          },
+          "8": {
+            "threads": 8,
+            "qps": 190.71,
+            "qps_std": 7.19,
+            "ms_per_query": 5.243511,
+            "ms_per_query_std": 0.197658,
+            "n_runs": 3,
+            "speedup_vs_t1": 4.696,
+            "parallel_efficiency": 0.587
+          },
+          "16": {
+            "threads": 16,
+            "qps": 190.81,
+            "qps_std": 0.52,
+            "ms_per_query": 5.240773,
+            "ms_per_query_std": 0.014184,
+            "n_runs": 3,
+            "speedup_vs_t1": 4.698,
+            "parallel_efficiency": 0.294
+          }
+        }
+      },
+      "r95": {
+        "param": 0.005,
+        "achieved_recall": 0.964105,
+        "target_recall": 0.95,
+        "k": 10,
+        "by_threads": {
+          "1": {
+            "threads": 1,
+            "qps": 36.86,
+            "qps_std": 0.51,
+            "ms_per_query": 27.128783,
+            "ms_per_query_std": 0.371713,
+            "n_runs": 3,
+            "speedup_vs_t1": 1.0,
+            "parallel_efficiency": 1.0
+          },
+          "2": {
+            "threads": 2,
+            "qps": 68.96,
+            "qps_std": 0.1,
+            "ms_per_query": 14.501184,
+            "ms_per_query_std": 0.0216,
+            "n_runs": 3,
+            "speedup_vs_t1": 1.871,
+            "parallel_efficiency": 0.935
+          },
+          "4": {
+            "threads": 4,
+            "qps": 115.26,
+            "qps_std": 3.32,
+            "ms_per_query": 8.676057,
+            "ms_per_query_std": 0.249881,
+            "n_runs": 3,
+            "speedup_vs_t1": 3.127,
+            "parallel_efficiency": 0.782
+          },
+          "8": {
+            "threads": 8,
+            "qps": 188.23,
+            "qps_std": 0.86,
+            "ms_per_query": 5.312783,
+            "ms_per_query_std": 0.024269,
+            "n_runs": 3,
+            "speedup_vs_t1": 5.106,
+            "parallel_efficiency": 0.638
+          },
+          "16": {
+            "threads": 16,
+            "qps": 171.33,
+            "qps_std": 0.21,
+            "ms_per_query": 5.836798,
+            "ms_per_query_std": 0.007044,
+            "n_runs": 3,
+            "speedup_vs_t1": 4.648,
+            "parallel_efficiency": 0.29
+          }
+        }
+      }
+    },
+    "SHG": {
+      "r90": {
+        "param": 15,
+        "achieved_recall": 0.913283,
+        "target_recall": 0.9,
+        "k": 10,
+        "by_threads": {
+          "1": {
+            "threads": 1,
+            "qps": 3329.95,
+            "qps_std": 2406.0,
+            "ms_per_query": 0.300304,
+            "ms_per_query_std": 0.21698,
+            "n_runs": 3,
+            "speedup_vs_t1": 1.0,
+            "parallel_efficiency": 1.0
+          },
+          "2": {
+            "threads": 2,
+            "qps": 12661.32,
+            "qps_std": 16.4,
+            "ms_per_query": 0.078981,
+            "ms_per_query_std": 0.000102,
+            "n_runs": 3,
+            "speedup_vs_t1": 3.802,
+            "parallel_efficiency": 1.901
+          },
+          "4": {
+            "threads": 4,
+            "qps": 23325.52,
+            "qps_std": 141.83,
+            "ms_per_query": 0.042871,
+            "ms_per_query_std": 0.000261,
+            "n_runs": 3,
+            "speedup_vs_t1": 7.005,
+            "parallel_efficiency": 1.751
+          },
+          "8": {
+            "threads": 8,
+            "qps": 32626.97,
+            "qps_std": 852.66,
+            "ms_per_query": 0.030649,
+            "ms_per_query_std": 0.000801,
+            "n_runs": 3,
+            "speedup_vs_t1": 9.798,
+            "parallel_efficiency": 1.225
+          },
+          "16": {
+            "threads": 16,
+            "qps": 37885.77,
+            "qps_std": 143.67,
+            "ms_per_query": 0.026395,
+            "ms_per_query_std": 0.0001,
+            "n_runs": 3,
+            "speedup_vs_t1": 11.377,
+            "parallel_efficiency": 0.711
+          }
+        }
+      },
+      "r95": {
+        "param": 40,
+        "achieved_recall": 0.957419,
+        "target_recall": 0.95,
+        "k": 10,
+        "by_threads": {
+          "1": {
+            "threads": 1,
+            "qps": 3598.31,
+            "qps_std": 40.71,
+            "ms_per_query": 0.277908,
+            "ms_per_query_std": 0.003144,
+            "n_runs": 3,
+            "speedup_vs_t1": 1.0,
+            "parallel_efficiency": 1.0
+          },
+          "2": {
+            "threads": 2,
+            "qps": 6771.32,
+            "qps_std": 7.35,
+            "ms_per_query": 0.147682,
+            "ms_per_query_std": 0.00016,
+            "n_runs": 3,
+            "speedup_vs_t1": 1.882,
+            "parallel_efficiency": 0.941
+          },
+          "4": {
+            "threads": 4,
+            "qps": 12544.68,
+            "qps_std": 25.54,
+            "ms_per_query": 0.079715,
+            "ms_per_query_std": 0.000162,
+            "n_runs": 3,
+            "speedup_vs_t1": 3.486,
+            "parallel_efficiency": 0.872
+          },
+          "8": {
+            "threads": 8,
+            "qps": 17736.19,
+            "qps_std": 102.23,
+            "ms_per_query": 0.056382,
+            "ms_per_query_std": 0.000325,
+            "n_runs": 3,
+            "speedup_vs_t1": 4.929,
+            "parallel_efficiency": 0.616
+          },
+          "16": {
+            "threads": 16,
+            "qps": 19662.47,
+            "qps_std": 70.07,
+            "ms_per_query": 0.050858,
+            "ms_per_query_std": 0.000181,
+            "n_runs": 3,
+            "speedup_vs_t1": 5.464,
+            "parallel_efficiency": 0.342
+          }
+        }
+      }
+    },
+    "CSPG": {
+      "r90": {
+        "param": 20,
+        "achieved_recall": 0.916708,
+        "target_recall": 0.9,
+        "k": 10,
+        "by_threads": {
+          "1": {
+            "threads": 1,
+            "qps": 5704.01,
+            "qps_std": 653.85,
+            "ms_per_query": 0.175315,
+            "ms_per_query_std": 0.020096,
+            "n_runs": 3,
+            "speedup_vs_t1": 1.0,
+            "parallel_efficiency": 1.0
+          },
+          "2": {
+            "threads": 2,
+            "qps": 11986.54,
+            "qps_std": 8.81,
+            "ms_per_query": 0.083427,
+            "ms_per_query_std": 6.1e-05,
+            "n_runs": 3,
+            "speedup_vs_t1": 2.101,
+            "parallel_efficiency": 1.051
+          },
+          "4": {
+            "threads": 4,
+            "qps": 22954.29,
+            "qps_std": 23.34,
+            "ms_per_query": 0.043565,
+            "ms_per_query_std": 4.4e-05,
+            "n_runs": 3,
+            "speedup_vs_t1": 4.024,
+            "parallel_efficiency": 1.006
+          },
+          "8": {
+            "threads": 8,
+            "qps": 33388.05,
+            "qps_std": 89.5,
+            "ms_per_query": 0.029951,
+            "ms_per_query_std": 8e-05,
+            "n_runs": 3,
+            "speedup_vs_t1": 5.853,
+            "parallel_efficiency": 0.732
+          },
+          "16": {
+            "threads": 16,
+            "qps": 37703.37,
+            "qps_std": 240.03,
+            "ms_per_query": 0.026523,
+            "ms_per_query_std": 0.000169,
+            "n_runs": 3,
+            "speedup_vs_t1": 6.61,
+            "parallel_efficiency": 0.413
+          }
+        }
+      },
+      "r95": {
+        "param": 60,
+        "achieved_recall": 0.959916,
+        "target_recall": 0.95,
+        "k": 10,
+        "by_threads": {
+          "1": {
+            "threads": 1,
+            "qps": 2505.18,
+            "qps_std": 9.45,
+            "ms_per_query": 0.399173,
+            "ms_per_query_std": 0.001506,
+            "n_runs": 3,
+            "speedup_vs_t1": 1.0,
+            "parallel_efficiency": 1.0
+          },
+          "2": {
+            "threads": 2,
+            "qps": 4851.09,
+            "qps_std": 0.48,
+            "ms_per_query": 0.206139,
+            "ms_per_query_std": 2.1e-05,
+            "n_runs": 3,
+            "speedup_vs_t1": 1.936,
+            "parallel_efficiency": 0.968
+          },
+          "4": {
+            "threads": 4,
+            "qps": 9268.74,
+            "qps_std": 11.08,
+            "ms_per_query": 0.107889,
+            "ms_per_query_std": 0.000129,
+            "n_runs": 3,
+            "speedup_vs_t1": 3.7,
+            "parallel_efficiency": 0.925
+          },
+          "8": {
+            "threads": 8,
+            "qps": 13039.81,
+            "qps_std": 59.61,
+            "ms_per_query": 0.076688,
+            "ms_per_query_std": 0.000351,
+            "n_runs": 3,
+            "speedup_vs_t1": 5.205,
+            "parallel_efficiency": 0.651
+          },
+          "16": {
+            "threads": 16,
+            "qps": 14559.59,
+            "qps_std": 48.83,
+            "ms_per_query": 0.068683,
+            "ms_per_query_std": 0.00023,
+            "n_runs": 3,
+            "speedup_vs_t1": 5.812,
+            "parallel_efficiency": 0.363
+          }
+        }
+      }
+    },
+    "HNSW32": {
+      "r90": {
+        "param": 30,
+        "achieved_recall": 0.915623,
+        "target_recall": 0.9,
+        "k": 10,
+        "by_threads": {
+          "1": {
+            "threads": 1,
+            "qps": 7633.43,
+            "qps_std": 917.3,
+            "ms_per_query": 0.131003,
+            "ms_per_query_std": 0.015742,
+            "n_runs": 3,
+            "speedup_vs_t1": 1.0,
+            "parallel_efficiency": 1.0
+          },
+          "2": {
+            "threads": 2,
+            "qps": 15874.48,
+            "qps_std": 10.42,
+            "ms_per_query": 0.062994,
+            "ms_per_query_std": 4.1e-05,
+            "n_runs": 3,
+            "speedup_vs_t1": 2.08,
+            "parallel_efficiency": 1.04
+          },
+          "4": {
+            "threads": 4,
+            "qps": 29425.18,
+            "qps_std": 161.14,
+            "ms_per_query": 0.033984,
+            "ms_per_query_std": 0.000186,
+            "n_runs": 3,
+            "speedup_vs_t1": 3.855,
+            "parallel_efficiency": 0.964
+          },
+          "8": {
+            "threads": 8,
+            "qps": 44476.23,
+            "qps_std": 502.93,
+            "ms_per_query": 0.022484,
+            "ms_per_query_std": 0.000254,
+            "n_runs": 3,
+            "speedup_vs_t1": 5.827,
+            "parallel_efficiency": 0.728
+          },
+          "16": {
+            "threads": 16,
+            "qps": 50887.9,
+            "qps_std": 378.46,
+            "ms_per_query": 0.019651,
+            "ms_per_query_std": 0.000146,
+            "n_runs": 3,
+            "speedup_vs_t1": 6.666,
+            "parallel_efficiency": 0.417
+          }
+        }
+      },
+      "r95": {
+        "param": 80,
+        "achieved_recall": 0.954059,
+        "target_recall": 0.95,
+        "k": 10,
+        "by_threads": {
+          "1": {
+            "threads": 1,
+            "qps": 3664.61,
+            "qps_std": 6.41,
+            "ms_per_query": 0.272881,
+            "ms_per_query_std": 0.000478,
+            "n_runs": 3,
+            "speedup_vs_t1": 1.0,
+            "parallel_efficiency": 1.0
+          },
+          "2": {
+            "threads": 2,
+            "qps": 6989.87,
+            "qps_std": 12.12,
+            "ms_per_query": 0.143064,
+            "ms_per_query_std": 0.000248,
+            "n_runs": 3,
+            "speedup_vs_t1": 1.907,
+            "parallel_efficiency": 0.954
+          },
+          "4": {
+            "threads": 4,
+            "qps": 12774.74,
+            "qps_std": 119.86,
+            "ms_per_query": 0.078279,
+            "ms_per_query_std": 0.000734,
+            "n_runs": 3,
+            "speedup_vs_t1": 3.486,
+            "parallel_efficiency": 0.871
+          },
+          "8": {
+            "threads": 8,
+            "qps": 19237.73,
+            "qps_std": 68.47,
+            "ms_per_query": 0.051981,
+            "ms_per_query_std": 0.000185,
+            "n_runs": 3,
+            "speedup_vs_t1": 5.25,
+            "parallel_efficiency": 0.656
+          },
+          "16": {
+            "threads": 16,
+            "qps": 21537.79,
+            "qps_std": 45.43,
+            "ms_per_query": 0.04643,
+            "ms_per_query_std": 9.8e-05,
+            "n_runs": 3,
+            "speedup_vs_t1": 5.877,
+            "parallel_efficiency": 0.367
+          }
+        }
+      }
+    },
+    "HNSW48": {
+      "r90": {
+        "param": 15,
+        "achieved_recall": 0.916626,
+        "target_recall": 0.9,
+        "k": 10,
+        "by_threads": {
+          "1": {
+            "threads": 1,
+            "qps": 6816.0,
+            "qps_std": 3034.78,
+            "ms_per_query": 0.146714,
+            "ms_per_query_std": 0.065323,
+            "n_runs": 3,
+            "speedup_vs_t1": 1.0,
+            "parallel_efficiency": 1.0
+          },
+          "2": {
+            "threads": 2,
+            "qps": 18915.96,
+            "qps_std": 39.02,
+            "ms_per_query": 0.052865,
+            "ms_per_query_std": 0.000109,
+            "n_runs": 3,
+            "speedup_vs_t1": 2.775,
+            "parallel_efficiency": 1.388
+          },
+          "4": {
+            "threads": 4,
+            "qps": 34698.89,
+            "qps_std": 212.34,
+            "ms_per_query": 0.028819,
+            "ms_per_query_std": 0.000176,
+            "n_runs": 3,
+            "speedup_vs_t1": 5.091,
+            "parallel_efficiency": 1.273
+          },
+          "8": {
+            "threads": 8,
+            "qps": 53349.35,
+            "qps_std": 114.07,
+            "ms_per_query": 0.018744,
+            "ms_per_query_std": 4e-05,
+            "n_runs": 3,
+            "speedup_vs_t1": 7.827,
+            "parallel_efficiency": 0.978
+          },
+          "16": {
+            "threads": 16,
+            "qps": 48778.77,
+            "qps_std": 7751.45,
+            "ms_per_query": 0.020501,
+            "ms_per_query_std": 0.003258,
+            "n_runs": 3,
+            "speedup_vs_t1": 7.157,
+            "parallel_efficiency": 0.447
+          }
+        }
+      },
+      "r95": {
+        "param": 40,
+        "achieved_recall": 0.957504,
+        "target_recall": 0.95,
+        "k": 10,
+        "by_threads": {
+          "1": {
+            "threads": 1,
+            "qps": 4758.23,
+            "qps_std": 145.53,
+            "ms_per_query": 0.210162,
+            "ms_per_query_std": 0.006428,
+            "n_runs": 3,
+            "speedup_vs_t1": 1.0,
+            "parallel_efficiency": 1.0
+          },
+          "2": {
+            "threads": 2,
+            "qps": 9127.99,
+            "qps_std": 100.37,
+            "ms_per_query": 0.109553,
+            "ms_per_query_std": 0.001205,
+            "n_runs": 3,
+            "speedup_vs_t1": 1.918,
+            "parallel_efficiency": 0.959
+          },
+          "4": {
+            "threads": 4,
+            "qps": 15248.55,
+            "qps_std": 1076.92,
+            "ms_per_query": 0.06558,
+            "ms_per_query_std": 0.004632,
+            "n_runs": 3,
+            "speedup_vs_t1": 3.205,
+            "parallel_efficiency": 0.801
+          },
+          "8": {
+            "threads": 8,
+            "qps": 24142.62,
+            "qps_std": 268.01,
+            "ms_per_query": 0.041421,
+            "ms_per_query_std": 0.00046,
+            "n_runs": 3,
+            "speedup_vs_t1": 5.074,
+            "parallel_efficiency": 0.634
+          },
+          "16": {
+            "threads": 16,
+            "qps": 26658.94,
+            "qps_std": 864.94,
+            "ms_per_query": 0.037511,
+            "ms_per_query_std": 0.001217,
+            "n_runs": 3,
+            "speedup_vs_t1": 5.603,
+            "parallel_efficiency": 0.35
+          }
+        }
+      }
+    }
   }
 }

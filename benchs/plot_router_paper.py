@@ -700,6 +700,239 @@ def plot_recall_vs_time_grid(all_results, out_dir, formats, k=10):
 
 
 # ---------------------------------------------------------------------------
+# Thread-scaling: QPS, speedup-vs-1-thread, parallel efficiency
+# ---------------------------------------------------------------------------
+
+def _thread_data(node):
+    """Pull (sorted-threads list, qps list, speedup list, eff list) from a
+    by_threads dict, dropping entries that errored out."""
+    bt = (node or {}).get("by_threads", {}) or {}
+    items = []
+    for k, v in bt.items():
+        try:
+            t = int(k)
+        except Exception:
+            continue
+        if not isinstance(v, dict) or v.get("qps") is None:
+            continue
+        items.append((t, v))
+    items.sort(key=lambda x: x[0])
+    if not items:
+        return [], [], [], []
+    ts   = [t for t, _ in items]
+    qps  = [v.get("qps")                  for _, v in items]
+    spd  = [v.get("speedup_vs_t1")        for _, v in items]
+    eff  = [v.get("parallel_efficiency")  for _, v in items]
+    return ts, qps, spd, eff
+
+
+def plot_thread_scaling_grid(all_results, out_dir, formats, recall_target="r95"):
+    """Grid of datasets: QPS vs threads (log-log) per index, with ideal-linear ref."""
+    datasets = [ds for ds in DATASETS if ds in all_results]
+    n = len(datasets); ncols = 4
+    nrows = (n + ncols - 1) // ncols
+    fig, axes = plt.subplots(nrows, ncols, figsize=(4.0 * ncols, 3.0 * nrows),
+                             squeeze=False)
+    any_global = False
+    for di, ds in enumerate(datasets):
+        ax = axes[di // ncols][di % ncols]
+        ts_node = all_results[ds].get("thread_scaling", {})
+        any_data = False
+        max_t = 1
+        for idx in INDICES:
+            ts, qps, _, _ = _thread_data(ts_node.get(idx, {}).get(recall_target))
+            if not ts:
+                continue
+            ax.plot(ts, qps, marker=INDEX_MARKER[idx], color=INDEX_COLOR[idx],
+                    label=idx, linewidth=1.4, markersize=5)
+            any_data = True
+            max_t = max(max_t, ts[-1])
+        ax.set_xscale("log", base=2); ax.set_yscale("log")
+        ax.set_title(DATASET_LABEL[ds], fontsize=10)
+        ax.grid(True, which="both", linestyle=":", alpha=0.4)
+        if not any_data:
+            ax.text(0.5, 0.5, "no data", transform=ax.transAxes,
+                    ha="center", va="center", color="gray")
+        else:
+            any_global = True
+            xt = [1, 2, 4, 8, 16, 32, 64]
+            xt = [t for t in xt if t <= max_t]
+            ax.set_xticks(xt); ax.set_xticklabels([str(t) for t in xt])
+        if di // ncols == nrows - 1:
+            ax.set_xlabel("threads")
+        if di % ncols == 0:
+            ax.set_ylabel("QPS")
+    for j in range(n, nrows * ncols):
+        axes[j // ncols][j % ncols].axis("off")
+    if not any_global:
+        plt.close(fig); return
+    handles = [plt.Line2D([0], [0], color=INDEX_COLOR[idx],
+                          marker=INDEX_MARKER[idx], label=idx, linewidth=1.4)
+               for idx in INDICES]
+    fig.legend(handles=handles, loc="lower center", ncol=len(INDICES),
+               frameon=False, fontsize=10, bbox_to_anchor=(0.5, -0.02))
+    fig.suptitle(f"Thread-scaling: QPS vs threads "
+                 f"@ recall ≥ {RECALL_TARGET_LABEL[recall_target]} (k=10)",
+                 fontsize=13)
+    fig.tight_layout(rect=[0, 0.03, 1, 0.97])
+    save_fig(fig, out_dir, f"thread_scaling_qps_{recall_target}", formats)
+
+
+def plot_thread_scaling_speedup(all_results, out_dir, formats, recall_target="r95"):
+    """Grid of datasets: speedup_vs_t1 vs threads, with y=x ideal-linear reference."""
+    datasets = [ds for ds in DATASETS if ds in all_results]
+    n = len(datasets); ncols = 4
+    nrows = (n + ncols - 1) // ncols
+    fig, axes = plt.subplots(nrows, ncols, figsize=(4.0 * ncols, 3.0 * nrows),
+                             squeeze=False)
+    any_global = False
+    for di, ds in enumerate(datasets):
+        ax = axes[di // ncols][di % ncols]
+        ts_node = all_results[ds].get("thread_scaling", {})
+        any_data = False
+        max_t = 1
+        for idx in INDICES:
+            ts, _, spd, _ = _thread_data(ts_node.get(idx, {}).get(recall_target))
+            spd_clean = [s for s in spd if s is not None]
+            if not ts or not spd_clean:
+                continue
+            ax.plot(ts, spd, marker=INDEX_MARKER[idx], color=INDEX_COLOR[idx],
+                    label=idx, linewidth=1.4, markersize=5)
+            any_data = True
+            max_t = max(max_t, ts[-1])
+        if any_data:
+            any_global = True
+            ideal = [1, 2, 4, 8, 16, 32, 64]
+            ideal = [t for t in ideal if t <= max_t]
+            ax.plot(ideal, ideal, color="black", linewidth=0.8,
+                    linestyle="--", alpha=0.6, label="ideal (linear)")
+            ax.set_xticks(ideal); ax.set_xticklabels([str(t) for t in ideal])
+            ax.set_xscale("log", base=2); ax.set_yscale("log", base=2)
+        ax.set_title(DATASET_LABEL[ds], fontsize=10)
+        ax.grid(True, which="both", linestyle=":", alpha=0.4)
+        if not any_data:
+            ax.text(0.5, 0.5, "no data", transform=ax.transAxes,
+                    ha="center", va="center", color="gray")
+        if di // ncols == nrows - 1:
+            ax.set_xlabel("threads")
+        if di % ncols == 0:
+            ax.set_ylabel("speedup vs 1 thread")
+    for j in range(n, nrows * ncols):
+        axes[j // ncols][j % ncols].axis("off")
+    if not any_global:
+        plt.close(fig); return
+    handles = [plt.Line2D([0], [0], color=INDEX_COLOR[idx],
+                          marker=INDEX_MARKER[idx], label=idx, linewidth=1.4)
+               for idx in INDICES]
+    handles.append(plt.Line2D([0], [0], color="black", linestyle="--",
+                              linewidth=0.8, label="ideal"))
+    fig.legend(handles=handles, loc="lower center", ncol=len(INDICES) + 1,
+               frameon=False, fontsize=10, bbox_to_anchor=(0.5, -0.02))
+    fig.suptitle(f"Thread-scaling: speedup vs 1 thread "
+                 f"@ recall ≥ {RECALL_TARGET_LABEL[recall_target]} (k=10)",
+                 fontsize=13)
+    fig.tight_layout(rect=[0, 0.03, 1, 0.97])
+    save_fig(fig, out_dir, f"thread_scaling_speedup_{recall_target}", formats)
+
+
+def plot_thread_scaling_efficiency_summary(all_results, out_dir, formats,
+                                           recall_target="r95", at_threads=None):
+    """Bar chart: parallel efficiency at the highest available thread count
+    (default = max across data) per dataset and index. Efficiency = speedup / threads."""
+    datasets = [ds for ds in DATASETS if ds in all_results]
+    # Determine target thread count automatically if not supplied.
+    if at_threads is None:
+        seen = set()
+        for ds in datasets:
+            ts_node = all_results[ds].get("thread_scaling", {})
+            for idx in INDICES:
+                ts, _, _, _ = _thread_data(ts_node.get(idx, {}).get(recall_target))
+                seen.update(ts)
+        if not seen:
+            return
+        at_threads = max(seen)
+
+    fig, ax = plt.subplots(figsize=(max(9, 1.0 * len(datasets) + 1), 4.4))
+    x = np.arange(len(datasets))
+    width = 0.16
+    any_data = False
+    for i, idx in enumerate(INDICES):
+        ys = []
+        for ds in datasets:
+            node = (all_results[ds].get("thread_scaling", {})
+                    .get(idx, {}).get(recall_target))
+            ts, _, _, eff = _thread_data(node)
+            ev = np.nan
+            if ts:
+                # find efficiency at exactly at_threads, else closest available
+                if at_threads in ts:
+                    ev = eff[ts.index(at_threads)]
+                else:
+                    j = min(range(len(ts)), key=lambda jj: abs(ts[jj] - at_threads))
+                    ev = eff[j]
+            if ev is None:
+                ev = np.nan
+            ys.append(ev)
+            if not np.isnan(ev):
+                any_data = True
+        offset = (i - (len(INDICES) - 1) / 2.0) * width
+        ax.bar(x + offset, np.where(np.isnan(ys), 0, ys), width,
+               label=idx, color=INDEX_COLOR[idx])
+    if not any_data:
+        plt.close(fig); return
+    ax.axhline(1.0, color="black", linewidth=0.7, linestyle="--", alpha=0.6)
+    ax.set_xticks(x)
+    ax.set_xticklabels([DATASET_LABEL[d] for d in datasets],
+                       rotation=30, ha="right", fontsize=9)
+    ax.set_ylabel("parallel efficiency  (speedup / threads)")
+    ax.set_ylim(0, 1.1)
+    ax.set_title(f"Parallel efficiency at {at_threads} threads "
+                 f"@ recall ≥ {RECALL_TARGET_LABEL[recall_target]} (k=10)")
+    ax.grid(True, axis="y", linestyle=":", alpha=0.4)
+    ax.legend(ncol=len(INDICES), fontsize=9, loc="upper left")
+    save_fig(fig, out_dir, f"thread_scaling_efficiency_t{at_threads}_{recall_target}",
+             formats)
+
+
+def table_thread_scaling(all_results, out_dir):
+    """One table per recall target: dataset × index × thread count → QPS, eff."""
+    datasets = [ds for ds in DATASETS if ds in all_results]
+    # Discover the union of thread counts seen across datasets.
+    for tgt in ("r90", "r95"):
+        thread_set = set()
+        for ds in datasets:
+            ts_node = all_results[ds].get("thread_scaling", {})
+            for idx in INDICES:
+                ts, _, _, _ = _thread_data(ts_node.get(idx, {}).get(tgt))
+                thread_set.update(ts)
+        if not thread_set:
+            continue
+        thread_list = sorted(thread_set)
+        header = ["Dataset", "Index"]
+        for t in thread_list:
+            header += [f"qps@t{t}", f"eff@t{t}"]
+        rows = []
+        for ds in datasets:
+            ts_node = all_results[ds].get("thread_scaling", {})
+            for idx in INDICES:
+                ts, qps, _, eff = _thread_data(ts_node.get(idx, {}).get(tgt))
+                if not ts:
+                    continue
+                lookup = {t: (q, e) for t, q, e in zip(ts, qps, eff)}
+                row = [DATASET_LABEL[ds], idx]
+                for t in thread_list:
+                    q, e = lookup.get(t, (None, None))
+                    row += [_fmt(q, 1), _fmt(e, 3)]
+                rows.append(row)
+        if rows:
+            write_table(out_dir, f"thread_scaling_{tgt}", header, rows,
+                        caption=f"QPS and parallel efficiency at recall "
+                                f"$\\geq$ {RECALL_TARGET_LABEL[tgt]} (k=10) "
+                                f"as faiss.omp\\_set\\_num\\_threads is swept.",
+                        label=f"thread-scaling-{tgt}")
+
+
+# ---------------------------------------------------------------------------
 # Robustness boxplot (per-query recall@20 distribution)
 # ---------------------------------------------------------------------------
 
@@ -1215,9 +1448,9 @@ def main():
     # MRE — both mean (legacy) and median (outlier-robust)
     plot_mre(all_results, args.out_dir, args.formats,
              field="mre", name="mre_at_recall", stat_label="MRE")
-    plot_mre(all_results, args.out_dir, args.formats,
-             field="mre_median", name="mre_median_at_recall",
-             stat_label="MRE (median)")
+    #plot_mre(all_results, args.out_dir, args.formats,
+    #         field="mre_median", name="mre_median_at_recall",
+    #         stat_label="MRE (median)")
 
     # Robustness
     plot_robustness_box(all_results, args.out_dir, args.formats)
@@ -1239,6 +1472,13 @@ def main():
     plot_recall_vs_time_grid(all_results, args.out_dir, args.formats, k=10)
     plot_recall_vs_time_grid(all_results, args.out_dir, args.formats, k=20)
 
+    # Thread-scaling figures (one per recall target)
+    for tgt in ("r90", "r95"):
+        plot_thread_scaling_grid(all_results, args.out_dir, args.formats, recall_target=tgt)
+        plot_thread_scaling_speedup(all_results, args.out_dir, args.formats, recall_target=tgt)
+        plot_thread_scaling_efficiency_summary(
+            all_results, args.out_dir, args.formats, recall_target=tgt)
+
     # Tables (csv + tex)
     table_dataset_features(all_results, args.out_dir)
     table_construction(all_results, args.out_dir)
@@ -1250,6 +1490,7 @@ def main():
     table_cold_warm(all_results, args.out_dir)
     table_unseen_robustness(all_results, args.out_dir)
     table_recall_at_qps(all_results, args.out_dir)
+    table_thread_scaling(all_results, args.out_dir)
 
     print(f"figures written to {args.out_dir}/")
     print(f"tables  written to {os.path.join(args.out_dir, 'tables')}/")
