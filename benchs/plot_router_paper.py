@@ -384,39 +384,319 @@ def plot_latency_tail(all_results, out_dir, formats, target="r95"):
 # MRE at recall targets
 # ---------------------------------------------------------------------------
 
-def plot_mre(all_results, out_dir, formats):
+MRE_OUTLIER_THRESHOLD = 2.0   # MRE values above this are "broken" (zero-distance GT etc.)
+
+
+def plot_mre(all_results, out_dir, formats, field="mre", name="mre_at_recall",
+             stat_label="MRE"):
+    """MRE bars with outlier-aware clipping: values > MRE_OUTLIER_THRESHOLD are
+    plotted at the threshold and tagged with a red asterisk so the figure stays
+    readable even on datasets with duplicate / zero-distance ground-truth pairs
+    (e.g. spacev10m where MRE blows up to 1e10)."""
     datasets = [ds for ds in DATASETS if ds in all_results]
     targets = ["r90", "r95", "r99"]
     fig, axes = plt.subplots(1, len(targets),
                              figsize=(4.5 * len(targets), 4.2),
-                             sharey=False)
+                             sharey=True)
     for ti, t in enumerate(targets):
         ax = axes[ti]
         x = np.arange(len(datasets))
         width = 0.16
         for i, idx in enumerate(INDICES):
-            ys = []
+            ys, broken = [], []
             for ds in datasets:
-                mre = all_results[ds].get("mre", {})
-                v = mre.get(idx, {}).get(t, {}).get("mre", np.nan)
-                if v is None:
-                    v = np.nan
-                # plot (mre - 1) so 0 is "perfect"
-                ys.append(v - 1.0 if np.isfinite(v) else np.nan)
+                v = all_results[ds].get("mre", {}).get(idx, {}).get(t, {}).get(field, np.nan)
+                if v is None or not np.isfinite(v):
+                    ys.append(np.nan); broken.append(False); continue
+                if v > MRE_OUTLIER_THRESHOLD:
+                    ys.append(MRE_OUTLIER_THRESHOLD - 1.0); broken.append(True)
+                else:
+                    ys.append(max(v - 1.0, 0)); broken.append(False)
+            offset = (i - (len(INDICES) - 1) / 2.0) * width
+            ax.bar(x + offset, np.where(np.isnan(ys), 0, ys), width,
+                   label=idx, color=INDEX_COLOR[idx])
+            for xi, bad in zip(x + offset, broken):
+                if bad:
+                    ax.text(xi, MRE_OUTLIER_THRESHOLD - 1.0, "*",
+                            ha="center", va="bottom", color="red", fontsize=11)
+        ax.set_xticks(x)
+        ax.set_xticklabels([DATASET_LABEL[d] for d in datasets],
+                           rotation=45, ha="right", fontsize=8)
+        ax.set_ylabel(f"{stat_label} − 1")
+        ax.set_title(f"{stat_label} at recall {RECALL_TARGET_LABEL[t]}")
+        ax.set_yscale("symlog", linthresh=1e-4)
+        ax.grid(True, axis="y", which="both", linestyle=":", alpha=0.4)
+        if ti == 0:
+            ax.legend(fontsize=8)
+    fig.tight_layout()
+    save_fig(fig, out_dir, name, formats)
+
+
+# ---------------------------------------------------------------------------
+# Cumulative cost (SuCo Fig 13): build_time + n_queries · ms_per_query at fixed recall
+# ---------------------------------------------------------------------------
+
+def plot_cumulative_cost(all_results, out_dir, formats, k=10, recall_target="r95"):
+    """Total wall-clock cost (s) = build_time + nq · ms_per_query / 1000 at fixed recall,
+    plotted as a function of nq. Crossover points show when each index amortizes its build."""
+    datasets = [ds for ds in DATASETS if ds in all_results]
+    section_key = f"recall_k{k}"
+    nq_grid = np.logspace(2, 7, 40)  # 100 .. 10M queries
+    n = len(datasets)
+    ncols = 4
+    nrows = (n + ncols - 1) // ncols
+    fig, axes = plt.subplots(nrows, ncols, figsize=(4.0 * ncols, 3.0 * nrows),
+                             squeeze=False)
+    for di, ds in enumerate(datasets):
+        ax = axes[di // ncols][di % ncols]
+        cons = all_results[ds].get("construction", {})
+        tar = all_results[ds].get("time_at_recall", {}).get(section_key, {}).get(recall_target, {})
+        any_data = False
+        for idx in INDICES:
+            bt = cons.get(idx, {}).get("build_time_s")
+            ms = tar.get(idx, {}).get("ms_per_query")
+            if bt is None or bt < 0 or ms is None:
+                continue
+            cost = bt + nq_grid * ms / 1000.0
+            ax.plot(nq_grid, cost, color=INDEX_COLOR[idx],
+                    marker=INDEX_MARKER[idx], markevery=8, markersize=4,
+                    label=idx, linewidth=1.4)
+            any_data = True
+        ax.set_xscale("log"); ax.set_yscale("log")
+        ax.set_title(DATASET_LABEL[ds], fontsize=10)
+        ax.grid(True, which="both", linestyle=":", alpha=0.4)
+        if not any_data:
+            ax.text(0.5, 0.5, "no data", transform=ax.transAxes,
+                    ha="center", va="center", color="gray")
+        if di // ncols == nrows - 1:
+            ax.set_xlabel("number of queries")
+        if di % ncols == 0:
+            ax.set_ylabel("cumulative cost (s)")
+    for j in range(n, nrows * ncols):
+        axes[j // ncols][j % ncols].axis("off")
+    handles = [plt.Line2D([0], [0], color=INDEX_COLOR[idx],
+                          marker=INDEX_MARKER[idx], label=idx, linewidth=1.4)
+               for idx in INDICES]
+    fig.legend(handles=handles, loc="lower center", ncol=len(INDICES),
+               frameon=False, fontsize=10, bbox_to_anchor=(0.5, -0.02))
+    fig.suptitle(f"Cumulative cost = build + nq·ms/q  at recall@{k} ≥ "
+                 f"{RECALL_TARGET_LABEL[recall_target]}", fontsize=13)
+    fig.tight_layout(rect=[0, 0.03, 1, 0.97])
+    save_fig(fig, out_dir, f"cumulative_cost_k{k}_{recall_target}", formats)
+
+
+# ---------------------------------------------------------------------------
+# k sensitivity: ms/query at recall>=target across k ∈ {1,10,20,50,100}
+# ---------------------------------------------------------------------------
+
+def plot_k_sensitivity(all_results, out_dir, formats, recall_target="r95"):
+    """For each index and dataset, ms/query at fixed recall as a function of k."""
+    datasets = [ds for ds in DATASETS if ds in all_results]
+    n = len(datasets); ncols = 4
+    nrows = (n + ncols - 1) // ncols
+    fig, axes = plt.subplots(nrows, ncols, figsize=(4.0 * ncols, 3.0 * nrows),
+                             squeeze=False)
+    for di, ds in enumerate(datasets):
+        ax = axes[di // ncols][di % ncols]
+        any_data = False
+        for idx in INDICES:
+            xs, ys = [], []
+            for k in K_LIST:
+                tar = all_results[ds].get("time_at_recall", {}).get(
+                    f"recall_k{k}", {}).get(recall_target, {})
+                ms = tar.get(idx, {}).get("ms_per_query")
+                if ms is not None:
+                    xs.append(k); ys.append(ms)
+            if xs:
+                ax.plot(xs, ys, color=INDEX_COLOR[idx],
+                        marker=INDEX_MARKER[idx], label=idx, linewidth=1.4)
+                any_data = True
+        ax.set_xscale("log"); ax.set_yscale("log")
+        ax.set_xticks(K_LIST); ax.set_xticklabels([str(k) for k in K_LIST])
+        ax.set_title(DATASET_LABEL[ds], fontsize=10)
+        ax.grid(True, which="both", linestyle=":", alpha=0.4)
+        if not any_data:
+            ax.text(0.5, 0.5, "no data", transform=ax.transAxes,
+                    ha="center", va="center", color="gray")
+        if di // ncols == nrows - 1:
+            ax.set_xlabel("k")
+        if di % ncols == 0:
+            ax.set_ylabel("ms / query")
+    for j in range(n, nrows * ncols):
+        axes[j // ncols][j % ncols].axis("off")
+    handles = [plt.Line2D([0], [0], color=INDEX_COLOR[idx],
+                          marker=INDEX_MARKER[idx], label=idx, linewidth=1.4)
+               for idx in INDICES]
+    fig.legend(handles=handles, loc="lower center", ncol=len(INDICES),
+               frameon=False, fontsize=10, bbox_to_anchor=(0.5, -0.02))
+    fig.suptitle(f"k sensitivity: ms/query at recall ≥ "
+                 f"{RECALL_TARGET_LABEL[recall_target]}", fontsize=13)
+    fig.tight_layout(rect=[0, 0.03, 1, 0.97])
+    save_fig(fig, out_dir, f"k_sensitivity_{recall_target}", formats)
+
+
+# ---------------------------------------------------------------------------
+# Cold latency absolute values (not just ratio)
+# ---------------------------------------------------------------------------
+
+def plot_cold_latency_abs(all_results, out_dir, formats):
+    datasets = [ds for ds in DATASETS if ds in all_results]
+    fig, axes = plt.subplots(1, 2, figsize=(max(11, 1.0 * len(datasets) + 4), 4.4),
+                             sharey=False)
+    for ax, field, title in [
+        (axes[0], "cold_mean_ms", "Cold-cache mean latency (ms)"),
+        (axes[1], "warm_mean_ms", "Warm-cache mean latency (ms)"),
+    ]:
+        x = np.arange(len(datasets))
+        width = 0.16
+        for i, idx in enumerate(INDICES):
+            ys = [all_results[d].get("cold_warm", {}).get(idx, {}).get(field, np.nan)
+                  for d in datasets]
+            ys = [np.nan if v is None else v for v in ys]
             offset = (i - (len(INDICES) - 1) / 2.0) * width
             ax.bar(x + offset, np.where(np.isnan(ys), 0, ys), width,
                    label=idx, color=INDEX_COLOR[idx])
         ax.set_xticks(x)
         ax.set_xticklabels([DATASET_LABEL[d] for d in datasets],
                            rotation=45, ha="right", fontsize=8)
-        ax.set_ylabel("MRE − 1")
-        ax.set_title(f"MRE at recall {RECALL_TARGET_LABEL[t]}")
-        ax.set_yscale("symlog", linthresh=1e-4)
+        ax.set_yscale("log")
+        ax.set_title(title); ax.set_ylabel("ms")
         ax.grid(True, axis="y", which="both", linestyle=":", alpha=0.4)
-        if ti == 0:
-            ax.legend(fontsize=8)
+    axes[0].legend(ncol=len(INDICES), fontsize=8, loc="upper left")
     fig.tight_layout()
-    save_fig(fig, out_dir, "mre_at_recall", formats)
+    save_fig(fig, out_dir, "cold_warm_absolute", formats)
+
+
+# ---------------------------------------------------------------------------
+# Construction tradeoff scatter: build_time vs index size, bubble = mean_recall@10@r95
+# ---------------------------------------------------------------------------
+
+def plot_build_vs_size(all_results, out_dir, formats):
+    fig, ax = plt.subplots(figsize=(8.0, 5.5))
+    plotted = False
+    for idx in INDICES:
+        xs, ys, ann = [], [], []
+        for ds in DATASETS:
+            if ds not in all_results:
+                continue
+            cons = all_results[ds].get("construction", {}).get(idx, {})
+            bt = cons.get("build_time_s"); sz = cons.get("size_mb")
+            if bt is None or sz is None or bt < 0 or sz < 0:
+                continue
+            xs.append(sz); ys.append(bt); ann.append(ds)
+        if not xs:
+            continue
+        ax.scatter(xs, ys, s=70, color=INDEX_COLOR[idx],
+                   marker=INDEX_MARKER[idx], label=idx,
+                   edgecolor="black", linewidth=0.5, alpha=0.85)
+        plotted = True
+        for x, y, a in zip(xs, ys, ann):
+            ax.annotate(DATASET_LABEL[a], (x, y), fontsize=6,
+                        color="dimgray", alpha=0.7,
+                        xytext=(4, 2), textcoords="offset points")
+    if not plotted:
+        return
+    ax.set_xscale("log"); ax.set_yscale("log")
+    ax.set_xlabel("Index size (MB, log)")
+    ax.set_ylabel("Build time (s, log)")
+    ax.set_title("Construction tradeoff: build time vs serialized size")
+    ax.grid(True, which="both", linestyle=":", alpha=0.4)
+    ax.legend(fontsize=9)
+    fig.tight_layout()
+    save_fig(fig, out_dir, "build_vs_size", formats)
+
+
+# ---------------------------------------------------------------------------
+# Dataset-difficulty scatter: LID vs speedup-vs-HNSW32 (recall@10 r95)
+# ---------------------------------------------------------------------------
+
+def plot_lid_vs_speedup(all_results, out_dir, formats, k=10, recall_target="r95"):
+    fig, ax = plt.subplots(figsize=(8.0, 5.5))
+    section_key = f"recall_k{k}"
+    plotted = False
+    for idx in INDICES:
+        xs, ys, ann = [], [], []
+        for ds in DATASETS:
+            if ds not in all_results:
+                continue
+            lid = all_results[ds].get("features", {}).get("lid_mle")
+            sp = (all_results[ds].get("time_at_recall", {})
+                  .get(section_key, {}).get(recall_target, {})
+                  .get(idx, {}).get("speedup_vs_HNSW32"))
+            if lid is None or sp is None:
+                continue
+            xs.append(lid); ys.append(sp); ann.append(ds)
+        if not xs:
+            continue
+        ax.scatter(xs, ys, s=70, color=INDEX_COLOR[idx],
+                   marker=INDEX_MARKER[idx], label=idx,
+                   edgecolor="black", linewidth=0.5, alpha=0.85)
+        plotted = True
+        for x, y, a in zip(xs, ys, ann):
+            ax.annotate(DATASET_LABEL[a], (x, y), fontsize=6,
+                        color="dimgray", alpha=0.7,
+                        xytext=(4, 2), textcoords="offset points")
+    if not plotted:
+        return
+    ax.axhline(1.0, color="black", linewidth=0.7, linestyle="--", alpha=0.6)
+    ax.set_yscale("log")
+    ax.set_xlabel("LID (MLE)")
+    ax.set_ylabel(f"speedup vs HNSW32 @ recall@{k}≥"
+                  f"{RECALL_TARGET_LABEL[recall_target]}")
+    ax.set_title("Dataset difficulty (LID) vs achieved speedup")
+    ax.grid(True, which="both", linestyle=":", alpha=0.4)
+    ax.legend(fontsize=9)
+    fig.tight_layout()
+    save_fig(fig, out_dir, f"lid_vs_speedup_k{k}_{recall_target}", formats)
+
+
+# ---------------------------------------------------------------------------
+# Recall-vs-time grid: ms/query (log-y) vs recall — same data as Pareto, easier read
+# ---------------------------------------------------------------------------
+
+def plot_recall_vs_time_grid(all_results, out_dir, formats, k=10):
+    section_key = f"recall_k{k}"
+    datasets = [ds for ds in DATASETS if ds in all_results]
+    n = len(datasets); ncols = 4
+    nrows = (n + ncols - 1) // ncols
+    fig, axes = plt.subplots(nrows, ncols, figsize=(4.0 * ncols, 3.0 * nrows),
+                             squeeze=False)
+    for di, ds in enumerate(datasets):
+        ax = axes[di // ncols][di % ncols]
+        any_data = False
+        for idx in INDICES:
+            rows = all_results[ds].get(section_key, {}).get(idx)
+            if not rows:
+                continue
+            rs = sorted([(r["recall"], r["ms_per_query"]) for r in rows
+                        if r.get("recall") is not None and r.get("ms_per_query")],
+                       key=lambda p: p[0])
+            if not rs:
+                continue
+            xs, ys = zip(*rs)
+            ax.plot(xs, ys, marker=INDEX_MARKER[idx], color=INDEX_COLOR[idx],
+                    label=idx, linewidth=1.4, markersize=4)
+            any_data = True
+        ax.set_yscale("log")
+        ax.set_title(DATASET_LABEL[ds], fontsize=10)
+        ax.grid(True, which="both", linestyle=":", alpha=0.4)
+        if not any_data:
+            ax.text(0.5, 0.5, "no data", transform=ax.transAxes,
+                    ha="center", va="center", color="gray")
+        if di // ncols == nrows - 1:
+            ax.set_xlabel(f"recall@{k}")
+        if di % ncols == 0:
+            ax.set_ylabel("ms / query")
+    for j in range(n, nrows * ncols):
+        axes[j // ncols][j % ncols].axis("off")
+    handles = [plt.Line2D([0], [0], color=INDEX_COLOR[idx],
+                          marker=INDEX_MARKER[idx], label=idx, linewidth=1.4)
+               for idx in INDICES]
+    fig.legend(handles=handles, loc="lower center", ncol=len(INDICES),
+               frameon=False, fontsize=10, bbox_to_anchor=(0.5, -0.02))
+    fig.suptitle(f"ms/query vs recall@{k} (log-y)", fontsize=13)
+    fig.tight_layout(rect=[0, 0.03, 1, 0.97])
+    save_fig(fig, out_dir, f"recall_vs_time_grid_k{k}", formats)
 
 
 # ---------------------------------------------------------------------------
@@ -731,8 +1011,10 @@ def table_latency_tail(all_results, out_dir):
 def table_mre(all_results, out_dir):
     datasets = [ds for ds in DATASETS if ds in all_results]
     targets = ["r90", "r95", "r99"]
-    header = ["Dataset", "Index"] + [
-        f"MRE@{RECALL_TARGET_LABEL[t]}" for t in targets]
+    header = ["Dataset", "Index"]
+    for t in targets:
+        header += [f"mean@{RECALL_TARGET_LABEL[t]}",
+                   f"med@{RECALL_TARGET_LABEL[t]}"]
     rows = []
     for ds in datasets:
         mre = all_results[ds].get("mre", {})
@@ -740,16 +1022,21 @@ def table_mre(all_results, out_dir):
             row = [DATASET_LABEL[ds], idx]
             has = False
             for t in targets:
-                v = mre.get(idx, {}).get(t, {}).get("mre")
-                row.append(_fmt(v, 4))
-                if v is not None:
+                cell = mre.get(idx, {}).get(t, {})
+                vm = cell.get("mre")
+                vmd = cell.get("mre_median")
+                row.append(_fmt(vm, 4))
+                row.append(_fmt(vmd, 4))
+                if vm is not None or vmd is not None:
                     has = True
             if has:
                 rows.append(row)
     if rows:
         write_table(out_dir, "mre_at_recall", header, rows,
-                    caption="Mean relative error (MRE) at recall targets "
-                            "(1.0 = exact distances; lower is better).",
+                    caption="Mean and median relative error (MRE) at recall "
+                            "targets (1.0 = exact distances; lower is better). "
+                            "Median is robust to duplicate / zero-distance "
+                            "ground-truth pairs that inflate the mean.",
                     label="mre")
 
 
@@ -925,8 +1212,12 @@ def main():
     for tgt in ("r90", "r95", "r99"):
         plot_latency_tail(all_results, args.out_dir, args.formats, target=tgt)
 
-    # MRE
-    plot_mre(all_results, args.out_dir, args.formats)
+    # MRE — both mean (legacy) and median (outlier-robust)
+    plot_mre(all_results, args.out_dir, args.formats,
+             field="mre", name="mre_at_recall", stat_label="MRE")
+    plot_mre(all_results, args.out_dir, args.formats,
+             field="mre_median", name="mre_median_at_recall",
+             stat_label="MRE (median)")
 
     # Robustness
     plot_robustness_box(all_results, args.out_dir, args.formats)
@@ -934,7 +1225,19 @@ def main():
 
     # Cold/warm + unseen
     plot_cold_warm(all_results, args.out_dir, args.formats)
+    plot_cold_latency_abs(all_results, args.out_dir, args.formats)
     plot_unseen_robustness(all_results, args.out_dir, args.formats)
+
+    # New analytical figures
+    plot_cumulative_cost(all_results, args.out_dir, args.formats, k=10, recall_target="r95")
+    plot_cumulative_cost(all_results, args.out_dir, args.formats, k=10, recall_target="r99")
+    plot_k_sensitivity(all_results, args.out_dir, args.formats, recall_target="r95")
+    plot_k_sensitivity(all_results, args.out_dir, args.formats, recall_target="r99")
+    plot_build_vs_size(all_results, args.out_dir, args.formats)
+    plot_lid_vs_speedup(all_results, args.out_dir, args.formats, k=10, recall_target="r95")
+    plot_recall_vs_time_grid(all_results, args.out_dir, args.formats, k=1)
+    plot_recall_vs_time_grid(all_results, args.out_dir, args.formats, k=10)
+    plot_recall_vs_time_grid(all_results, args.out_dir, args.formats, k=20)
 
     # Tables (csv + tex)
     table_dataset_features(all_results, args.out_dir)

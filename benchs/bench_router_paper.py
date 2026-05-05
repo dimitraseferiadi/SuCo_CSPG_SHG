@@ -26,6 +26,8 @@ Benchmarks:
   latency_tail        — p50/p95/p99/p99.9 per-query latency at recall {0.90,0.95,0.99}
   cold_warm           — first-query/cold-cache vs warm-cache latency
   mre                 — mean relative error at recall {0.90,0.95,0.99}
+  thread_scaling      — QPS / speedup / efficiency at threads ∈ {1,2,4,8,16}
+                        at recall ∈ {0.90, 0.95}, k=10
   pareto              — derived Pareto upper envelope from recall_k* curves
   time_at_recall      — interpolated ms/query at recall {0.80,0.90,0.95,0.99}
                         + speedup-at-recall vs HNSW32 baseline
@@ -127,13 +129,31 @@ SPEEDUP_BASELINE_LABEL = "HNSW32"   # denominator for speedup ratios
 # MRE evaluation.
 MRE_K = 20
 
+# Thread-scaling: sweep faiss.omp_set_num_threads at fixed recall targets.
+THREAD_COUNTS = (1, 2, 4, 8, 16)
+THREAD_RECALL_TARGETS = (0.90, 0.95)
+THREAD_K = 10                       # measure recall@k=10 throughput
+
 ALL_DATASETS = [
     "sift1m", "sift10m", "gist1m",
     "deep1m", "deep10m",
     "spacev10m",
     "msong", "enron", "openai1m",
     "msturing10m", "uqv",
+    # SIFT size sweep (subsamples from SIFT10M source, comparable across sizes).
+    "sift100k", "sift200k", "sift500k", "sift2m", "sift5m",
 ]
+
+# SIFT size-sweep configuration: every entry subsamples from SIFT10Mfeatures.mat
+# so curves at different n are directly comparable. sift1m / sift10m remain the
+# paper-default loaders untouched; sift1m_sub is the matching point on this sweep.
+SIFT_SIZE_SWEEP = {
+    "sift100k": 100_000,
+    "sift200k": 200_000,
+    "sift500k": 500_000,
+    "sift2m":   2_000_000,
+    "sift5m":   5_000_000,
+}
 ALL_BENCHMARKS = [
     "construction",
     "features",
@@ -144,6 +164,7 @@ ALL_BENCHMARKS = [
     "latency_tail",
     "cold_warm",
     "mre",
+    "thread_scaling",
     "pareto",
     "time_at_recall",
 ]
@@ -152,6 +173,7 @@ PER_INDEX_BENCHMARKS = {
     "construction",
     "robustness", "hard_robustness",
     "latency_tail", "cold_warm", "mre",
+    "thread_scaling",
     *(f"recall_k{k}" for k in RECALL_KS),
 }
 # Benchmarks computed once per dataset (need rebuild or aggregate over results).
@@ -327,10 +349,34 @@ def load_dataset(name, data_dir):
                 read_fvecs(os.path.join(p, "uqv_query.fvecs")),
                 read_ivecs(os.path.join(p, "uqv_groundtruth.ivecs")))
 
+    if name in SIFT_SIZE_SWEEP:
+        return _load_sift_subsample(data_dir, SIFT_SIZE_SWEEP[name])
+
     raise ValueError(f"Unknown dataset: {name!r}")
 
 
-def _load_sift10m(data_dir, nb=10_000_000, nq=10_000):
+def _load_sift_subsample(data_dir, nb, nq=10_000):
+    """Subsample of SIFT10Mfeatures.mat: first `nb` base + 10K queries + size-keyed GT.
+
+    Cache key is keyed on nb so each size gets its own GT file. Sharing the source
+    means recall curves across sizes are directly comparable (no distribution shift).
+    """
+    xb, xq = _load_sift_raw(data_dir, nb, nq)
+    cache = os.path.join(data_dir, "SIFT10M", f"sift_{nb}_gt.npy")
+    if os.path.exists(cache):
+        gt = np.load(cache).astype(np.int32)
+    else:
+        gt = compute_ground_truth(xb, xq, 100)
+        try:
+            np.save(cache, gt)
+            print(f"  Cached GT to {cache}")
+        except Exception as e:
+            print(f"  Could not cache GT: {e}")
+    return xb, xq, gt
+
+
+def _load_sift_raw(data_dir, nb, nq=10_000):
+    """Load raw (xb, xq) of given sizes from SIFT10Mfeatures.mat. No GT."""
     p = os.path.join(data_dir, "SIFT10M", "SIFT10Mfeatures.mat")
     if not os.path.exists(p):
         raise FileNotFoundError(f"SIFT10M features file not found: {p}")
@@ -356,7 +402,11 @@ def _load_sift10m(data_dir, nb=10_000_000, nq=10_000):
     if raw.shape[1] != 128:
         raw = raw.T
     x = np.ascontiguousarray(raw, dtype=np.float32)
-    xb, xq = x[:nb], x[nb : nb + nq]
+    return x[:nb], x[nb : nb + nq]
+
+
+def _load_sift10m(data_dir, nb=10_000_000, nq=10_000):
+    xb, xq = _load_sift_raw(data_dir, nb, nq)
 
     gt_path = None
     for cand in [
@@ -513,7 +563,12 @@ def approx_ratio_at_k(D_ret, xb, xq, gt, k=10):
 
 
 def compute_mre_at_k(I, xb, xq, gt, k=MRE_K):
-    """SuCo-style MRE: (1/k) Σ ‖q,oᵢ‖ / ‖q,o*ᵢ‖. Real (non-squared) L2."""
+    """SuCo-style MRE: (1/k) Σ ‖q,oᵢ‖ / ‖q,o*ᵢ‖. Real (non-squared) L2.
+
+    Returns (mean_mre, median_mre). Pairs with true_d == 0 (duplicate base
+    vectors / query == base vector) are undefined and excluded from the
+    per-query average; queries with all-zero true distances are skipped.
+    """
     nq = xq.shape[0]
     k_use = min(k, gt.shape[1], I.shape[1])
     mres = []
@@ -528,8 +583,13 @@ def compute_mre_at_k(I, xb, xq, gt, k=MRE_K):
         true_d = np.sqrt(np.maximum(((xb[gt_ids] - q) ** 2).sum(axis=1), 0))
         ret_d  = np.sqrt(np.maximum(((xb[ret_ids] - q) ** 2).sum(axis=1), 0))
         ret_sorted = np.sort(ret_d)[: len(true_d)]
-        mres.append(float(np.mean(ret_sorted / np.maximum(true_d, 1e-12))))
-    return float(np.mean(mres)) if mres else -1.0
+        mask = true_d > 0
+        if not mask.any():
+            continue
+        mres.append(float(np.mean(ret_sorted[mask] / true_d[mask])))
+    if not mres:
+        return -1.0, -1.0
+    return float(np.mean(mres)), float(np.median(mres))
 
 
 # ===========================================================================
@@ -948,17 +1008,91 @@ def run_mre(idx, kind, xb, xq, gt, k=MRE_K, recall_curve=None):
             continue
         search_fn = factory(chosen["param"])
         D, I = search_fn(idx, xq, k)
-        mre = compute_mre_at_k(I, xb, xq, gt, k=k)
+        mre_mean, mre_median = compute_mre_at_k(I, xb, xq, gt, k=k)
         ar  = approx_ratio_at_k(D, xb, xq, gt, k=k)
         out[f"r{int(round(target * 100))}"] = {
             "k": k,
             "param": chosen["param"],
             "achieved_recall": chosen["recall"],
             "target_recall":   target,
-            "mre": round(float(mre), 6),
+            "mre": round(float(mre_mean), 6),
+            "mre_median": round(float(mre_median), 6),
             "approx_ratio_sq_l2": round(float(ar), 6),
         }
-        print(f"  {kind} MRE @recall≥{target}: {mre:.4f} (approx-ratio^2={ar:.4f})")
+        print(f"  {kind} MRE @recall≥{target}: mean={mre_mean:.4f} "
+              f"median={mre_median:.4f} (approx-ratio^2={ar:.4f})")
+    return out
+
+
+def run_thread_scaling(idx, kind, xq, gt, k=THREAD_K, recall_curve=None,
+                       thread_counts=THREAD_COUNTS,
+                       recall_targets=THREAD_RECALL_TARGETS):
+    """Sweep faiss.omp_set_num_threads ∈ thread_counts at each recall target.
+    Reports per-thread QPS, ms/query (batch-amortized), speedup vs t=1 and
+    parallel efficiency (speedup / threads). Restores caller's thread count on exit."""
+    factory, params, _ = SEARCH_FACTORY[kind]
+    if recall_curve is None:
+        recall_curve = recall_time_curve(idx, kind, xq, gt, k, factory, params, n_runs=1)
+
+    try:
+        prev_threads = int(faiss.omp_get_max_threads())
+    except Exception:
+        prev_threads = -1
+
+    nq = int(xq.shape[0])
+    out = {}
+    try:
+        for target in recall_targets:
+            chosen = pick_param_for_recall(recall_curve, target)
+            if chosen is None:
+                continue
+            search_fn = factory(chosen["param"])
+
+            per_target = {
+                "param": chosen["param"],
+                "achieved_recall": chosen["recall"],
+                "target_recall": float(target),
+                "k": int(k),
+                "by_threads": {},
+            }
+            qps_t1 = None
+            for t in thread_counts:
+                try:
+                    faiss.omp_set_num_threads(int(t))
+                except Exception as e:
+                    per_target["by_threads"][str(t)] = {"error": f"omp_set: {e}"}
+                    continue
+                # Warmup at this thread count.
+                for _ in range(2):
+                    search_fn(idx, xq[: min(50, nq)], k)
+
+                t0 = time.perf_counter()
+                _, _ = search_fn(idx, xq, k)
+                elapsed = time.perf_counter() - t0
+                qps = nq / elapsed if elapsed > 0 else 0.0
+                ms_per_q = (elapsed / nq) * 1000.0
+                if t == thread_counts[0]:
+                    qps_t1 = qps
+                speedup = (qps / qps_t1) if (qps_t1 and qps_t1 > 0) else None
+                eff = (speedup / t) if (speedup is not None and t > 0) else None
+                per_target["by_threads"][str(t)] = {
+                    "threads":      int(t),
+                    "qps":          round(float(qps),       2),
+                    "ms_per_query": round(float(ms_per_q),  6),
+                    "speedup_vs_t1":   round(float(speedup), 3) if speedup is not None else None,
+                    "parallel_efficiency": round(float(eff), 3) if eff is not None else None,
+                }
+                print(f"  {kind} threads={t} @recall≥{target}: "
+                      f"qps={qps:.0f} ms/q={ms_per_q:.4f} "
+                      f"speedup={speedup if speedup is None else round(speedup,2)} "
+                      f"eff={eff if eff is None else round(eff,2)}")
+            out[f"r{int(round(target * 100))}"] = per_target
+    finally:
+        if prev_threads > 0:
+            try:
+                faiss.omp_set_num_threads(prev_threads)
+            except Exception:
+                pass
     return out
 
 
@@ -1109,6 +1243,7 @@ def run_benchmarks(dataset, benchmarks, index_types, data_dir, index_dir, output
     latency_results    = dict(all_results.get("latency_tail", {}) or {})
     coldwarm_results   = dict(all_results.get("cold_warm", {}) or {})
     mre_results        = dict(all_results.get("mre", {}) or {})
+    thread_results     = dict(all_results.get("thread_scaling", {}) or {})
 
     for kind in index_types:
         if kind not in BUILDERS:
@@ -1225,6 +1360,18 @@ def run_benchmarks(dataset, benchmarks, index_types, data_dir, index_dir, output
                 print(f"  {label} MRE FAILED: {e}")
                 traceback.print_exc()
 
+        if "thread_scaling" in benchmarks:
+            print(f"\n--- {label} thread scaling (threads={list(THREAD_COUNTS)}) ---")
+            try:
+                # Use the recall@k=THREAD_K curve so the recall target matches the metric.
+                tk_curve = recall_curves.get(f"recall_k{THREAD_K}", {}).get(label)
+                thread_results[label] = run_thread_scaling(
+                    idx, kind, xq, gt, k=THREAD_K, recall_curve=tk_curve,
+                )
+            except Exception as e:
+                print(f"  {label} thread_scaling FAILED: {e}")
+                traceback.print_exc()
+
         del idx
         gc.collect()
 
@@ -1246,6 +1393,7 @@ def run_benchmarks(dataset, benchmarks, index_types, data_dir, index_dir, output
     if "latency_tail"      in benchmarks: all_results["latency_tail"]      = latency_results
     if "cold_warm"         in benchmarks: all_results["cold_warm"]         = coldwarm_results
     if "mre"               in benchmarks: all_results["mre"]               = mre_results
+    if "thread_scaling"    in benchmarks: all_results["thread_scaling"]    = thread_results
 
     # Dataset-level benchmarks (last so curves are populated).
     if "unseen_robustness" in benchmarks:
