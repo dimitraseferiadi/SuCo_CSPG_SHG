@@ -25,6 +25,10 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
+from paper_style import apply_paper_style, color_for, marker_for, grid_for
+
+apply_paper_style()
+
 
 DATASETS_ORDER = ["openai", "enron", "gist1m", "msong", "uqv", "msturing10m"]
 DATASET_LABELS = {
@@ -36,27 +40,24 @@ DATASET_LABELS = {
     "msturing10m": "MsTuring10M",
 }
 
-INDEX_COLORS = {
-    "SHG": "#f4a261",
-    "HNSW": "#e63946",
-    "PANORAMA": "#6ab187",
-    "IVFFLAT": "#457b9d",
-    "IVFPQ": "#a8dadc",
-    "SHG-NO-SHORTCUT": "#c0392b",
-    "SHG-NO-LB": "#e67e22",
-    "SHG-NO-BOTH": "#95a5a6",
-}
-
-INDEX_MARKERS = {
-    "SHG": "o",
-    "HNSW": "s",
-    "PANORAMA": "D",
-    "IVFFLAT": "^",
-    "IVFPQ": "v",
-    "SHG-NO-SHORTCUT": "x",
-    "SHG-NO-LB": "+",
-    "SHG-NO-BOTH": "*",
-}
+# Canonical 5-index palette (cross-algorithm) + SHG ablation shades.
+# Keys cover every casing variant that may appear in results JSON
+# (e.g. "Panorama"/"PANORAMA", "IVFFlat"/"IVFFLAT"). Use color_for/marker_for
+# at call sites to avoid relying on a particular casing.
+_SHG_INDEX_KEYS = [
+    ("SHG",             "SHG"),
+    ("HNSW",            "HNSW"),
+    ("PANORAMA",        "PANORAMA"),
+    ("Panorama",        "PANORAMA"),
+    ("IVFFLAT",         "IVFFlat"),
+    ("IVFFlat",         "IVFFlat"),
+    ("IVFPQ",           "IVFPQ"),
+    ("SHG-NO-SHORTCUT", "SHG-NO-SHORTCUT"),
+    ("SHG-NO-LB",       "SHG-NO-LB"),
+    ("SHG-NO-BOTH",     "SHG-NO-BOTH"),
+]
+INDEX_COLORS  = {k: color_for(v)  for k, v in _SHG_INDEX_KEYS}
+INDEX_MARKERS = {k: marker_for(v) for k, v in _SHG_INDEX_KEYS}
 
 
 def load_results(results_dir):
@@ -89,7 +90,7 @@ def plot_construction(results, output_dir):
             t = r.get("build_time_s", 0)
             times.append(t if t > 0 else 0.01)
         ax.bar(x + i * width, times, width, label=idx_name,
-               color=INDEX_COLORS.get(idx_name.upper(), "#333"))
+               color=color_for(idx_name))
     ax.set_yscale("log")
     ax.set_ylabel("Construction Time (s)")
     ax.set_xticks(x + width * 2)
@@ -111,7 +112,7 @@ def plot_construction(results, output_dir):
             m = r.get("memory_mb", 0)
             mems.append(m if m > 0 else 0.01)
         ax.bar(x + i * width, mems, width, label=idx_name,
-               color=INDEX_COLORS.get(idx_name.upper(), "#333"))
+               color=color_for(idx_name))
     ax.set_yscale("log")
     ax.set_ylabel("Memory Cost (MB)")
     ax.set_xticks(x + width * 2)
@@ -132,8 +133,7 @@ def plot_recall_vs_time(results, output_dir, k_key, k_val):
         return
 
     n_ds = len(datasets)
-    cols = min(4, n_ds)
-    rows = (n_ds + cols - 1) // cols
+    rows, cols = grid_for(n_ds)
     fig, axes = plt.subplots(rows, cols, figsize=(5 * cols, 4 * rows))
     if n_ds == 1:
         axes = np.array([axes])
@@ -148,8 +148,8 @@ def plot_recall_vs_time(results, output_dir, k_key, k_val):
                 continue
             recalls = [p["recall"] for p in points]
             times = [p["ms_per_query"] for p in points]
-            color = INDEX_COLORS.get(label, "#333")
-            marker = INDEX_MARKERS.get(label, "o")
+            color = INDEX_COLORS.get(label, color_for(label))
+            marker = INDEX_MARKERS.get(label, marker_for(label))
             ax.plot(times, recalls, marker=marker, color=color,
                     label=label, markersize=5, linewidth=1.5)
 
@@ -207,7 +207,7 @@ def plot_robustness(results, output_dir):
             })
             positions.append(pos)
             labels.append(f"{ds_label}\n{idx_name}")
-            colors.append(INDEX_COLORS.get(idx_name, "#333"))
+            colors.append(INDEX_COLORS.get(idx_name, color_for(idx_name)))
             pos += 1
         pos += 1  # gap between datasets
 
@@ -248,8 +248,7 @@ def plot_ablation(results, output_dir):
     }
 
     n_ds = len(datasets)
-    cols = min(4, n_ds)
-    rows = (n_ds + cols - 1) // cols
+    rows, cols = grid_for(n_ds)
     fig, axes = plt.subplots(rows, cols, figsize=(5 * cols, 4 * rows))
     if n_ds == 1:
         axes = np.array([axes])
@@ -268,8 +267,8 @@ def plot_ablation(results, output_dir):
                 continue
             recalls = [p["recall"] for p in points]
             times = [p["ms_per_query"] for p in points]
-            color = INDEX_COLORS.get(label, "#333")
-            marker = INDEX_MARKERS.get(label, "o")
+            color = INDEX_COLORS.get(label, color_for(label))
+            marker = INDEX_MARKERS.get(label, marker_for(label))
             ax.plot(times, recalls, marker=marker, color=color,
                     label=ablation_labels.get(label, label),
                     markersize=5, linewidth=1.5)
@@ -284,7 +283,7 @@ def plot_ablation(results, output_dir):
     for idx in range(n_ds, len(axes)):
         axes[idx].set_visible(False)
 
-    fig.suptitle("Ablation Study: Effect of Shortcuts and LB Pruning (k=20)", fontsize=14)
+    fig.suptitle("Ablation Study: Effect of Shortcuts and LB Pruning (k=20)")
     fig.tight_layout()
     fig.savefig(os.path.join(output_dir, "fig9_ablation.pdf"), dpi=150)
     fig.savefig(os.path.join(output_dir, "fig9_ablation.png"), dpi=150)
@@ -299,8 +298,7 @@ def plot_shg_vs_hnsw(results, output_dir, k_key, k_val):
         return
 
     n_ds = len(datasets)
-    cols = min(3, n_ds)
-    rows = (n_ds + cols - 1) // cols
+    rows, cols = grid_for(n_ds)
     fig, axes = plt.subplots(rows, cols, figsize=(5 * cols, 4 * rows))
     if n_ds == 1:
         axes = np.array([axes])
@@ -316,8 +314,8 @@ def plot_shg_vs_hnsw(results, output_dir, k_key, k_val):
                 continue
             recalls = [p["recall"] for p in points]
             times = [p["ms_per_query"] for p in points]
-            color = INDEX_COLORS.get(label.upper(), "#333")
-            marker = INDEX_MARKERS.get(label.upper(), "o")
+            color = color_for(label)
+            marker = marker_for(label)
             ax.plot(times, recalls, marker=marker, color=color,
                     label=label, markersize=6, linewidth=2)
 
@@ -331,7 +329,7 @@ def plot_shg_vs_hnsw(results, output_dir, k_key, k_val):
     for idx in range(n_ds, len(axes)):
         axes[idx].set_visible(False)
 
-    fig.suptitle(f"SHG vs HNSW — Recall vs Query Time (k={k_val})", fontsize=14)
+    fig.suptitle(f"SHG vs HNSW — Recall vs Query Time (k={k_val})")
     fig.tight_layout()
     fig_name = f"shg_vs_hnsw_k{k_val}"
     fig.savefig(os.path.join(output_dir, f"{fig_name}.pdf"), dpi=150)

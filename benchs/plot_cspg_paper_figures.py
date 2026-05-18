@@ -38,17 +38,13 @@ import numpy as np
 # Style configuration (matching paper aesthetics)
 # ---------------------------------------------------------------------------
 
-plt.rcParams.update({
-    "font.size": 10,
-    "axes.labelsize": 11,
-    "axes.titlesize": 12,
-    "legend.fontsize": 8,
-    "xtick.labelsize": 9,
-    "ytick.labelsize": 9,
-    "figure.dpi": 150,
-    "savefig.dpi": 150,
-    "savefig.bbox": "tight",
-})
+from paper_style import (
+    apply_paper_style, color_for, marker_for, shade, variant_palette,
+    grid_for,
+)
+import matplotlib.colors as _mcolors
+
+apply_paper_style()
 
 DATASETS_ORDER = ["sift1m", "deep1m", "gist1m", "uqv1m", "openai1m", "sift10m"]
 PAPER_CORE_DATASETS = ["sift1m", "deep1m", "gist1m", "sift10m"]
@@ -61,14 +57,30 @@ DATASET_LABELS = {
     "sift10m":  "SIFT10M",
 }
 
-# Colors/markers for main comparison (Fig 3)
+# Colors/markers for main comparison (Fig 3) -- canonical cross-algorithm palette.
+# HNSW baseline reuses HNSW32 (red); CSPG-HNSW reuses CSPG (green).
 STYLE_MAIN = {
-    "HNSW":      {"color": "#3498db", "marker": "s", "ls": "--", "label": "HNSW"},
-    "CSPG-HNSW": {"color": "#e74c3c", "marker": "o", "ls": "-",  "label": "CSPG-HNSW"},
+    "HNSW":      {"color": color_for("HNSW32"), "marker": marker_for("HNSW32"),
+                  "ls": "--", "label": "HNSW"},
+    "CSPG-HNSW": {"color": color_for("CSPG"),   "marker": marker_for("CSPG"),
+                  "ls": "-",  "label": "CSPG-HNSW"},
 }
 
-# Ablation color palette (Figs 5-7)
-ABLATION_CMAP = plt.cm.tab10
+# Ablation palette: shades of the canonical CSPG green so the variant family
+# is visually grouped under one hue.
+def _ablation_palette(n):
+    return variant_palette("CSPG", max(int(n), 1))
+
+class _AblationCmap:
+    """Backwards-compatible shim that mimics ``plt.cm.tab10`` indexing."""
+    def __call__(self, positions):
+        import numpy as np
+        pos = np.atleast_1d(positions)
+        n = len(pos)
+        cols = _ablation_palette(n)
+        return [_mcolors.to_rgba(c) for c in cols]
+
+ABLATION_CMAP = _AblationCmap()
 
 
 # ---------------------------------------------------------------------------
@@ -173,9 +185,9 @@ def plot_table1(results, output_dir):
     cell_colors = []
     for cls in all_labels:
         if cls == "CSPG-HNSW":
-            cell_colors.append(["#fde0dc"] * len(col_headers))
+            cell_colors.append(["#dfeede"] * len(col_headers))
         elif cls == "HNSW":
-            cell_colors.append(["#dce8fd"] * len(col_headers))
+            cell_colors.append(["#fbdbdb"] * len(col_headers))
         else:
             cell_colors.append(["#f0f0f0"] * len(col_headers))
 
@@ -184,7 +196,7 @@ def plot_table1(results, output_dir):
         rowLabels=row_labels,
         colLabels=col_headers,
         cellColours=cell_colors,
-        rowColours=["#fde0dc" if c == "CSPG-HNSW" else "#dce8fd" if c == "HNSW"
+        rowColours=["#dfeede" if c == "CSPG-HNSW" else "#fbdbdb" if c == "HNSW"
                     else "#f0f0f0" for c in all_labels],
         colColours=["#e8e8e8"] * len(col_headers),
         loc="center",
@@ -194,8 +206,8 @@ def plot_table1(results, output_dir):
     table.set_fontsize(10)
     table.scale(1.0, 1.8)
 
-    ax.set_title("Table 1: Index Construction Cost — IS = Index Size (MB), IT = Construction Time (s)",
-                 fontsize=12, fontweight="bold", pad=20)
+    ax.set_title("Index Construction Cost — IS = Index Size (MB), IT = Construction Time (s)",
+                 pad=20)
     fig.tight_layout()
     _save(fig, output_dir, "table1_construction")
 
@@ -214,8 +226,11 @@ def plot_fig3(results, output_dir):
         return
 
     n_ds = len(datasets)
-    fig, axes = plt.subplots(1, n_ds, figsize=(4.5 * n_ds, 3.8), squeeze=False)
+    _rows, _cols = grid_for(n_ds)
+    fig, axes = plt.subplots(_rows, _cols, figsize=(4.5 * _cols, 3.8 * _rows), squeeze=False)
     axes = axes.flatten()
+    for _ax in axes[n_ds:]:
+        _ax.set_visible(False)
 
     for idx, ds in enumerate(datasets):
         ax = axes[idx]
@@ -250,7 +265,7 @@ def plot_fig3(results, output_dir):
         if leg:
             leg.remove()
 
-    fig.suptitle("Figure 3: QPS vs Recall@10 — HNSW vs CSPG-HNSW", fontsize=13, y=1.10)
+    fig.suptitle("QPS vs Recall@10 — HNSW vs CSPG-HNSW", y=1.06)
     fig.tight_layout()
     _save(fig, output_dir, "fig3_qps_recall_k10")
 
@@ -268,8 +283,11 @@ def _plot_qps_recall(results, output_dir, k):
         return
 
     n_ds = len(datasets)
-    fig, axes = plt.subplots(1, n_ds, figsize=(4.5 * n_ds, 3.8), squeeze=False)
+    _rows, _cols = grid_for(n_ds)
+    fig, axes = plt.subplots(_rows, _cols, figsize=(4.5 * _cols, 3.8 * _rows), squeeze=False)
     axes = axes.flatten()
+    for _ax in axes[n_ds:]:
+        _ax.set_visible(False)
 
     for idx, ds in enumerate(datasets):
         ax = axes[idx]
@@ -294,7 +312,7 @@ def _plot_qps_recall(results, output_dir, k):
     handles, labels = axes[0].get_legend_handles_labels()
     fig.legend(handles, labels, loc="upper center", ncol=len(labels),
                fontsize=9, bbox_to_anchor=(0.5, 1.05))
-    fig.suptitle(f"QPS vs Recall@{k} — HNSW vs CSPG-HNSW", fontsize=13, y=1.10)
+    fig.suptitle(f"QPS vs Recall@{k} — HNSW vs CSPG-HNSW", y=1.06)
     fig.tight_layout()
     _save(fig, output_dir, f"fig3_qps_recall_k{k}")
 
@@ -321,8 +339,11 @@ def plot_fig4(results, output_dir):
         return
 
     n_panels = len(available)
-    fig, axes = plt.subplots(1, n_panels, figsize=(4.0 * n_panels, 3.8), squeeze=False)
+    _rows, _cols = grid_for(n_panels)
+    fig, axes = plt.subplots(_rows, _cols, figsize=(4.0 * _cols, 3.8 * _rows), squeeze=False)
     axes = axes.flatten()
+    for _ax in axes[n_panels:]:
+        _ax.set_visible(False)
 
     for idx, sk in enumerate(available):
         ax = axes[idx]
@@ -347,8 +368,7 @@ def plot_fig4(results, output_dir):
     handles, labels = axes[0].get_legend_handles_labels()
     fig.legend(handles, labels, loc="upper center", ncol=len(labels),
                fontsize=9, bbox_to_anchor=(0.5, 1.05))
-    fig.suptitle("Figure 4: Query performance when varying the dataset size $n$",
-                 fontsize=13, y=1.10)
+    fig.suptitle("Query performance when varying the dataset size $n$", y=1.06)
     fig.tight_layout()
     _save(fig, output_dir, "fig4_varying_n")
 
@@ -367,8 +387,11 @@ def plot_fig5(results, output_dir):
         return
 
     n_ds = len(datasets)
-    fig, axes = plt.subplots(1, n_ds, figsize=(4.5 * n_ds, 3.8), squeeze=False)
+    _rows, _cols = grid_for(n_ds)
+    fig, axes = plt.subplots(_rows, _cols, figsize=(4.5 * _cols, 3.8 * _rows), squeeze=False)
     axes = axes.flatten()
+    for _ax in axes[n_ds:]:
+        _ax.set_visible(False)
 
     for idx, ds in enumerate(datasets):
         ax = axes[idx]
@@ -403,8 +426,7 @@ def plot_fig5(results, output_dir):
         if leg:
             leg.remove()
 
-    fig.suptitle("Figure 5: Query performance when varying the number of partitions $m$",
-                 fontsize=13, y=1.10)
+    fig.suptitle("Query performance when varying the number of partitions $m$", y=1.06)
     fig.tight_layout()
     _save(fig, output_dir, "fig5_ablation_m")
 
@@ -423,8 +445,11 @@ def plot_fig6(results, output_dir):
         return
 
     n_ds = len(datasets)
-    fig, axes = plt.subplots(1, n_ds, figsize=(4.5 * n_ds, 3.8), squeeze=False)
+    _rows, _cols = grid_for(n_ds)
+    fig, axes = plt.subplots(_rows, _cols, figsize=(4.5 * _cols, 3.8 * _rows), squeeze=False)
     axes = axes.flatten()
+    for _ax in axes[n_ds:]:
+        _ax.set_visible(False)
 
     for idx, ds in enumerate(datasets):
         ax = axes[idx]
@@ -453,8 +478,7 @@ def plot_fig6(results, output_dir):
     fig.legend(handles, labels_leg, loc="upper center", ncol=len(labels_leg),
                fontsize=9, bbox_to_anchor=(0.5, 1.05))
 
-    fig.suptitle(r"Figure 6: Query performance when varying the sampling ratio $\lambda$",
-                 fontsize=13, y=1.10)
+    fig.suptitle(r"Query performance when varying the sampling ratio $\lambda$", y=1.06)
     fig.tight_layout()
     _save(fig, output_dir, "fig6_ablation_lambda")
 
@@ -473,8 +497,11 @@ def plot_fig7(results, output_dir):
         return
 
     n_ds = len(datasets)
-    fig, axes = plt.subplots(1, n_ds, figsize=(4.5 * n_ds, 3.8), squeeze=False)
+    _rows, _cols = grid_for(n_ds)
+    fig, axes = plt.subplots(_rows, _cols, figsize=(4.5 * _cols, 3.8 * _rows), squeeze=False)
     axes = axes.flatten()
+    for _ax in axes[n_ds:]:
+        _ax.set_visible(False)
 
     for idx, ds in enumerate(datasets):
         ax = axes[idx]
@@ -503,8 +530,8 @@ def plot_fig7(results, output_dir):
     fig.legend(handles, labels_leg, loc="upper center", ncol=len(labels_leg),
                fontsize=9, bbox_to_anchor=(0.5, 1.05))
 
-    fig.suptitle(r"Figure 7: Query performance when varying the candidate set size $ef_1$ in the first stage",
-                 fontsize=13, y=1.10)
+    fig.suptitle(r"Query performance when varying the candidate set size $ef_1$ in the first stage",
+                 y=1.06)
     fig.tight_layout()
     _save(fig, output_dir, "fig7_ablation_ef1")
 
@@ -531,8 +558,11 @@ def plot_fig8(results, output_dir):
         return
 
     n_ds = len(datasets_with_detour)
-    fig, axes = plt.subplots(1, n_ds, figsize=(4.5 * n_ds, 3.8), squeeze=False)
+    _rows, _cols = grid_for(n_ds)
+    fig, axes = plt.subplots(_rows, _cols, figsize=(4.5 * _cols, 3.8 * _rows), squeeze=False)
     axes = axes.flatten()
+    for _ax in axes[n_ds:]:
+        _ax.set_visible(False)
 
     for idx, ds in enumerate(datasets_with_detour):
         ax = axes[idx]
@@ -560,8 +590,7 @@ def plot_fig8(results, output_dir):
     fig.legend(handles, labels_leg, loc="upper center", ncol=len(labels_leg),
                fontsize=9, bbox_to_anchor=(0.5, 1.05))
 
-    fig.suptitle("Figure 8: Detour factor when varying the dataset size $n$",
-                 fontsize=13, y=1.10)
+    fig.suptitle("Detour factor when varying the dataset size $n$", y=1.06)
     fig.tight_layout()
     _save(fig, output_dir, "fig8_detour_factor")
 
@@ -614,7 +643,7 @@ def plot_fig9(results, output_dir):
     ax.set_xticklabels(tick_labels, fontsize=8, rotation=30, ha="right")
     ax.set_ylabel("Recall@20")
     ax.set_ylim([0, 1.05])
-    ax.set_title("Figure 9: Robustness — Per-Query Recall on Unseen Queries ($k=20$)")
+    ax.set_title("Robustness — Per-Query Recall on Unseen Queries ($k=20$)")
     ax.grid(axis="y", alpha=0.3)
     fig.tight_layout()
     _save(fig, output_dir, "fig9_robustness")
@@ -670,7 +699,7 @@ def plot_construction_bars(results, output_dir):
         ax.set_xticklabels([DATASET_LABELS.get(ds, ds) for ds in datasets])
         ax.legend(fontsize=9)
         ax.grid(axis="y", alpha=0.3)
-        ax.set_title(f"Table 1: {ylabel}")
+        ax.set_title(f"{ylabel}")
         fig.tight_layout()
         _save(fig, output_dir, stem)
 

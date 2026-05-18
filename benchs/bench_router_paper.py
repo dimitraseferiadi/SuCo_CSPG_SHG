@@ -69,6 +69,17 @@ SUCO_COLLISION_RATIO = 0.05
 SUCO_CANDIDATE_RATIO = 0.005
 SUCO_NITER = 10
 
+# Per-dataset overrides for SuCo Ns. These match the paper-reproduction scripts
+# (benchs/bench_suco_gist1m.py, benchs/bench_suco_spacev10m.py) where the SuCo
+# paper uses a finer subspace split than the auto-rule would pick. Each override
+# must satisfy d%Ns==0 and (d/Ns)%2==0.
+#   gist1m    (d=960):  Ns=40 → subspace dim 24, half-subspace dim 12 (paper)
+#   spacev10m (d=100):  Ns=10 → subspace dim 10, half-subspace dim 5  (paper)
+SUCO_NSUBSPACES_OVERRIDE = {
+    "gist1m":    40,
+    "spacev10m": 10,
+}
+
 # SHG (report 2, §4.2 / SHG paper §5.1)
 SHG_M = 48
 SHG_EFC = 80
@@ -464,15 +475,49 @@ def _pick_suco_nsubspaces(d, preferred=SUCO_NSUBSPACES_PREFERRED):
     return candidates[0] if candidates else None
 
 
-def build_index_suco(xb, d):
+def _validate_suco_nsubspaces(d, n):
+    return n > 0 and d % n == 0 and (d // n) % 2 == 0
+
+
+def resolve_suco_nsubspaces(dataset, d):
+    """Return the Ns to use for `dataset`, honouring SUCO_NSUBSPACES_OVERRIDE
+    when set, otherwise falling back to the auto-rule."""
+    override = SUCO_NSUBSPACES_OVERRIDE.get(dataset)
+    if override is not None:
+        if not _validate_suco_nsubspaces(d, override):
+            raise RuntimeError(
+                f"SuCo: override nsubspaces={override} invalid for d={d} "
+                f"(needs d%n==0 and (d/n)%2==0)"
+            )
+        return override, True
     n = _pick_suco_nsubspaces(d)
     if n is None:
         raise RuntimeError(
             f"SuCo: no valid nsubspaces ≤ {SUCO_NSUBSPACES_PREFERRED} for d={d} "
             f"(needs d%n==0 and (d/n)%2==0)"
         )
-    if n != SUCO_NSUBSPACES_PREFERRED:
-        print(f"  SuCo: using nsubspaces={n} (preferred {SUCO_NSUBSPACES_PREFERRED} invalid for d={d})")
+    return n, False
+
+
+def build_index_suco(xb, d, n_override=None):
+    if n_override is not None:
+        if not _validate_suco_nsubspaces(d, n_override):
+            raise RuntimeError(
+                f"SuCo: override nsubspaces={n_override} invalid for d={d} "
+                f"(needs d%n==0 and (d/n)%2==0)"
+            )
+        n = n_override
+        print(f"  SuCo: using override nsubspaces={n} for d={d} "
+              f"(half_dim={d // (2 * n)})")
+    else:
+        n = _pick_suco_nsubspaces(d)
+        if n is None:
+            raise RuntimeError(
+                f"SuCo: no valid nsubspaces ≤ {SUCO_NSUBSPACES_PREFERRED} for d={d} "
+                f"(needs d%n==0 and (d/n)%2==0)"
+            )
+        if n != SUCO_NSUBSPACES_PREFERRED:
+            print(f"  SuCo: using nsubspaces={n} (preferred {SUCO_NSUBSPACES_PREFERRED} invalid for d={d})")
 
     idx = faiss.IndexSuCo(
         d, n, SUCO_NCENTROIDS_HALF,
@@ -1084,7 +1129,13 @@ def run_unseen_robustness(xb, xq, data_dir, dataset, index_types, k=UNSEEN_K):
         label, builder = BUILDERS[kind]
         try:
             print(f"\n  --- Rebuilding {label} on kept set ---")
-            idx, _ = builder(xb_keep, d)
+            if kind == "suco":
+                idx, _ = build_index_suco(
+                    xb_keep, d,
+                    n_override=SUCO_NSUBSPACES_OVERRIDE.get(dataset),
+                )
+            else:
+                idx, _ = builder(xb_keep, d)
             factory, _, _ = SEARCH_FACTORY[kind]
             if kind == "suco":
                 search_fn = factory(ROBUSTNESS_CANDIDATE_RATIO)
@@ -1203,7 +1254,18 @@ def run_benchmarks(dataset, benchmarks, index_types, data_dir, index_dir, output
             print(f"  Unknown index type {kind!r}, skipping")
             continue
         label, builder = BUILDERS[kind]
-        idx_path = os.path.join(index_dir, f"{dataset}_{kind}.idx")
+
+        # For SuCo, tag the on-disk index path with the Ns we plan to use so
+        # that a prior run with a different Ns (e.g. the auto-rule fallback)
+        # is not silently reloaded.
+        suco_n_override = None
+        if kind == "suco":
+            suco_n, _ = resolve_suco_nsubspaces(dataset, d)
+            suco_n_override = SUCO_NSUBSPACES_OVERRIDE.get(dataset)
+            idx_path = os.path.join(index_dir, f"{dataset}_suco_ns{suco_n}.idx")
+        else:
+            idx_path = os.path.join(index_dir, f"{dataset}_{kind}.idx")
+
         idx = None
         build_time = -1.0
         peak_rss_mb = -1.0
@@ -1221,7 +1283,10 @@ def run_benchmarks(dataset, benchmarks, index_types, data_dir, index_dir, output
             print(f"\n--- Building {label} ---")
             peak_before = _peak_rss_mb()
             try:
-                idx, build_time = builder(xb, d)
+                if kind == "suco":
+                    idx, build_time = build_index_suco(xb, d, n_override=suco_n_override)
+                else:
+                    idx, build_time = builder(xb, d)
                 peak_rss_mb = max(0.0, _peak_rss_mb() - peak_before)
                 try:
                     faiss.write_index(idx, idx_path)
@@ -1408,6 +1473,26 @@ def main():
     os.makedirs(args.index_dir,  exist_ok=True)
     os.makedirs(args.output_dir, exist_ok=True)
 
+    ds_tag = "_".join(datasets) if len(datasets) <= 3 else f"{len(datasets)}datasets"
+    log_path = os.path.join(args.output_dir, f"log_router_{ds_tag}.txt")
+    log_fh = open(log_path, "w", buffering=1)
+
+    class _Tee:
+        def __init__(self, real, tee):
+            self._real, self._tee = real, tee
+        def write(self, s):
+            self._real.write(s)
+            self._tee.write(s)
+        def flush(self):
+            self._real.flush()
+            self._tee.flush()
+        def fileno(self):
+            return self._real.fileno()
+
+    sys.stdout = _Tee(sys.stdout, log_fh)
+    sys.stderr = _Tee(sys.stderr, log_fh)
+
+    print(f"Log:        {log_path}")
     print(f"Data dir:   {args.data_dir}")
     print(f"Index dir:  {args.index_dir}")
     print(f"Output dir: {args.output_dir}")

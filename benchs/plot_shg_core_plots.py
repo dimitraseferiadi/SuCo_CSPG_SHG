@@ -42,48 +42,9 @@ import numpy as np
 # ---------------------------------------------------------------------------
 # Paper-quality global style
 # ---------------------------------------------------------------------------
-plt.rcParams.update(
-    {
-        # Paper-like typography and compact layout (style only).
-        "font.family": "serif",
-        "font.serif": ["Times New Roman", "Times", "Linux Libertine O", "DejaVu Serif"],
-        "mathtext.fontset": "dejavuserif",
-        "font.size": 8.5,
-        "axes.titlesize": 10,
-        "axes.labelsize": 8.5,
-        "xtick.labelsize": 8,
-        "ytick.labelsize": 8,
-        "legend.fontsize": 7,
-        "legend.frameon": True,
-        "legend.framealpha": 0.95,
-        "legend.fancybox": False,
-        "legend.edgecolor": "0.65",
-        "legend.borderpad": 0.35,
-        "axes.spines.top": False,
-        "axes.spines.right": False,
-        "axes.linewidth": 0.7,
-        "xtick.major.width": 0.7,
-        "ytick.major.width": 0.7,
-        "xtick.minor.width": 0.5,
-        "ytick.minor.width": 0.5,
-        "xtick.major.size": 3.0,
-        "ytick.major.size": 3.0,
-        "xtick.minor.size": 2.0,
-        "ytick.minor.size": 2.0,
-        "lines.linewidth": 1.5,
-        "lines.markersize": 4.8,
-        "patch.linewidth": 0.5,
-        "figure.facecolor": "white",
-        "axes.facecolor": "white",
-        "savefig.facecolor": "white",
-        "grid.linewidth": 0.4,
-        "grid.linestyle": "--",
-        "grid.alpha": 0.35,
-        "figure.dpi": 150,
-        "savefig.bbox": "tight",
-        "savefig.pad_inches": 0.04,
-    }
-)
+from paper_style import apply_paper_style, color_for, marker_for
+
+apply_paper_style()
 
 
 def _clean_ax(ax: plt.Axes) -> None:
@@ -106,23 +67,24 @@ DATASET_LABELS = {
     "msturing10m": "MsTuring10M",
 }
 
-# Colors borrowed from benchs/plot_benchmarks_from_logs.py
+# Canonical cross-algorithm palette: SHG = orange, HNSW = red, plus
+# complementary tones for the Panorama / IVFFlat baselines and SHG ablations.
 COLORS = {
-    "HNSW": "#a8dadc",
-    "SHG": "#457b9d",
-    "PANORAMA": "#6ab187",
-    "IVFFLAT": "#2f2f2f",
-    "SHG_NO_SHORTCUT": "#e63946",
-    "SHG_NO_LB": "#f4a261",
+    "HNSW":            color_for("HNSW"),
+    "SHG":             color_for("SHG"),
+    "PANORAMA":        color_for("PANORAMA"),
+    "IVFFLAT":         color_for("IVFFlat"),
+    "SHG_NO_SHORTCUT": color_for("SHG-NO-SHORTCUT"),
+    "SHG_NO_LB":       color_for("SHG-NO-LB"),
 }
 
 MARKERS = {
-    "SHG": "o",
-    "HNSW": "^",
-    "PANORAMA": "P",
-    "IVFFLAT": "X",
-    "SHG_NO_SHORTCUT": "s",
-    "SHG_NO_LB": "D",
+    "SHG":             marker_for("SHG"),
+    "HNSW":            marker_for("HNSW"),
+    "PANORAMA":        marker_for("PANORAMA"),
+    "IVFFLAT":         marker_for("IVFFlat"),
+    "SHG_NO_SHORTCUT": marker_for("SHG-NO-SHORTCUT"),
+    "SHG_NO_LB":       marker_for("SHG-NO-LB"),
 }
 
 CURVE_ZORDER = {

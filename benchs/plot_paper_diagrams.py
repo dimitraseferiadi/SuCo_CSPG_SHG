@@ -22,6 +22,10 @@ import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 import numpy as np
 
+from paper_style import apply_paper_style
+
+apply_paper_style()
+
 
 OUT_DIR = Path(__file__).parent / "plots"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -87,8 +91,7 @@ def plot_fig3_workflow() -> None:
     ax.text(0.02, 0.49, "Online Query Processing", fontsize=11.5,
             color="#2b2d42", fontweight="bold")
 
-    ax.set_title("Figure 3 (illustration): Overview of the SuCo workflow",
-                 fontsize=13, fontweight="bold", pad=12)
+    ax.set_title("Overview of the SuCo workflow", pad=12)
     _save(fig, "23_fig3_suco_workflow_diagram.png")
 
 
@@ -121,19 +124,16 @@ def plot_fig4_ivf_vs_imi() -> None:
         axes[0].axvline(x, color="#e76f51", lw=1.0, alpha=0.6)
     for y in [-0.1, 0.2]:
         axes[0].axhline(y, color="#e76f51", lw=1.0, alpha=0.6)
-    axes[0].set_title("(a) Inverted Index (single-space K-means)",
-                      fontsize=10.5, fontweight="bold")
+    axes[0].set_title("(a) Inverted Index (single-space K-means)")
 
     # Right: IMI-style product partition from two independent 1D quantizers.
     for x in [-1.4, -0.2, 0.8, 1.6]:
         axes[1].axvline(x, color="#2a9d8f", lw=1.0, alpha=0.8)
     for y in [-1.5, -0.4, 0.5, 1.4]:
         axes[1].axhline(y, color="#2a9d8f", lw=1.0, alpha=0.8)
-    axes[1].set_title("(b) Inverted Multi-Index (product cells)",
-                      fontsize=10.5, fontweight="bold")
+    axes[1].set_title("(b) Inverted Multi-Index (product cells)")
 
-    fig.suptitle("Figure 4 (illustration): IVF vs IMI partitioning in 2D",
-                 fontsize=13, fontweight="bold", y=1.02)
+    fig.suptitle("IVF vs IMI partitioning in 2D", y=1.02)
     fig.tight_layout()
     _save(fig, "24_fig4_ivf_vs_imi_diagram.png")
 
@@ -170,8 +170,7 @@ def plot_fig5_dynamic_activation() -> None:
     ax.set_yticks(np.arange(n))
     ax.set_xlabel("Centroid id in subspace A")
     ax.set_ylabel("Centroid id in subspace B")
-    ax.set_title("Figure 5 (illustration): Dynamic Activation traversal over IMI cells",
-                 fontsize=12.5, fontweight="bold")
+    ax.set_title("Dynamic Activation traversal over IMI cells")
 
     # Mark a cutoff to illustrate stopping criterion.
     cutoff_step = 5
