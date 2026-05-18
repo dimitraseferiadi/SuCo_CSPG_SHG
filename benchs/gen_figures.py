@@ -40,20 +40,32 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # ── colour / style palette ──────────────────────────────────────────────────
+# Canonical 5-index colours are sourced from paper_style; baselines outside
+# the cross-algorithm set use the complementary palette there.
+from paper_style import (
+    apply_paper_style, color_for, marker_for,
+    INDEX_COLOR as _INDEX_COLOR,
+)
+
 COLORS = {
-    'SuCo':    '#e6194b',
-    'HNSW':    '#3cb44b',
-    'IVFFlat': '#4363d8',
-    'IVFPQ':   '#f58231',
-    'OPQ':     '#911eb4',
-    'LSH':     '#42d4f4',
-    'DynAct':  '#e6194b',
-    'MultiSeq':'#4363d8',
+    'SuCo':    color_for('SuCo'),
+    'HNSW':    color_for('HNSW'),
+    'IVFFlat': color_for('IVFFlat'),
+    'IVFPQ':   color_for('IVFPQ'),
+    'OPQ':     color_for('OPQ'),
+    'LSH':     color_for('LSH'),
+    'DynAct':  color_for('DynAct'),
+    'MultiSeq': color_for('MultiSeq'),
 }
 MARKERS = {
-    'SuCo': 'o', 'HNSW': 's', 'IVFFlat': '^', 'IVFPQ': 'D', 'OPQ': 'v',
-    'LSH': 'x',
-    'DynAct': 'o', 'MultiSeq': 's',
+    'SuCo':    marker_for('SuCo'),
+    'HNSW':    marker_for('HNSW'),
+    'IVFFlat': marker_for('IVFFlat'),
+    'IVFPQ':   marker_for('IVFPQ'),
+    'OPQ':     marker_for('OPQ'),
+    'LSH':     marker_for('LSH'),
+    'DynAct':  marker_for('DynAct'),
+    'MultiSeq': marker_for('MultiSeq'),
 }
 LSTYLE = {
     'SuCo':    '-',
@@ -65,12 +77,7 @@ LSTYLE = {
 }
 METHODS_ORDER = ['SuCo', 'HNSW', 'IVFFlat', 'IVFPQ', 'OPQ', 'LSH']
 
-plt.rcParams.update({
-    'font.size': 9, 'axes.labelsize': 9, 'axes.titlesize': 9,
-    'xtick.labelsize': 8, 'ytick.labelsize': 8, 'legend.fontsize': 7.5,
-    'figure.dpi': 150, 'axes.grid': True, 'grid.alpha': 0.3,
-    'axes.spines.top': False, 'axes.spines.right': False,
-})
+apply_paper_style()
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -244,13 +251,15 @@ def _save(fig, out_dir, name):
 def _dual_axis(ax, x, y_left, y_right, xlabel, ylabel_l, ylabel_r, title,
                ylim_r=None):
     ax2 = ax.twinx()
-    l1, = ax.plot(x, y_left,  '-o',  color='#e6194b', ms=5, lw=1.6,
+    _c_left = COLORS['SuCo']
+    _c_right = COLORS['MultiSeq']
+    l1, = ax.plot(x, y_left,  '-o',  color=_c_left, ms=5, lw=1.6,
                   label=ylabel_l)
-    l2, = ax2.plot(x, y_right, '--^', color='#4363d8', ms=5, lw=1.6,
+    l2, = ax2.plot(x, y_right, '--^', color=_c_right, ms=5, lw=1.6,
                    label=ylabel_r)
     ax.set_xlabel(xlabel)
-    ax.set_ylabel(ylabel_l,  color='#e6194b')
-    ax2.set_ylabel(ylabel_r, color='#4363d8')
+    ax.set_ylabel(ylabel_l,  color=_c_left)
+    ax2.set_ylabel(ylabel_r, color=_c_right)
     if ylim_r:
         ax2.set_ylim(*ylim_r)
     ax.set_title(title)
@@ -312,7 +321,7 @@ def fig7_param_sweep(fig7_rows, out):
                'Centroids per half-subspace nc', 'Build time (s)', 'Index size (GB)',
                '(d) Indexing perf vs nc  (SIFT10M)')
     fig.suptitle('SuCo parameter study: Ns and nc  (SIFT10M)',
-                 fontsize=10, fontweight='bold', y=1.01)
+                 fontsize=10, y=1.01)
     fig.tight_layout()
     _save(fig, out, 'fig7_param_Ns_nc')
 
@@ -340,7 +349,7 @@ def fig8_param_alphabeta(fig8_rows, out):
         _dual_axis(ax, d['x'], d['qps'], d['r10'],
                    xlabel, 'QPS', 'Recall@10', title, ylim_r=(0.90, 1.01))
     fig.suptitle('Query performance vs α and β  (SIFT10M)',
-                 fontsize=10, fontweight='bold')
+                 fontsize=10)
     fig.tight_layout()
     _save(fig, out, 'fig8_param_alpha_beta')
 
@@ -374,7 +383,7 @@ def fig11_recall_qps_1M(data, out):
     for ax, (ds, label) in zip(axes, datasets):
         _recall_qps_panel(ax, data, ds); ax.set_title(label)
     fig.suptitle('Recall@10 vs QPS: 1M-scale datasets',
-                 fontsize=10, fontweight='bold')
+                 fontsize=10)
     fig.tight_layout()
     _save(fig, out, 'fig11_recall_qps_1M')
 
@@ -387,7 +396,7 @@ def fig12_recall_qps_10M(data, out):
     for ax, (ds, label) in zip(axes, datasets):
         _recall_qps_panel(ax, data, ds); ax.set_title(label)
     fig.suptitle('Recall@10 vs QPS: 10M-scale datasets',
-                 fontsize=10, fontweight='bold')
+                 fontsize=10)
     fig.tight_layout()
     _save(fig, out, 'fig12_recall_qps_10M')
 
@@ -445,19 +454,19 @@ def fig_indexing(data, out):
 
     x = np.arange(len(labels))
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(9, 3.5))
-    b1 = ax1.bar(x, build_t, color='#e6194b', alpha=0.85)
+    b1 = ax1.bar(x, build_t, color=COLORS['SuCo'], alpha=0.85)
     ax1.set_xticks(x); ax1.set_xticklabels(labels, rotation=20, ha='right')
     ax1.set_ylabel('Build time (s)'); ax1.set_title('(a) Index build time  [SuCo]')
     ax1.bar_label(b1, fmt='%.2fs', fontsize=7, padding=2)
     if any(v > 0 for v in build_t):
         ax1.set_yscale('log')
     ax1.grid(True, axis='y', alpha=0.3)
-    b2 = ax2.bar(x, size_gb, color='#3cb44b', alpha=0.85)
+    b2 = ax2.bar(x, size_gb, color=COLORS['IVFFlat'], alpha=0.85)
     ax2.set_xticks(x); ax2.set_xticklabels(labels, rotation=20, ha='right')
     ax2.set_ylabel('Index size (GB)'); ax2.set_title('(b) Index memory footprint  [SuCo]')
     ax2.bar_label(b2, fmt='%.1fGB', fontsize=7, padding=2)
     ax2.grid(True, axis='y', alpha=0.3)
-    fig.suptitle('SuCo Indexing Performance', fontsize=10, fontweight='bold')
+    fig.suptitle('SuCo Indexing Performance', fontsize=10)
     fig.tight_layout()
     _save(fig, out, 'fig_indexing')
 
@@ -486,7 +495,7 @@ def fig_recall_heatmap(data, out):
             if not np.isnan(v):
                 ax.text(j, i, f'{v:.3f}', ha='center', va='center',
                         fontsize=7.5, color='black' if v > 0.6 else 'white')
-    ax.set_title('Best Recall@10 per dataset × method', fontweight='bold')
+    ax.set_title('Best Recall@10 per dataset × method')
     fig.tight_layout()
     _save(fig, out, 'fig_recall_heatmap')
 
@@ -550,7 +559,7 @@ def fig2_sc_score_pareto(pareto_files, out):
         axes[idx // ncols][idx % ncols].axis('off')
 
     fig.suptitle('"Pareto principle" of SC-score',
-                 fontsize=10, fontweight='bold')
+                 fontsize=10)
     fig.tight_layout()
     _save(fig, out, 'fig2_sc_score_pareto')
 
@@ -673,10 +682,8 @@ def fig9_10_indexing_bars(data, extra_bt, out):
         if not valid_ds:
             continue
 
-        method_colors = {
-            'SuCo': '#e6194b', 'HNSW': '#3cb44b', 'IVFFlat': '#4363d8',
-            'IVFPQ': '#f58231', 'OPQ': '#911eb4', 'LSH': '#42d4f4',
-        }
+        method_colors = {m: COLORS.get(m, 'grey') for m in
+                         ('SuCo', 'HNSW', 'IVFFlat', 'IVFPQ', 'OPQ', 'LSH')}
         fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4))
 
         x = np.arange(len(valid_ds))
@@ -716,7 +723,7 @@ def fig9_10_indexing_bars(data, extra_bt, out):
             ax.legend(fontsize=7)
             ax.grid(True, axis='y', alpha=0.3)
 
-        fig.suptitle(group_titles[fig_name], fontsize=10, fontweight='bold')
+        fig.suptitle(group_titles[fig_name], fontsize=10)
         fig.tight_layout()
         _save(fig, out, fig_name)
 
@@ -765,7 +772,7 @@ def fig11_mre_qps_1M(data, out):
         _mre_qps_panel(ax, data, ds)
         ax.set_title(label)
     fig.suptitle('MRE vs QPS: 1M-scale datasets  (SuCo)',
-                 fontsize=10, fontweight='bold')
+                 fontsize=10)
     fig.tight_layout()
     _save(fig, out, 'fig11_mre_qps_1M')
 
@@ -780,7 +787,7 @@ def fig12_mre_qps_10M(data, out):
         _mre_qps_panel(ax, data, ds)
         ax.set_title(label)
     fig.suptitle('MRE vs QPS: 10M-scale datasets  (SuCo)',
-                 fontsize=10, fontweight='bold')
+                 fontsize=10)
     fig.tight_layout()
     _save(fig, out, 'fig12_mre_qps_10M')
 
@@ -800,7 +807,7 @@ def fig11_combined_1M(data, out):
         _mre_qps_panel(axes[1, col], data, ds)
         axes[1, col].set_title(f'({"def"[col]}) {label}')
     fig.suptitle('Recall-QPS (top) and MRE-QPS (bottom): 1M datasets',
-                 fontsize=10, fontweight='bold')
+                 fontsize=10)
     fig.tight_layout()
     _save(fig, out, 'fig11_combined_1M')
 
@@ -855,7 +862,7 @@ def fig_mre_qps_suco_vs_lsh(data, out):
         ax.legend(fontsize=7.5)
         ax.grid(True, which='both', alpha=0.3)
 
-    fig.suptitle('MRE vs QPS: SuCo vs LSH', fontsize=10, fontweight='bold')
+    fig.suptitle('MRE vs QPS: SuCo vs LSH', fontsize=10)
     fig.tight_layout()
     _save(fig, out, 'fig_mre_qps_suco_vs_lsh')
 
@@ -959,7 +966,7 @@ def fig13_cumulative_cost(data, extra_bt, out):
         axes[pi // ncols][pi % ncols].axis('off')
 
     fig.suptitle('Cumulative cost: index build + query answering',
-                 fontsize=10, fontweight='bold')
+                 fontsize=10)
     fig.tight_layout()
     _save(fig, out, 'fig13_cumulative_cost')
 

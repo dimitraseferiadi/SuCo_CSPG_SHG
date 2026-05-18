@@ -1,0 +1,103 @@
+Log:        /Users/dhm/Documents/SuCo/benchs/results_router/log_router_bigann20m.txt
+Data dir:   /Users/dhm/Documents/data
+Index dir:  /Users/dhm/Documents/indices
+Output dir: /Users/dhm/Documents/SuCo/benchs/results_router
+Datasets:   ['bigann20m']
+Benchmarks: ['construction', 'features', 'recall_k1', 'recall_k10', 'recall_k20', 'recall_k50', 'recall_k100', 'robustness', 'unseen_robustness', 'hard_robustness', 'latency_tail', 'cold_warm', 'mre', 'pareto', 'time_at_recall']
+Indexes:    ['suco', 'shg', 'cspg', 'hnsw32', 'hnsw48']
+N runs:     3
+
+######################################################################
+# Dataset: BIGANN20M
+######################################################################
+
+Loading bigann20m...
+  Loaded in 6.3s: xb=(20000000, 128), xq=(10000, 128), gt=(10000, 100)
+
+======================================================================
+BENCHMARK: features - bigann20m
+======================================================================
+  {'n': 20000000, 'd': 128, 'nq': 10000, 'lid_mle': 18.400218963623047, 'pdist_mean': 526.8775024414062, 'pdist_std': 59.769100189208984, 'kmeans_inertia_ratio_16': 0.7225475758979831}
+
+--- Loading SuCo from /Users/dhm/Documents/indices/bigann20m_suco.idx ---
+  Failed to load, will rebuild: Error in faiss::IndexSuCo::IndexSuCo(idx_t, int, int, float, float, int) at /Users/dhm/Documents/SuCo/faiss/IndexSuCo.cpp:126: Error: '!(d % nsubspaces == 0)' failed: IndexSuCo: d must be divisible by nsubspaces
+
+--- Building SuCo ---
+  SuCo (Ns=8, nc=50): build=43.01s
+  Saved to /Users/dhm/Documents/indices/bigann20m_suco.idx
+
+--- SuCo recall@1 curve (n_runs=3) ---
+  SuCo (0.0005): recall@1=0.9429, ms/q=17.3477±0.5868, qps=58±2
+  SuCo (0.001): recall@1=0.9715, ms/q=17.5509±0.2258, qps=57±1
+  SuCo (0.002): recall@1=0.9894, ms/q=17.9177±0.0473, qps=56±0
+  SuCo (0.005): recall@1=0.9953, ms/q=18.9529±0.1837, qps=53±1
+  SuCo (0.01): recall@1=0.9981, ms/q=20.8940±0.2253, qps=48±1
+  SuCo (0.02): recall@1=0.9999, ms/q=24.8300±0.3352, qps=40±1
+  SuCo (0.05): recall@1=1.0000, ms/q=35.9880±0.6066, qps=28±0
+  SuCo (0.1): recall@1=1.0000, ms/q=48.5571±0.4256, qps=21±0
+  SuCo (0.2): recall@1=1.0000, ms/q=76.5250±2.4262, qps=13±0
+
+--- SuCo recall@10 curve (n_runs=3) ---
+  SuCo (0.0005): recall@10=0.8966, ms/q=17.4896±0.0282, qps=57±0
+  SuCo (0.001): recall@10=0.9427, ms/q=17.9128±0.4499, qps=56±1
+  SuCo (0.002): recall@10=0.9754, ms/q=18.7014±0.0884, qps=53±0
+  SuCo (0.005): recall@10=0.9904, ms/q=19.6269±0.0671, qps=51±0
+  SuCo (0.01): recall@10=0.9959, ms/q=21.0132±0.4915, qps=48±1
+  SuCo (0.02): recall@10=0.9990, ms/q=24.1639±0.2075, qps=41±0
+  SuCo (0.05): recall@10=0.9995, ms/q=34.0798±1.5007, qps=29±1
+  SuCo (0.1): recall@10=0.9999, ms/q=50.4439±1.5608, qps=20±1
+  SuCo (0.2): recall@10=0.9999, ms/q=77.4868±1.6237, qps=13±0
+
+--- SuCo recall@20 curve (n_runs=3) ---
+  SuCo (0.0005): recall@20=0.8697, ms/q=17.8564±0.2137, qps=56±1
+  SuCo (0.001): recall@20=0.9252, ms/q=18.1065±0.1839, qps=55±1
+  SuCo (0.002): recall@20=0.9662, ms/q=18.2054±0.1631, qps=55±0
+  SuCo (0.005): recall@20=0.9867, ms/q=18.9310±0.0303, qps=53±0
+  SuCo (0.01): recall@20=0.9940, ms/q=20.5646±0.0287, qps=49±0
+  SuCo (0.02): recall@20=0.9986, ms/q=24.3599±0.0143, qps=41±0
+  SuCo (0.05): recall@20=0.9994, ms/q=34.9456±0.0358, qps=29±0
+  SuCo (0.1): recall@20=0.9999, ms/q=50.0050±0.3336, qps=20±0
+  SuCo (0.2): recall@20=0.9999, ms/q=75.0767±1.1942, qps=13±0
+
+--- SuCo recall@50 curve (n_runs=3) ---
+  SuCo (0.0005): recall@50=0.8226, ms/q=17.5056±0.1566, qps=57±1
+  SuCo (0.001): recall@50=0.8908, ms/q=18.2731±0.7184, qps=55±2
+  SuCo (0.002): recall@50=0.9456, ms/q=18.7198±0.8248, qps=53±2
+  SuCo (0.005): recall@50=0.9774, ms/q=18.7523±0.0299, qps=53±0
+  SuCo (0.01): recall@50=0.9892, ms/q=20.4750±0.0581, qps=49±0
+  SuCo (0.02): recall@50=0.9971, ms/q=24.3017±0.0498, qps=41±0
+  SuCo (0.05): recall@50=0.9987, ms/q=35.0319±0.0679, qps=29±0
+  SuCo (0.1): recall@50=0.9998, ms/q=49.7010±0.0510, qps=20±0
+  SuCo (0.2): recall@50=0.9998, ms/q=74.2992±0.0816, qps=13±0
+
+--- SuCo recall@100 curve (n_runs=3) ---
+  SuCo (0.0005): recall@100=0.7779, ms/q=17.5506±0.0537, qps=57±0
+  SuCo (0.001): recall@100=0.8581, ms/q=17.7584±0.0122, qps=56±0
+  SuCo (0.002): recall@100=0.9245, ms/q=17.9588±0.0821, qps=56±0
+  SuCo (0.005): recall@100=0.9673, ms/q=18.6856±0.0097, qps=54±0
+  SuCo (0.01): recall@100=0.9838, ms/q=20.4965±0.1139, qps=49±0
+  SuCo (0.02): recall@100=0.9953, ms/q=24.2962±0.0535, qps=41±0
+  SuCo (0.05): recall@100=0.9979, ms/q=34.8248±0.0117, qps=29±0
+  SuCo (0.1): recall@100=0.9997, ms/q=49.6737±0.1270, qps=20±0
+  SuCo (0.2): recall@100=0.9998, ms/q=74.2388±0.4101, qps=13±0
+
+--- SuCo robustness (k=20) ---
+  SuCo: {'k': 20, 'param': 0.005, 'param_name': 'candidate_ratio', 'mean_recall': 0.9867, 'median_recall': 1.0, 'min_recall': 0.65, 'max_recall': 1.0, 'q25_recall': 1.0, 'q75_recall': 1.0, 'ms_per_query': 18.8488}
+
+--- SuCo hard-query robustness ---
+  SuCo: easy={'n': 1001, 'mean_recall': 0.9322, 'median_recall': 1.0, 'min_recall': 0.15, 'p10_recall': 0.75, 'p90_recall': 1.0} hard={'n': 1000, 'mean_recall': 0.8542, 'median_recall': 0.85, 'min_recall': 0.4, 'p10_recall': 0.7, 'p90_recall': 1.0}
+
+--- SuCo latency tail ---
+  suco latency @recall≥0.9: p50=67.008 p95=72.242 p99=104.612 p999=152.974 ms
+  suco latency @recall≥0.95: p50=67.817 p95=69.055 p99=70.850 p999=77.371 ms
+  suco latency @recall≥0.99: p50=82.103 p95=83.606 p99=85.009 p999=89.176 ms
+
+--- SuCo cold/warm cache ---
+  SuCo: {'param': 0.002, 'achieved_recall': 0.966165, 'target_recall': 0.95, 'page_cache_flushed': False, 'evict_buffer_mb': 2048, 'cold_first_ms': 125.011709, 'cold_mean_ms': 196.040546, 'cold_p95_ms': 295.725044, 'warm_mean_ms': 67.156398, 'warm_p95_ms': 70.431538, 'cold_warm_ratio': 2.919, 'n_cold': 30, 'n_warm': 500}
+
+--- SuCo MRE ---
+  suco MRE @recall≥0.9: mean=1.0024 median=1.0007 (approx-ratio^2=1.0048)
+  suco MRE @recall≥0.95: mean=1.0009 median=1.0000 (approx-ratio^2=1.0017)
+  suco MRE @recall≥0.99: mean=1.0001 median=1.0000 (approx-ratio^2=1.0002)
+
+--- Building SHG ---

@@ -58,6 +58,10 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
+from paper_style import apply_paper_style, INDEX_COLOR, INDEX_MARKER
+
+apply_paper_style()
+
 
 # ---------------------------------------------------------------------------
 # Style
@@ -84,21 +88,8 @@ DATASET_LABEL = {
 
 INDICES = ["SuCo", "SHG", "CSPG", "HNSW32", "HNSW48"]
 
-INDEX_COLOR = {
-    "SuCo":   "#1f77b4",
-    "SHG":    "#f4a261",
-    "CSPG":   "#2ca02c",
-    "HNSW32": "#d62728",
-    "HNSW48": "#9467bd",
-}
-
-INDEX_MARKER = {
-    "SuCo":   "o",
-    "SHG":    "s",
-    "CSPG":   "D",
-    "HNSW32": "^",
-    "HNSW48": "v",
-}
+# INDEX_COLOR and INDEX_MARKER are imported from paper_style (canonical
+# cross-algorithm palette shared by every thesis figure).
 
 K_LIST = [1, 10, 20, 50, 100]
 RECALL_TARGETS = ["r80", "r90", "r95", "r99"]

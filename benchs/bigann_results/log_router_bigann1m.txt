@@ -1,0 +1,611 @@
+Log:        /leonardo_work/EUHPC_D32_102/dhm/SuCo/benchs/results_router/log_router_bigann1m.txt
+Data dir:   /leonardo_work/EUHPC_D32_102/dhm/data
+Index dir:  /leonardo_work/EUHPC_D32_102/dhm/indices
+Output dir: /leonardo_work/EUHPC_D32_102/dhm/SuCo/benchs/results_router
+Datasets:   ['bigann1m']
+Benchmarks: ['construction', 'features', 'recall_k1', 'recall_k10', 'recall_k20', 'recall_k50', 'recall_k100', 'robustness', 'unseen_robustness', 'hard_robustness', 'latency_tail', 'cold_warm', 'mre', 'pareto', 'time_at_recall']
+Indexes:    ['suco', 'shg', 'cspg', 'hnsw32', 'hnsw48']
+N runs:     3
+
+######################################################################
+# Dataset: BIGANN1M
+######################################################################
+
+Loading bigann1m...
+  Loaded in 0.7s: xb=(1000000, 128), xq=(10000, 128), gt=(10000, 100)
+
+======================================================================
+BENCHMARK: features - bigann1m
+======================================================================
+  {'n': 1000000, 'd': 128, 'nq': 10000, 'lid_mle': 18.337940216064453, 'pdist_mean': 528.4931030273438, 'pdist_std': 59.21131134033203, 'kmeans_inertia_ratio_16': 0.7233879910784893}
+
+--- Building SuCo ---
+  SuCo (Ns=8, nc=50): build=2.83s
+  Saved to /leonardo_work/EUHPC_D32_102/dhm/indices/bigann1m_suco.idx
+
+--- SuCo recall@1 curve (n_runs=3) ---
+  SuCo (0.0005): recall@1=0.8433, ms/q=0.1068±0.0002, qps=9365±17
+  SuCo (0.001): recall@1=0.9058, ms/q=0.1191±0.0000, qps=8394±3
+  SuCo (0.002): recall@1=0.9549, ms/q=0.1384±0.0000, qps=7223±1
+  SuCo (0.005): recall@1=0.9824, ms/q=0.1752±0.0000, qps=5708±1
+  SuCo (0.01): recall@1=0.9909, ms/q=0.2179±0.0000, qps=4589±1
+  SuCo (0.02): recall@1=0.9979, ms/q=0.3042±0.0000, qps=3287±0
+  SuCo (0.05): recall@1=0.9990, ms/q=0.5994±0.0053, qps=1668±15
+  SuCo (0.1): recall@1=0.9999, ms/q=0.7468±0.0031, qps=1339±6
+  SuCo (0.2): recall@1=1.0000, ms/q=1.3762±0.0163, qps=727±9
+
+--- SuCo recall@10 curve (n_runs=3) ---
+  SuCo (0.0005): recall@10=0.7170, ms/q=0.1072±0.0000, qps=9324±1
+  SuCo (0.001): recall@10=0.8109, ms/q=0.1190±0.0000, qps=8407±3
+  SuCo (0.002): recall@10=0.8918, ms/q=0.1382±0.0000, qps=7238±2
+  SuCo (0.005): recall@10=0.9498, ms/q=0.1749±0.0001, qps=5718±3
+  SuCo (0.01): recall@10=0.9739, ms/q=0.2175±0.0001, qps=4597±2
+  SuCo (0.02): recall@10=0.9915, ms/q=0.3038±0.0001, qps=3292±1
+  SuCo (0.05): recall@10=0.9963, ms/q=0.5928±0.0014, qps=1687±4
+  SuCo (0.1): recall@10=0.9993, ms/q=0.7469±0.0022, qps=1339±4
+  SuCo (0.2): recall@10=0.9997, ms/q=1.3833±0.0085, qps=723±4
+
+--- SuCo recall@20 curve (n_runs=3) ---
+  SuCo (0.0005): recall@20=0.6553, ms/q=0.1074±0.0001, qps=9308±12
+  SuCo (0.001): recall@20=0.7609, ms/q=0.1193±0.0002, qps=8385±15
+  SuCo (0.002): recall@20=0.8552, ms/q=0.1387±0.0003, qps=7209±13
+  SuCo (0.005): recall@20=0.9298, ms/q=0.1756±0.0004, qps=5695±13
+  SuCo (0.01): recall@20=0.9623, ms/q=0.2182±0.0004, qps=4583±7
+  SuCo (0.02): recall@20=0.9865, ms/q=0.3043±0.0004, qps=3286±4
+  SuCo (0.05): recall@20=0.9943, ms/q=0.5950±0.0012, qps=1681±3
+  SuCo (0.1): recall@20=0.9990, ms/q=0.7469±0.0084, qps=1339±15
+  SuCo (0.2): recall@20=0.9994, ms/q=1.3956±0.0119, qps=717±6
+
+--- SuCo recall@50 curve (n_runs=3) ---
+  SuCo (0.0005): recall@50=0.5582, ms/q=0.1062±0.0009, qps=9419±80
+  SuCo (0.001): recall@50=0.6768, ms/q=0.1176±0.0010, qps=8503±74
+  SuCo (0.002): recall@50=0.7905, ms/q=0.1364±0.0014, qps=7332±76
+  SuCo (0.005): recall@50=0.8909, ms/q=0.1719±0.0023, qps=5819±78
+  SuCo (0.01): recall@50=0.9375, ms/q=0.2153±0.0018, qps=4644±39
+  SuCo (0.02): recall@50=0.9759, ms/q=0.3020±0.0017, qps=3311±18
+  SuCo (0.05): recall@50=0.9892, ms/q=0.5930±0.0049, qps=1686±14
+  SuCo (0.1): recall@50=0.9980, ms/q=0.7398±0.0024, qps=1352±4
+  SuCo (0.2): recall@50=0.9989, ms/q=1.3850±0.0084, qps=722±4
+
+--- SuCo recall@100 curve (n_runs=3) ---
+  SuCo (0.0005): recall@100=0.4747, ms/q=0.1037±0.0009, qps=9643±80
+  SuCo (0.001): recall@100=0.6001, ms/q=0.1145±0.0010, qps=8730±79
+  SuCo (0.002): recall@100=0.7266, ms/q=0.1320±0.0018, qps=7577±103
+  SuCo (0.005): recall@100=0.8489, ms/q=0.1665±0.0018, qps=6005±66
+  SuCo (0.01): recall@100=0.9099, ms/q=0.2099±0.0021, qps=4764±47
+  SuCo (0.02): recall@100=0.9625, ms/q=0.2967±0.0022, qps=3371±24
+  SuCo (0.05): recall@100=0.9827, ms/q=0.5801±0.0084, qps=1724±25
+  SuCo (0.1): recall@100=0.9962, ms/q=0.7338±0.0032, qps=1363±6
+  SuCo (0.2): recall@100=0.9979, ms/q=1.4552±0.0609, qps=687±29
+
+--- SuCo robustness (k=20) ---
+  SuCo: {'k': 20, 'param': 0.005, 'param_name': 'candidate_ratio', 'mean_recall': 0.9298, 'median_recall': 0.95, 'min_recall': 0.3, 'max_recall': 1.0, 'q25_recall': 0.9, 'q75_recall': 1.0, 'ms_per_query': 0.1834}
+
+--- SuCo hard-query robustness ---
+  SuCo: easy={'n': 1000, 'mean_recall': 0.9958, 'median_recall': 1.0, 'min_recall': 0.8, 'p10_recall': 1.0, 'p90_recall': 1.0} hard={'n': 1000, 'mean_recall': 0.8457, 'median_recall': 0.85, 'min_recall': 0.4, 'p10_recall': 0.7, 'p90_recall': 1.0}
+
+--- SuCo latency tail ---
+  suco latency @recall≥0.9: p50=6.948 p95=7.310 p99=7.422 p999=10.722 ms
+  suco latency @recall≥0.95: p50=7.680 p95=7.853 p99=8.143 p999=8.556 ms
+  suco latency @recall≥0.99: p50=13.163 p95=13.435 p99=13.542 p999=13.674 ms
+
+--- SuCo cold/warm cache ---
+  SuCo: {'param': 0.01, 'achieved_recall': 0.9623, 'target_recall': 0.95, 'page_cache_flushed': False, 'evict_buffer_mb': 2048, 'cold_first_ms': 8.536835, 'cold_mean_ms': 8.26417, 'cold_p95_ms': 8.430817, 'warm_mean_ms': 7.689439, 'warm_p95_ms': 7.871811, 'cold_warm_ratio': 1.075, 'n_cold': 30, 'n_warm': 500}
+
+--- SuCo MRE ---
+  suco MRE @recall≥0.9: mean=1.0021 median=1.0004 (approx-ratio^2=1.0042)
+  suco MRE @recall≥0.95: mean=1.0010 median=1.0000 (approx-ratio^2=1.0020)
+  suco MRE @recall≥0.99: mean=1.0001 median=1.0000 (approx-ratio^2=1.0003)
+
+--- Building SHG ---
+  SHG (M=48, efC=80): add=36.78s, shortcut=0.50s, total=37.28s
+  Saved to /leonardo_work/EUHPC_D32_102/dhm/indices/bigann1m_shg.idx
+
+--- SHG recall@1 curve (n_runs=3) ---
+  SHG (10): recall@1=0.9117, ms/q=0.0097±0.0000, qps=103279±204
+  SHG (15): recall@1=0.9509, ms/q=0.0124±0.0000, qps=80481±52
+  SHG (20): recall@1=0.9699, ms/q=0.0151±0.0000, qps=66231±32
+  SHG (30): recall@1=0.9849, ms/q=0.0203±0.0000, qps=49221±13
+  SHG (40): recall@1=0.9922, ms/q=0.0254±0.0000, qps=39373±15
+  SHG (60): recall@1=0.9969, ms/q=0.0352±0.0000, qps=28381±13
+  SHG (80): recall@1=0.9984, ms/q=0.0447±0.0000, qps=22379±24
+  SHG (100): recall@1=0.9990, ms/q=0.0543±0.0000, qps=18412±12
+  SHG (150): recall@1=0.9995, ms/q=0.0764±0.0000, qps=13095±3
+  SHG (200): recall@1=0.9997, ms/q=0.0979±0.0001, qps=10212±10
+  SHG (300): recall@1=0.9998, ms/q=0.1420±0.0000, qps=7041±1
+  SHG (400): recall@1=0.9998, ms/q=0.1797±0.0000, qps=5566±1
+  SHG (600): recall@1=0.9998, ms/q=0.2546±0.0001, qps=3928±1
+  SHG (800): recall@1=0.9998, ms/q=0.3244±0.0000, qps=3082±0
+  SHG (1000): recall@1=0.9998, ms/q=0.3933±0.0000, qps=2542±0
+  SHG (1500): recall@1=0.9998, ms/q=0.5703±0.0002, qps=1753±1
+  SHG (2000): recall@1=0.9998, ms/q=0.7509±0.0005, qps=1332±1
+
+--- SHG recall@10 curve (n_runs=3) ---
+  SHG (10): recall@10=0.8446, ms/q=0.0097±0.0000, qps=102739±148
+  SHG (15): recall@10=0.8996, ms/q=0.0125±0.0000, qps=80144±48
+  SHG (20): recall@10=0.9316, ms/q=0.0152±0.0000, qps=65993±45
+  SHG (30): recall@10=0.9627, ms/q=0.0204±0.0000, qps=49097±56
+  SHG (40): recall@10=0.9775, ms/q=0.0255±0.0000, qps=39279±18
+  SHG (60): recall@10=0.9899, ms/q=0.0353±0.0000, qps=28329±22
+  SHG (80): recall@10=0.9943, ms/q=0.0447±0.0000, qps=22360±14
+  SHG (100): recall@10=0.9967, ms/q=0.0544±0.0000, qps=18379±11
+  SHG (150): recall@10=0.9987, ms/q=0.0765±0.0000, qps=13073±1
+  SHG (200): recall@10=0.9993, ms/q=0.0979±0.0001, qps=10211±14
+  SHG (300): recall@10=0.9998, ms/q=0.1422±0.0000, qps=7035±1
+  SHG (400): recall@10=0.9999, ms/q=0.1798±0.0000, qps=5562±0
+  SHG (600): recall@10=0.9999, ms/q=0.2547±0.0001, qps=3926±1
+  SHG (800): recall@10=0.9999, ms/q=0.3247±0.0000, qps=3080±0
+  SHG (1000): recall@10=0.9999, ms/q=0.3936±0.0001, qps=2541±1
+  SHG (1500): recall@10=0.9999, ms/q=0.5708±0.0000, qps=1752±0
+  SHG (2000): recall@10=0.9999, ms/q=0.7515±0.0004, qps=1331±1
+
+--- SHG recall@20 curve (n_runs=3) ---
+  SHG (10): recall@20=0.9057, ms/q=0.0152±0.0000, qps=65700±95
+  SHG (15): recall@20=0.9057, ms/q=0.0152±0.0000, qps=65815±40
+  SHG (20): recall@20=0.9057, ms/q=0.0152±0.0000, qps=65813±38
+  SHG (30): recall@20=0.9463, ms/q=0.0204±0.0000, qps=48985±50
+  SHG (40): recall@20=0.9667, ms/q=0.0255±0.0000, qps=39206±23
+  SHG (60): recall@20=0.9844, ms/q=0.0353±0.0000, qps=28290±13
+  SHG (80): recall@20=0.9912, ms/q=0.0448±0.0000, qps=22316±14
+  SHG (100): recall@20=0.9946, ms/q=0.0545±0.0000, qps=18361±7
+  SHG (150): recall@20=0.9980, ms/q=0.0765±0.0000, qps=13065±3
+  SHG (200): recall@20=0.9990, ms/q=0.0979±0.0002, qps=10217±20
+  SHG (300): recall@20=0.9996, ms/q=0.1422±0.0000, qps=7032±2
+  SHG (400): recall@20=0.9998, ms/q=0.1799±0.0001, qps=5560±2
+  SHG (600): recall@20=0.9999, ms/q=0.2548±0.0000, qps=3924±1
+  SHG (800): recall@20=0.9999, ms/q=0.3247±0.0001, qps=3080±1
+  SHG (1000): recall@20=0.9999, ms/q=0.3938±0.0001, qps=2539±0
+  SHG (1500): recall@20=1.0000, ms/q=0.5708±0.0001, qps=1752±0
+  SHG (2000): recall@20=1.0000, ms/q=0.7519±0.0002, qps=1330±0
+
+--- SHG recall@50 curve (n_runs=3) ---
+  SHG (10): recall@50=0.9580, ms/q=0.0306±0.0000, qps=32657±26
+  SHG (15): recall@50=0.9580, ms/q=0.0306±0.0000, qps=32674±7
+  SHG (20): recall@50=0.9580, ms/q=0.0306±0.0000, qps=32662±18
+  SHG (30): recall@50=0.9580, ms/q=0.0306±0.0000, qps=32677±7
+  SHG (40): recall@50=0.9580, ms/q=0.0306±0.0000, qps=32666±7
+  SHG (60): recall@50=0.9694, ms/q=0.0355±0.0000, qps=28180±29
+  SHG (80): recall@50=0.9820, ms/q=0.0449±0.0000, qps=22267±18
+  SHG (100): recall@50=0.9886, ms/q=0.0546±0.0001, qps=18317±17
+  SHG (150): recall@50=0.9953, ms/q=0.0766±0.0000, qps=13050±3
+  SHG (200): recall@50=0.9976, ms/q=0.0979±0.0002, qps=10215±22
+  SHG (300): recall@50=0.9992, ms/q=0.1424±0.0000, qps=7024±2
+  SHG (400): recall@50=0.9996, ms/q=0.1801±0.0000, qps=5553±1
+  SHG (600): recall@50=0.9999, ms/q=0.2551±0.0000, qps=3920±1
+  SHG (800): recall@50=0.9999, ms/q=0.3250±0.0001, qps=3077±0
+  SHG (1000): recall@50=0.9999, ms/q=0.3940±0.0001, qps=2538±1
+  SHG (1500): recall@50=1.0000, ms/q=0.5713±0.0001, qps=1750±0
+  SHG (2000): recall@50=1.0000, ms/q=0.7524±0.0001, qps=1329±0
+
+--- SHG recall@100 curve (n_runs=3) ---
+  SHG (10): recall@100=0.9786, ms/q=0.0548±0.0000, qps=18265±6
+  SHG (15): recall@100=0.9786, ms/q=0.0547±0.0000, qps=18273±2
+  SHG (20): recall@100=0.9786, ms/q=0.0547±0.0000, qps=18270±3
+  SHG (30): recall@100=0.9786, ms/q=0.0547±0.0000, qps=18280±4
+  SHG (40): recall@100=0.9786, ms/q=0.0547±0.0000, qps=18274±7
+  SHG (60): recall@100=0.9786, ms/q=0.0547±0.0000, qps=18277±2
+  SHG (80): recall@100=0.9786, ms/q=0.0547±0.0000, qps=18272±11
+  SHG (100): recall@100=0.9786, ms/q=0.0547±0.0000, qps=18270±6
+  SHG (150): recall@100=0.9908, ms/q=0.0768±0.0000, qps=13015±6
+  SHG (200): recall@100=0.9952, ms/q=0.0982±0.0000, qps=10179±5
+  SHG (300): recall@100=0.9983, ms/q=0.1426±0.0001, qps=7014±4
+  SHG (400): recall@100=0.9991, ms/q=0.1802±0.0001, qps=5548±3
+  SHG (600): recall@100=0.9997, ms/q=0.2553±0.0001, qps=3916±2
+  SHG (800): recall@100=0.9998, ms/q=0.3252±0.0001, qps=3075±1
+  SHG (1000): recall@100=0.9999, ms/q=0.3941±0.0002, qps=2537±1
+  SHG (1500): recall@100=1.0000, ms/q=0.5715±0.0002, qps=1750±1
+  SHG (2000): recall@100=1.0000, ms/q=0.7526±0.0002, qps=1329±0
+
+--- SHG robustness (k=20) ---
+  SHG: {'k': 20, 'param': 200, 'param_name': 'efSearch', 'mean_recall': 0.999, 'median_recall': 1.0, 'min_recall': 0.85, 'max_recall': 1.0, 'q25_recall': 1.0, 'q75_recall': 1.0, 'ms_per_query': 0.098}
+
+--- SHG hard-query robustness ---
+  SHG: easy={'n': 1000, 'mean_recall': 0.9704, 'median_recall': 1.0, 'min_recall': 0.6, 'p10_recall': 0.9, 'p90_recall': 1.0} hard={'n': 1000, 'mean_recall': 0.8261, 'median_recall': 0.85, 'min_recall': 0.3, 'p10_recall': 0.65, 'p90_recall': 0.95}
+
+--- SHG latency tail ---
+  shg latency @recall≥0.9: p50=0.352 p95=0.476 p99=0.539 p999=1.108 ms
+  shg latency @recall≥0.95: p50=0.586 p95=0.800 p99=0.871 p999=1.457 ms
+  shg latency @recall≥0.99: p50=1.024 p95=1.330 p99=1.436 p999=1.815 ms
+
+--- SHG cold/warm cache ---
+  SHG: {'param': 40, 'achieved_recall': 0.966655, 'target_recall': 0.95, 'page_cache_flushed': False, 'evict_buffer_mb': 2048, 'cold_first_ms': 1.020589, 'cold_mean_ms': 0.793256, 'cold_p95_ms': 1.023886, 'warm_mean_ms': 0.604207, 'warm_p95_ms': 0.80822, 'cold_warm_ratio': 1.313, 'n_cold': 30, 'n_warm': 500}
+
+--- SHG MRE ---
+  shg MRE @recall≥0.9: mean=1.0029 median=1.0014 (approx-ratio^2=1.0058)
+  shg MRE @recall≥0.95: mean=1.0008 median=1.0000 (approx-ratio^2=1.0017)
+  shg MRE @recall≥0.99: mean=1.0002 median=1.0000 (approx-ratio^2=1.0004)
+
+--- Building CSPG ---
+  CSPG (M=32, efC=128, m=2, λ=0.5): build=47.56s
+  Saved to /leonardo_work/EUHPC_D32_102/dhm/indices/bigann1m_cspg.idx
+
+--- CSPG recall@1 curve (n_runs=3) ---
+  CSPG (10): recall@1=0.8744, ms/q=0.0068±0.0000, qps=147801±669
+  CSPG (15): recall@1=0.9258, ms/q=0.0089±0.0000, qps=112375±287
+  CSPG (20): recall@1=0.9511, ms/q=0.0109±0.0000, qps=91642±161
+  CSPG (30): recall@1=0.9763, ms/q=0.0149±0.0000, qps=66944±69
+  CSPG (40): recall@1=0.9860, ms/q=0.0189±0.0000, qps=52919±51
+  CSPG (60): recall@1=0.9937, ms/q=0.0267±0.0000, qps=37463±10
+  CSPG (80): recall@1=0.9965, ms/q=0.0349±0.0001, qps=28635±46
+  CSPG (100): recall@1=0.9978, ms/q=0.0443±0.0001, qps=22575±29
+  CSPG (150): recall@1=0.9991, ms/q=0.0641±0.0000, qps=15609±10
+  CSPG (200): recall@1=0.9996, ms/q=0.0853±0.0002, qps=11729±24
+  CSPG (300): recall@1=0.9999, ms/q=0.1260±0.0002, qps=7936±16
+  CSPG (400): recall@1=0.9998, ms/q=0.1662±0.0004, qps=6015±14
+  CSPG (600): recall@1=1.0000, ms/q=0.2536±0.0006, qps=3944±9
+  CSPG (800): recall@1=1.0000, ms/q=0.3439±0.0006, qps=2908±5
+  CSPG (1000): recall@1=0.9998, ms/q=0.4396±0.0009, qps=2275±5
+  CSPG (1500): recall@1=0.9998, ms/q=0.7115±0.0013, qps=1405±3
+  CSPG (2000): recall@1=1.0000, ms/q=1.0292±0.0011, qps=972±1
+
+--- CSPG recall@10 curve (n_runs=3) ---
+  CSPG (10): recall@10=0.7975, ms/q=0.0068±0.0001, qps=147370±1236
+  CSPG (15): recall@10=0.8637, ms/q=0.0088±0.0000, qps=113044±188
+  CSPG (20): recall@10=0.9024, ms/q=0.0109±0.0000, qps=91584±8
+  CSPG (30): recall@10=0.9440, ms/q=0.0149±0.0000, qps=66935±23
+  CSPG (40): recall@10=0.9640, ms/q=0.0189±0.0000, qps=52857±49
+  CSPG (60): recall@10=0.9831, ms/q=0.0268±0.0000, qps=37340±29
+  CSPG (80): recall@10=0.9900, ms/q=0.0350±0.0000, qps=28602±33
+  CSPG (100): recall@10=0.9939, ms/q=0.0444±0.0000, qps=22534±7
+  CSPG (150): recall@10=0.9975, ms/q=0.0641±0.0001, qps=15612±17
+  CSPG (200): recall@10=0.9988, ms/q=0.0854±0.0002, qps=11704±24
+  CSPG (300): recall@10=0.9995, ms/q=0.1258±0.0001, qps=7952±3
+  CSPG (400): recall@10=0.9998, ms/q=0.1658±0.0002, qps=6033±8
+  CSPG (600): recall@10=0.9998, ms/q=0.2545±0.0005, qps=3929±8
+  CSPG (800): recall@10=0.9999, ms/q=0.3437±0.0006, qps=2909±5
+  CSPG (1000): recall@10=0.9999, ms/q=0.4407±0.0007, qps=2269±4
+  CSPG (1500): recall@10=1.0000, ms/q=0.7133±0.0009, qps=1402±2
+  CSPG (2000): recall@10=1.0000, ms/q=1.0302±0.0008, qps=971±1
+
+--- CSPG recall@20 curve (n_runs=3) ---
+  CSPG (10): recall@20=0.8716, ms/q=0.0110±0.0001, qps=91278±434
+  CSPG (15): recall@20=0.8716, ms/q=0.0109±0.0000, qps=91635±30
+  CSPG (20): recall@20=0.8716, ms/q=0.0109±0.0000, qps=91514±121
+  CSPG (30): recall@20=0.9224, ms/q=0.0149±0.0000, qps=66978±161
+  CSPG (40): recall@20=0.9490, ms/q=0.0189±0.0000, qps=53013±40
+  CSPG (60): recall@20=0.9747, ms/q=0.0268±0.0000, qps=37369±35
+  CSPG (80): recall@20=0.9851, ms/q=0.0349±0.0001, qps=28614±53
+  CSPG (100): recall@20=0.9905, ms/q=0.0445±0.0001, qps=22495±37
+  CSPG (150): recall@20=0.9960, ms/q=0.0641±0.0001, qps=15602±21
+  CSPG (200): recall@20=0.9981, ms/q=0.0854±0.0003, qps=11708±40
+  CSPG (300): recall@20=0.9993, ms/q=0.1260±0.0002, qps=7934±12
+  CSPG (400): recall@20=0.9996, ms/q=0.1660±0.0001, qps=6024±4
+  CSPG (600): recall@20=0.9998, ms/q=0.2542±0.0002, qps=3934±2
+  CSPG (800): recall@20=0.9999, ms/q=0.3444±0.0003, qps=2904±2
+  CSPG (1000): recall@20=0.9999, ms/q=0.4405±0.0003, qps=2270±2
+  CSPG (1500): recall@20=1.0000, ms/q=0.7128±0.0012, qps=1403±2
+  CSPG (2000): recall@20=1.0000, ms/q=1.0312±0.0021, qps=970±2
+
+--- CSPG recall@50 curve (n_runs=3) ---
+  CSPG (10): recall@50=0.9371, ms/q=0.0229±0.0001, qps=43608±160
+  CSPG (15): recall@50=0.9371, ms/q=0.0229±0.0000, qps=43676±27
+  CSPG (20): recall@50=0.9371, ms/q=0.0229±0.0001, qps=43676±121
+  CSPG (30): recall@50=0.9371, ms/q=0.0230±0.0001, qps=43566±165
+  CSPG (40): recall@50=0.9371, ms/q=0.0229±0.0001, qps=43730±104
+  CSPG (60): recall@50=0.9527, ms/q=0.0268±0.0001, qps=37366±99
+  CSPG (80): recall@50=0.9711, ms/q=0.0349±0.0001, qps=28614±50
+  CSPG (100): recall@50=0.9809, ms/q=0.0444±0.0000, qps=22520±7
+  CSPG (150): recall@50=0.9916, ms/q=0.0640±0.0001, qps=15617±31
+  CSPG (200): recall@50=0.9956, ms/q=0.0854±0.0003, qps=11709±39
+  CSPG (300): recall@50=0.9983, ms/q=0.1259±0.0002, qps=7943±14
+  CSPG (400): recall@50=0.9992, ms/q=0.1666±0.0007, qps=6001±27
+  CSPG (600): recall@50=0.9997, ms/q=0.2545±0.0002, qps=3929±4
+  CSPG (800): recall@50=0.9998, ms/q=0.3436±0.0004, qps=2911±3
+  CSPG (1000): recall@50=0.9999, ms/q=0.4409±0.0009, qps=2268±5
+  CSPG (1500): recall@50=0.9999, ms/q=0.7127±0.0013, qps=1403±3
+  CSPG (2000): recall@50=0.9999, ms/q=1.0297±0.0020, qps=971±2
+
+--- CSPG recall@100 curve (n_runs=3) ---
+  CSPG (10): recall@100=0.9661, ms/q=0.0443±0.0000, qps=22565±19
+  CSPG (15): recall@100=0.9661, ms/q=0.0444±0.0000, qps=22544±24
+  CSPG (20): recall@100=0.9661, ms/q=0.0444±0.0001, qps=22539±28
+  CSPG (30): recall@100=0.9661, ms/q=0.0444±0.0000, qps=22511±13
+  CSPG (40): recall@100=0.9661, ms/q=0.0443±0.0001, qps=22563±42
+  CSPG (60): recall@100=0.9661, ms/q=0.0444±0.0001, qps=22541±51
+  CSPG (80): recall@100=0.9661, ms/q=0.0444±0.0001, qps=22542±48
+  CSPG (100): recall@100=0.9661, ms/q=0.0443±0.0001, qps=22556±27
+  CSPG (150): recall@100=0.9843, ms/q=0.0642±0.0001, qps=15588±19
+  CSPG (200): recall@100=0.9914, ms/q=0.0852±0.0000, qps=11732±5
+  CSPG (300): recall@100=0.9966, ms/q=0.1258±0.0004, qps=7948±22
+  CSPG (400): recall@100=0.9983, ms/q=0.1659±0.0001, qps=6028±5
+  CSPG (600): recall@100=0.9994, ms/q=0.2539±0.0005, qps=3938±7
+  CSPG (800): recall@100=0.9997, ms/q=0.3435±0.0001, qps=2911±0
+  CSPG (1000): recall@100=0.9998, ms/q=0.4404±0.0010, qps=2271±5
+  CSPG (1500): recall@100=0.9999, ms/q=0.7123±0.0015, qps=1404±3
+  CSPG (2000): recall@100=1.0000, ms/q=1.0309±0.0005, qps=970±0
+
+--- CSPG robustness (k=20) ---
+  CSPG: {'k': 20, 'param': 200, 'param_name': 'efSearch', 'mean_recall': 0.9981, 'median_recall': 1.0, 'min_recall': 0.85, 'max_recall': 1.0, 'q25_recall': 1.0, 'q75_recall': 1.0, 'ms_per_query': 0.0854}
+
+--- CSPG hard-query robustness ---
+  CSPG: easy={'n': 1000, 'mean_recall': 0.9807, 'median_recall': 1.0, 'min_recall': 0.7, 'p10_recall': 0.95, 'p90_recall': 1.0} hard={'n': 1000, 'mean_recall': 0.8433, 'median_recall': 0.85, 'min_recall': 0.3, 'p10_recall': 0.7, 'p90_recall': 0.95}
+
+--- CSPG latency tail ---
+  cspg latency @recall≥0.9: p50=0.349 p95=0.468 p99=0.526 p999=1.166 ms
+  cspg latency @recall≥0.95: p50=0.631 p95=0.831 p99=0.899 p999=1.486 ms
+  cspg latency @recall≥0.99: p50=0.962 p95=1.362 p99=1.455 p999=1.699 ms
+
+--- CSPG cold/warm cache ---
+  CSPG: {'param': 60, 'achieved_recall': 0.974665, 'target_recall': 0.95, 'page_cache_flushed': False, 'evict_buffer_mb': 2048, 'cold_first_ms': 1.249345, 'cold_mean_ms': 0.969846, 'cold_p95_ms': 1.355642, 'warm_mean_ms': 0.63308, 'warm_p95_ms': 0.88375, 'cold_warm_ratio': 1.532, 'n_cold': 30, 'n_warm': 500}
+
+--- CSPG MRE ---
+  cspg MRE @recall≥0.9: mean=1.0023 median=1.0009 (approx-ratio^2=1.0046)
+  cspg MRE @recall≥0.95: mean=1.0006 median=1.0000 (approx-ratio^2=1.0012)
+  cspg MRE @recall≥0.99: mean=1.0002 median=1.0000 (approx-ratio^2=1.0004)
+
+--- Building HNSW32 ---
+  HNSW32 (M=32, efC=128): build=34.61s
+  Saved to /leonardo_work/EUHPC_D32_102/dhm/indices/bigann1m_hnsw32.idx
+
+--- HNSW32 recall@1 curve (n_runs=3) ---
+  HNSW32 (10): recall@1=0.8506, ms/q=0.0053±0.0000, qps=187216±710
+  HNSW32 (15): recall@1=0.9070, ms/q=0.0069±0.0000, qps=145336±84
+  HNSW32 (20): recall@1=0.9384, ms/q=0.0084±0.0000, qps=118728±69
+  HNSW32 (30): recall@1=0.9666, ms/q=0.0114±0.0000, qps=87679±298
+  HNSW32 (40): recall@1=0.9812, ms/q=0.0143±0.0000, qps=69941±46
+  HNSW32 (60): recall@1=0.9930, ms/q=0.0201±0.0000, qps=49852±17
+  HNSW32 (80): recall@1=0.9966, ms/q=0.0257±0.0000, qps=38964±17
+  HNSW32 (100): recall@1=0.9982, ms/q=0.0312±0.0000, qps=32043±18
+  HNSW32 (150): recall@1=0.9992, ms/q=0.0448±0.0000, qps=22319±12
+  HNSW32 (200): recall@1=0.9995, ms/q=0.0583±0.0000, qps=17140±5
+  HNSW32 (300): recall@1=0.9997, ms/q=0.0838±0.0000, qps=11933±4
+  HNSW32 (400): recall@1=0.9999, ms/q=0.1099±0.0000, qps=9103±3
+  HNSW32 (600): recall@1=0.9999, ms/q=0.1607±0.0000, qps=6223±1
+  HNSW32 (800): recall@1=0.9999, ms/q=0.2141±0.0003, qps=4672±6
+  HNSW32 (1000): recall@1=0.9999, ms/q=0.2697±0.0003, qps=3707±3
+  HNSW32 (1500): recall@1=0.9999, ms/q=0.4240±0.0010, qps=2359±6
+  HNSW32 (2000): recall@1=0.9999, ms/q=0.6070±0.0012, qps=1648±3
+
+--- HNSW32 recall@10 curve (n_runs=3) ---
+  HNSW32 (10): recall@10=0.7691, ms/q=0.0054±0.0000, qps=186583±614
+  HNSW32 (15): recall@10=0.8391, ms/q=0.0069±0.0000, qps=144790±114
+  HNSW32 (20): recall@10=0.8834, ms/q=0.0084±0.0000, qps=118348±60
+  HNSW32 (30): recall@10=0.9307, ms/q=0.0114±0.0000, qps=87638±62
+  HNSW32 (40): recall@10=0.9546, ms/q=0.0143±0.0000, qps=69793±8
+  HNSW32 (60): recall@10=0.9777, ms/q=0.0201±0.0000, qps=49796±20
+  HNSW32 (80): recall@10=0.9872, ms/q=0.0257±0.0000, qps=38934±12
+  HNSW32 (100): recall@10=0.9919, ms/q=0.0316±0.0005, qps=31679±500
+  HNSW32 (150): recall@10=0.9966, ms/q=0.0448±0.0000, qps=22314±9
+  HNSW32 (200): recall@10=0.9982, ms/q=0.0584±0.0000, qps=17132±4
+  HNSW32 (300): recall@10=0.9993, ms/q=0.0838±0.0000, qps=11931±2
+  HNSW32 (400): recall@10=0.9996, ms/q=0.1099±0.0001, qps=9100±5
+  HNSW32 (600): recall@10=0.9999, ms/q=0.1608±0.0001, qps=6220±4
+  HNSW32 (800): recall@10=0.9999, ms/q=0.2142±0.0002, qps=4668±4
+  HNSW32 (1000): recall@10=0.9999, ms/q=0.2695±0.0003, qps=3711±4
+  HNSW32 (1500): recall@10=0.9999, ms/q=0.4243±0.0003, qps=2357±2
+  HNSW32 (2000): recall@10=0.9999, ms/q=0.6068±0.0010, qps=1648±3
+
+--- HNSW32 recall@20 curve (n_runs=3) ---
+  HNSW32 (10): recall@20=0.7174, ms/q=0.0054±0.0000, qps=184793±473
+  HNSW32 (15): recall@20=0.7959, ms/q=0.0069±0.0000, qps=143954±56
+  HNSW32 (20): recall@20=0.8467, ms/q=0.0085±0.0000, qps=117969±63
+  HNSW32 (30): recall@20=0.9046, ms/q=0.0114±0.0000, qps=87393±45
+  HNSW32 (40): recall@20=0.9363, ms/q=0.0144±0.0000, qps=69671±36
+  HNSW32 (60): recall@20=0.9670, ms/q=0.0201±0.0000, qps=49744±23
+  HNSW32 (80): recall@20=0.9803, ms/q=0.0257±0.0000, qps=38897±14
+  HNSW32 (100): recall@20=0.9873, ms/q=0.0313±0.0000, qps=31983±37
+  HNSW32 (150): recall@20=0.9947, ms/q=0.0449±0.0000, qps=22275±12
+  HNSW32 (200): recall@20=0.9972, ms/q=0.0584±0.0000, qps=17123±3
+  HNSW32 (300): recall@20=0.9989, ms/q=0.0838±0.0000, qps=11926±4
+  HNSW32 (400): recall@20=0.9994, ms/q=0.1099±0.0001, qps=9103±5
+  HNSW32 (600): recall@20=0.9998, ms/q=0.1607±0.0001, qps=6222±2
+  HNSW32 (800): recall@20=0.9999, ms/q=0.2149±0.0006, qps=4653±13
+  HNSW32 (1000): recall@20=0.9999, ms/q=0.2696±0.0004, qps=3709±6
+  HNSW32 (1500): recall@20=0.9999, ms/q=0.4238±0.0006, qps=2360±4
+  HNSW32 (2000): recall@20=0.9999, ms/q=0.6075±0.0005, qps=1646±1
+
+--- HNSW32 recall@50 curve (n_runs=3) ---
+  HNSW32 (10): recall@50=0.6181, ms/q=0.0055±0.0000, qps=181176±441
+  HNSW32 (15): recall@50=0.7073, ms/q=0.0071±0.0000, qps=141432±248
+  HNSW32 (20): recall@50=0.7691, ms/q=0.0086±0.0000, qps=115770±560
+  HNSW32 (30): recall@50=0.8468, ms/q=0.0116±0.0000, qps=86536±115
+  HNSW32 (40): recall@50=0.8918, ms/q=0.0145±0.0001, qps=68997±284
+  HNSW32 (60): recall@50=0.9390, ms/q=0.0202±0.0000, qps=49545±19
+  HNSW32 (80): recall@50=0.9615, ms/q=0.0258±0.0000, qps=38781±14
+  HNSW32 (100): recall@50=0.9740, ms/q=0.0313±0.0000, qps=31916±11
+  HNSW32 (150): recall@50=0.9883, ms/q=0.0449±0.0000, qps=22253±9
+  HNSW32 (200): recall@50=0.9937, ms/q=0.0588±0.0004, qps=17018±106
+  HNSW32 (300): recall@50=0.9975, ms/q=0.0839±0.0000, qps=11916±3
+  HNSW32 (400): recall@50=0.9987, ms/q=0.1099±0.0001, qps=9096±6
+  HNSW32 (600): recall@50=0.9996, ms/q=0.1609±0.0001, qps=6214±5
+  HNSW32 (800): recall@50=0.9998, ms/q=0.2143±0.0002, qps=4667±5
+  HNSW32 (1000): recall@50=0.9999, ms/q=0.2702±0.0004, qps=3701±5
+  HNSW32 (1500): recall@50=0.9999, ms/q=0.4242±0.0003, qps=2357±1
+  HNSW32 (2000): recall@50=0.9999, ms/q=0.6068±0.0014, qps=1648±4
+
+--- HNSW32 recall@100 curve (n_runs=3) ---
+  HNSW32 (10): recall@100=0.5227, ms/q=0.0057±0.0000, qps=175480±444
+  HNSW32 (15): recall@100=0.6145, ms/q=0.0073±0.0000, qps=137395±192
+  HNSW32 (20): recall@100=0.6828, ms/q=0.0088±0.0000, qps=113373±114
+  HNSW32 (30): recall@100=0.7751, ms/q=0.0118±0.0000, qps=84814±96
+  HNSW32 (40): recall@100=0.8338, ms/q=0.0147±0.0000, qps=67990±64
+  HNSW32 (60): recall@100=0.9003, ms/q=0.0204±0.0000, qps=48964±40
+  HNSW32 (80): recall@100=0.9348, ms/q=0.0260±0.0000, qps=38478±21
+  HNSW32 (100): recall@100=0.9546, ms/q=0.0315±0.0000, qps=31783±8
+  HNSW32 (150): recall@100=0.9783, ms/q=0.0451±0.0000, qps=22188±15
+  HNSW32 (200): recall@100=0.9879, ms/q=0.0586±0.0000, qps=17061±3
+  HNSW32 (300): recall@100=0.9950, ms/q=0.0841±0.0000, qps=11895±2
+  HNSW32 (400): recall@100=0.9975, ms/q=0.1102±0.0001, qps=9073±12
+  HNSW32 (600): recall@100=0.9991, ms/q=0.1611±0.0001, qps=6207±4
+  HNSW32 (800): recall@100=0.9995, ms/q=0.2146±0.0001, qps=4659±3
+  HNSW32 (1000): recall@100=0.9997, ms/q=0.2701±0.0001, qps=3703±2
+  HNSW32 (1500): recall@100=0.9999, ms/q=0.4241±0.0006, qps=2358±3
+  HNSW32 (2000): recall@100=0.9999, ms/q=0.6062±0.0011, qps=1650±3
+
+--- HNSW32 robustness (k=20) ---
+  HNSW32: {'k': 20, 'param': 200, 'param_name': 'efSearch', 'mean_recall': 0.9972, 'median_recall': 1.0, 'min_recall': 0.8, 'max_recall': 1.0, 'q25_recall': 1.0, 'q75_recall': 1.0, 'ms_per_query': 0.0585}
+
+--- HNSW32 hard-query robustness ---
+  HNSW32: easy={'n': 1000, 'mean_recall': 0.9762, 'median_recall': 1.0, 'min_recall': 0.4, 'p10_recall': 0.9, 'p90_recall': 1.0} hard={'n': 1000, 'mean_recall': 0.817, 'median_recall': 0.85, 'min_recall': 0.0, 'p10_recall': 0.65, 'p90_recall': 0.95}
+
+--- HNSW32 latency tail ---
+  hnsw32 latency @recall≥0.9: p50=0.244 p95=0.332 p99=0.367 p999=0.395 ms
+  hnsw32 latency @recall≥0.95: p50=0.434 p95=0.565 p99=0.621 p999=0.681 ms
+  hnsw32 latency @recall≥0.99: p50=0.954 p95=1.246 p99=1.429 p999=1.514 ms
+
+--- HNSW32 cold/warm cache ---
+  HNSW32: {'param': 60, 'achieved_recall': 0.96699, 'target_recall': 0.95, 'page_cache_flushed': False, 'evict_buffer_mb': 2048, 'cold_first_ms': 0.760881, 'cold_mean_ms': 0.545991, 'cold_p95_ms': 0.750241, 'warm_mean_ms': 0.424454, 'warm_p95_ms': 0.571846, 'cold_warm_ratio': 1.286, 'n_cold': 30, 'n_warm': 500}
+
+--- HNSW32 MRE ---
+  hnsw32 MRE @recall≥0.9: mean=1.0029 median=1.0013 (approx-ratio^2=1.0059)
+  hnsw32 MRE @recall≥0.95: mean=1.0008 median=1.0000 (approx-ratio^2=1.0017)
+  hnsw32 MRE @recall≥0.99: mean=1.0001 median=1.0000 (approx-ratio^2=1.0002)
+
+--- Building HNSW48 ---
+  HNSW48 (M=48, efC=80): build=36.23s
+  Saved to /leonardo_work/EUHPC_D32_102/dhm/indices/bigann1m_hnsw48.idx
+
+--- HNSW48 recall@1 curve (n_runs=3) ---
+  HNSW48 (10): recall@1=0.9107, ms/q=0.0082±0.0000, qps=121568±305
+  HNSW48 (15): recall@1=0.9473, ms/q=0.0106±0.0000, qps=94233±37
+  HNSW48 (20): recall@1=0.9663, ms/q=0.0130±0.0000, qps=77078±63
+  HNSW48 (30): recall@1=0.9845, ms/q=0.0176±0.0000, qps=56778±24
+  HNSW48 (40): recall@1=0.9914, ms/q=0.0222±0.0000, qps=45135±23
+  HNSW48 (60): recall@1=0.9969, ms/q=0.0309±0.0000, qps=32371±4
+  HNSW48 (80): recall@1=0.9986, ms/q=0.0393±0.0000, qps=25423±6
+  HNSW48 (100): recall@1=0.9991, ms/q=0.0478±0.0000, qps=20925±11
+  HNSW48 (150): recall@1=0.9995, ms/q=0.0678±0.0000, qps=14752±4
+  HNSW48 (200): recall@1=0.9997, ms/q=0.0867±0.0000, qps=11530±6
+  HNSW48 (300): recall@1=0.9998, ms/q=0.1224±0.0001, qps=8168±4
+  HNSW48 (400): recall@1=0.9998, ms/q=0.1567±0.0000, qps=6382±1
+  HNSW48 (600): recall@1=0.9998, ms/q=0.2250±0.0001, qps=4444±3
+  HNSW48 (800): recall@1=0.9998, ms/q=0.2937±0.0002, qps=3405±2
+  HNSW48 (1000): recall@1=0.9998, ms/q=0.3627±0.0003, qps=2757±3
+  HNSW48 (1500): recall@1=0.9998, ms/q=0.5505±0.0004, qps=1817±1
+  HNSW48 (2000): recall@1=0.9998, ms/q=0.7629±0.0016, qps=1311±3
+
+--- HNSW48 recall@10 curve (n_runs=3) ---
+  HNSW48 (10): recall@10=0.8455, ms/q=0.0082±0.0000, qps=121295±275
+  HNSW48 (15): recall@10=0.8993, ms/q=0.0106±0.0000, qps=94041±33
+  HNSW48 (20): recall@10=0.9307, ms/q=0.0130±0.0000, qps=76879±46
+  HNSW48 (30): recall@10=0.9627, ms/q=0.0176±0.0000, qps=56696±14
+  HNSW48 (40): recall@10=0.9774, ms/q=0.0222±0.0000, qps=45118±10
+  HNSW48 (60): recall@10=0.9899, ms/q=0.0309±0.0000, qps=32349±16
+  HNSW48 (80): recall@10=0.9945, ms/q=0.0394±0.0000, qps=25407±11
+  HNSW48 (100): recall@10=0.9968, ms/q=0.0478±0.0000, qps=20918±7
+  HNSW48 (150): recall@10=0.9988, ms/q=0.0678±0.0000, qps=14742±9
+  HNSW48 (200): recall@10=0.9993, ms/q=0.0868±0.0000, qps=11517±4
+  HNSW48 (300): recall@10=0.9998, ms/q=0.1225±0.0000, qps=8163±1
+  HNSW48 (400): recall@10=0.9999, ms/q=0.1568±0.0002, qps=6378±7
+  HNSW48 (600): recall@10=0.9999, ms/q=0.2254±0.0001, qps=4437±2
+  HNSW48 (800): recall@10=1.0000, ms/q=0.2939±0.0001, qps=3403±1
+  HNSW48 (1000): recall@10=1.0000, ms/q=0.3633±0.0005, qps=2753±3
+  HNSW48 (1500): recall@10=1.0000, ms/q=0.5513±0.0001, qps=1814±0
+  HNSW48 (2000): recall@10=1.0000, ms/q=0.7623±0.0015, qps=1312±3
+
+--- HNSW48 recall@20 curve (n_runs=3) ---
+  HNSW48 (10): recall@20=0.8028, ms/q=0.0083±0.0000, qps=120668±312
+  HNSW48 (15): recall@20=0.8663, ms/q=0.0107±0.0000, qps=93735±61
+  HNSW48 (20): recall@20=0.9049, ms/q=0.0130±0.0000, qps=76768±32
+  HNSW48 (30): recall@20=0.9464, ms/q=0.0177±0.0000, qps=56625±66
+  HNSW48 (40): recall@20=0.9665, ms/q=0.0222±0.0000, qps=45073±17
+  HNSW48 (60): recall@20=0.9842, ms/q=0.0309±0.0000, qps=32321±7
+  HNSW48 (80): recall@20=0.9913, ms/q=0.0394±0.0000, qps=25393±12
+  HNSW48 (100): recall@20=0.9946, ms/q=0.0478±0.0000, qps=20916±5
+  HNSW48 (150): recall@20=0.9980, ms/q=0.0679±0.0000, qps=14737±5
+  HNSW48 (200): recall@20=0.9989, ms/q=0.0868±0.0000, qps=11516±3
+  HNSW48 (300): recall@20=0.9996, ms/q=0.1225±0.0001, qps=8160±4
+  HNSW48 (400): recall@20=0.9998, ms/q=0.1567±0.0001, qps=6382±5
+  HNSW48 (600): recall@20=0.9999, ms/q=0.2252±0.0000, qps=4440±1
+  HNSW48 (800): recall@20=0.9999, ms/q=0.2938±0.0001, qps=3404±2
+  HNSW48 (1000): recall@20=1.0000, ms/q=0.3635±0.0002, qps=2751±1
+  HNSW48 (1500): recall@20=1.0000, ms/q=0.5511±0.0003, qps=1814±1
+  HNSW48 (2000): recall@20=1.0000, ms/q=0.7630±0.0013, qps=1311±2
+
+--- HNSW48 recall@50 curve (n_runs=3) ---
+  HNSW48 (10): recall@50=0.7206, ms/q=0.0084±0.0000, qps=119116±207
+  HNSW48 (15): recall@50=0.7985, ms/q=0.0108±0.0000, qps=92698±133
+  HNSW48 (20): recall@50=0.8492, ms/q=0.0132±0.0000, qps=76017±83
+  HNSW48 (30): recall@50=0.9083, ms/q=0.0178±0.0000, qps=56277±56
+  HNSW48 (40): recall@50=0.9394, ms/q=0.0223±0.0000, qps=44883±23
+  HNSW48 (60): recall@50=0.9692, ms/q=0.0310±0.0000, qps=32225±27
+  HNSW48 (80): recall@50=0.9819, ms/q=0.0395±0.0000, qps=25345±4
+  HNSW48 (100): recall@50=0.9885, ms/q=0.0479±0.0000, qps=20887±8
+  HNSW48 (150): recall@50=0.9953, ms/q=0.0679±0.0000, qps=14731±3
+  HNSW48 (200): recall@50=0.9976, ms/q=0.0869±0.0000, qps=11507±0
+  HNSW48 (300): recall@50=0.9991, ms/q=0.1226±0.0000, qps=8159±2
+  HNSW48 (400): recall@50=0.9996, ms/q=0.1567±0.0001, qps=6380±2
+  HNSW48 (600): recall@50=0.9999, ms/q=0.2256±0.0005, qps=4432±11
+  HNSW48 (800): recall@50=0.9999, ms/q=0.2937±0.0002, qps=3405±3
+  HNSW48 (1000): recall@50=0.9999, ms/q=0.3630±0.0002, qps=2755±1
+  HNSW48 (1500): recall@50=1.0000, ms/q=0.5516±0.0009, qps=1813±3
+  HNSW48 (2000): recall@50=1.0000, ms/q=0.7618±0.0006, qps=1313±1
+
+--- HNSW48 recall@100 curve (n_runs=3) ---
+  HNSW48 (10): recall@100=0.6348, ms/q=0.0086±0.0000, qps=116582±248
+  HNSW48 (15): recall@100=0.7216, ms/q=0.0110±0.0000, qps=91067±97
+  HNSW48 (20): recall@100=0.7821, ms/q=0.0134±0.0000, qps=74857±62
+  HNSW48 (30): recall@100=0.8580, ms/q=0.0180±0.0000, qps=55595±36
+  HNSW48 (40): recall@100=0.9014, ms/q=0.0225±0.0000, qps=44460±13
+  HNSW48 (60): recall@100=0.9461, ms/q=0.0313±0.0000, qps=31998±13
+  HNSW48 (80): recall@100=0.9671, ms/q=0.0396±0.0000, qps=25223±6
+  HNSW48 (100): recall@100=0.9785, ms/q=0.0481±0.0000, qps=20809±11
+  HNSW48 (150): recall@100=0.9907, ms/q=0.0680±0.0001, qps=14704±11
+  HNSW48 (200): recall@100=0.9951, ms/q=0.0870±0.0001, qps=11493±8
+  HNSW48 (300): recall@100=0.9982, ms/q=0.1227±0.0000, qps=8147±2
+  HNSW48 (400): recall@100=0.9991, ms/q=0.1570±0.0002, qps=6368±10
+  HNSW48 (600): recall@100=0.9997, ms/q=0.2255±0.0003, qps=4435±5
+  HNSW48 (800): recall@100=0.9998, ms/q=0.2943±0.0001, qps=3398±1
+  HNSW48 (1000): recall@100=0.9999, ms/q=0.3633±0.0002, qps=2753±2
+  HNSW48 (1500): recall@100=0.9999, ms/q=0.5511±0.0007, qps=1815±2
+  HNSW48 (2000): recall@100=1.0000, ms/q=0.7637±0.0008, qps=1309±1
+
+--- HNSW48 robustness (k=20) ---
+  HNSW48: {'k': 20, 'param': 200, 'param_name': 'efSearch', 'mean_recall': 0.9989, 'median_recall': 1.0, 'min_recall': 0.85, 'max_recall': 1.0, 'q25_recall': 1.0, 'q75_recall': 1.0, 'ms_per_query': 0.0869}
+
+--- HNSW48 hard-query robustness ---
+  HNSW48: easy={'n': 1000, 'mean_recall': 0.971, 'median_recall': 1.0, 'min_recall': 0.65, 'p10_recall': 0.9, 'p90_recall': 1.0} hard={'n': 1000, 'mean_recall': 0.8268, 'median_recall': 0.85, 'min_recall': 0.05, 'p10_recall': 0.65, 'p90_recall': 0.95}
+
+--- HNSW48 latency tail ---
+  hnsw48 latency @recall≥0.9: p50=0.268 p95=0.353 p99=0.392 p999=0.436 ms
+  hnsw48 latency @recall≥0.95: p50=0.463 p95=0.579 p99=0.631 p999=0.687 ms
+  hnsw48 latency @recall≥0.99: p50=0.820 p95=1.022 p99=1.085 p999=1.168 ms
+
+--- HNSW48 cold/warm cache ---
+  HNSW48: {'param': 40, 'achieved_recall': 0.966485, 'target_recall': 0.95, 'page_cache_flushed': False, 'evict_buffer_mb': 2048, 'cold_first_ms': 0.727098, 'cold_mean_ms': 0.56513, 'cold_p95_ms': 0.710863, 'warm_mean_ms': 0.455045, 'warm_p95_ms': 0.575534, 'cold_warm_ratio': 1.242, 'n_cold': 30, 'n_warm': 500}
+
+--- HNSW48 MRE ---
+  hnsw48 MRE @recall≥0.9: mean=1.0029 median=1.0014 (approx-ratio^2=1.0059)
+  hnsw48 MRE @recall≥0.95: mean=1.0008 median=1.0000 (approx-ratio^2=1.0017)
+  hnsw48 MRE @recall≥0.99: mean=1.0002 median=1.0000 (approx-ratio^2=1.0004)
+
+======================================================================
+BENCHMARK: construction - bigann1m
+======================================================================
+  SuCo: build=2.83s, peak_rss_delta=514.15MB, serialized=549.49MB
+  SHG: build=37.28s, peak_rss_delta=0.0MB, serialized=1350.48MB
+  CSPG: build=47.56s, peak_rss_delta=0.0MB, serialized=900.46MB
+  HNSW32: build=34.61s, peak_rss_delta=0.0MB, serialized=747.8MB
+  HNSW48: build=36.23s, peak_rss_delta=0.0MB, serialized=869.83MB
+
+======================================================================
+BENCHMARK: unseen_robustness - bigann1m
+======================================================================
+
+  Unseen split: keep=995000, query/held=5000
+  Computing brute-force GT for unseen queries (k=100)...
+
+  --- Rebuilding SuCo on kept set ---
+  SuCo (Ns=8, nc=50): build=2.81s
+
+  --- Rebuilding SHG on kept set ---
+  SHG (M=48, efC=80): add=37.30s, shortcut=0.51s, total=37.81s
+
+  --- Rebuilding CSPG on kept set ---
+  CSPG (M=32, efC=128, m=2, λ=0.5): build=48.16s
+
+  --- Rebuilding HNSW32 on kept set ---
+  HNSW32 (M=32, efC=128): build=34.72s
+
+  --- Rebuilding HNSW48 on kept set ---
+  HNSW48 (M=48, efC=80): build=36.11s
+
+======================================================================
+BENCHMARK: pareto - bigann1m
+======================================================================
+
+======================================================================
+BENCHMARK: time_at_recall - bigann1m
+======================================================================
+
+Results saved to /leonardo_work/EUHPC_D32_102/dhm/SuCo/benchs/results_router/results_bigann1m.json
