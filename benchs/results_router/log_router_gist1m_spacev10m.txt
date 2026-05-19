@@ -1,0 +1,252 @@
+Log:        /Users/dhm/Documents/SuCo/benchs/results_router/log_router_gist1m_spacev10m.txt
+Data dir:   /Users/dhm/Documents/data
+Index dir:  /Users/dhm/Documents/indices
+Output dir: /Users/dhm/Documents/SuCo/benchs/results_router
+Datasets:   ['gist1m', 'spacev10m']
+Benchmarks: ['construction', 'features', 'recall_k1', 'recall_k10', 'recall_k20', 'recall_k50', 'recall_k100', 'robustness', 'unseen_robustness', 'hard_robustness', 'latency_tail', 'cold_warm', 'mre', 'pareto', 'time_at_recall']
+Indexes:    ['suco']
+N runs:     3
+
+######################################################################
+# Dataset: GIST1M
+######################################################################
+
+Loading gist1m...
+  Loaded in 7.2s: xb=(1000000, 960), xq=(1000, 960), gt=(1000, 100)
+
+======================================================================
+BENCHMARK: features - gist1m
+======================================================================
+  {'n': 1000000, 'd': 960, 'nq': 1000, 'lid_mle': 38.109554290771484, 'pdist_mean': 1.9595098495483398, 'pdist_std': 0.47921499609947205, 'kmeans_inertia_ratio_16': 0.71470700602162}
+
+--- Building SuCo ---
+  SuCo: using override nsubspaces=40 for d=960 (half_dim=12)
+  SuCo (Ns=40, nc=50): build=8.71s
+  Saved to /Users/dhm/Documents/indices/gist1m_suco_ns40.idx
+
+--- SuCo recall@1 curve (n_runs=3) ---
+  SuCo (0.0005): recall@1=0.8380, ms/q=0.6509±0.0525, qps=1536±124
+  SuCo (0.001): recall@1=0.8980, ms/q=0.6538±0.0065, qps=1529±15
+  SuCo (0.002): recall@1=0.9360, ms/q=0.7420±0.0011, qps=1348±2
+  SuCo (0.005): recall@1=0.9670, ms/q=0.9613±0.0101, qps=1040±11
+  SuCo (0.01): recall@1=0.9810, ms/q=1.3092±0.0094, qps=764±5
+  SuCo (0.02): recall@1=0.9870, ms/q=2.1266±0.0225, qps=470±5
+  SuCo (0.05): recall@1=0.9920, ms/q=4.2208±0.0099, qps=237±1
+  SuCo (0.1): recall@1=0.9940, ms/q=8.2785±0.3057, qps=121±4
+  SuCo (0.2): recall@1=0.9940, ms/q=15.6172±0.0684, qps=64±0
+
+--- SuCo recall@10 curve (n_runs=3) ---
+  SuCo (0.0005): recall@10=0.6857, ms/q=0.8603±0.0384, qps=1162±52
+  SuCo (0.001): recall@10=0.7850, ms/q=0.8874±0.0208, qps=1127±26
+  SuCo (0.002): recall@10=0.8610, ms/q=1.0509±0.0763, qps=952±69
+  SuCo (0.005): recall@10=0.9353, ms/q=1.2241±0.0106, qps=817±7
+  SuCo (0.01): recall@10=0.9655, ms/q=1.7277±0.0985, qps=579±33
+  SuCo (0.02): recall@10=0.9850, ms/q=2.3635±0.0730, qps=423±13
+  SuCo (0.05): recall@10=0.9955, ms/q=4.9867±0.2173, qps=201±9
+  SuCo (0.1): recall@10=0.9979, ms/q=10.9469±0.4798, qps=91±4
+  SuCo (0.2): recall@10=0.9987, ms/q=20.4678±0.6165, qps=49±1
+
+--- SuCo recall@20 curve (n_runs=3) ---
+  SuCo (0.0005): recall@20=0.6159, ms/q=1.1003±0.1224, qps=909±101
+  SuCo (0.001): recall@20=0.7246, ms/q=1.0019±0.0108, qps=998±11
+  SuCo (0.002): recall@20=0.8158, ms/q=1.0770±0.0116, qps=929±10
+  SuCo (0.005): recall@20=0.9065, ms/q=1.3540±0.0194, qps=739±11
+  SuCo (0.01): recall@20=0.9502, ms/q=1.7739±0.0188, qps=564±6
+  SuCo (0.02): recall@20=0.9776, ms/q=2.4692±0.0615, qps=405±10
+  SuCo (0.05): recall@20=0.9934, ms/q=5.0880±0.0385, qps=197±1
+  SuCo (0.1): recall@20=0.9980, ms/q=9.4522±0.0481, qps=106±1
+  SuCo (0.2): recall@20=0.9996, ms/q=19.0907±0.2399, qps=52±1
+
+--- SuCo recall@50 curve (n_runs=3) ---
+  SuCo (0.0005): recall@50=0.5119, ms/q=1.1163±0.1040, qps=896±83
+  SuCo (0.001): recall@50=0.6303, ms/q=1.0331±0.0108, qps=968±10
+  SuCo (0.002): recall@50=0.7406, ms/q=1.1298±0.0136, qps=885±11
+  SuCo (0.005): recall@50=0.8571, ms/q=1.3976±0.0158, qps=715±8
+  SuCo (0.01): recall@50=0.9196, ms/q=1.8307±0.0332, qps=546±10
+  SuCo (0.02): recall@50=0.9608, ms/q=2.6403±0.0514, qps=379±7
+  SuCo (0.05): recall@50=0.9884, ms/q=5.5383±0.0848, qps=181±3
+  SuCo (0.1): recall@50=0.9963, ms/q=10.5632±0.1043, qps=95±1
+  SuCo (0.2): recall@50=0.9991, ms/q=20.2917±0.2847, qps=49±1
+
+--- SuCo recall@100 curve (n_runs=3) ---
+  SuCo (0.0005): recall@100=0.4267, ms/q=1.1078±0.1107, qps=903±90
+  SuCo (0.001): recall@100=0.5481, ms/q=1.0766±0.0941, qps=929±81
+  SuCo (0.002): recall@100=0.6697, ms/q=2.5329±0.1053, qps=395±16
+  SuCo (0.005): recall@100=0.8070, ms/q=2.6676±0.1549, qps=375±22
+  SuCo (0.01): recall@100=0.8863, ms/q=3.9021±0.0429, qps=256±3
+  SuCo (0.02): recall@100=0.9408, ms/q=5.8883±0.0057, qps=170±0
+  SuCo (0.05): recall@100=0.9816, ms/q=10.9311±0.7007, qps=91±6
+  SuCo (0.1): recall@100=0.9937, ms/q=19.7021±0.5607, qps=51±1
+  SuCo (0.2): recall@100=0.9985, ms/q=36.1455±0.8098, qps=28±1
+
+--- SuCo robustness (k=20) ---
+  SuCo: {'k': 20, 'param': 0.005, 'param_name': 'candidate_ratio', 'mean_recall': 0.9065, 'median_recall': 0.95, 'min_recall': 0.4, 'max_recall': 1.0, 'q25_recall': 0.85, 'q75_recall': 1.0, 'ms_per_query': 2.5386}
+
+--- SuCo hard-query robustness ---
+  SuCo: easy={'n': 100, 'mean_recall': 0.9735, 'median_recall': 1.0, 'min_recall': 0.65, 'p10_recall': 0.9, 'p90_recall': 1.0} hard={'n': 100, 'mean_recall': 0.8835, 'median_recall': 0.9, 'min_recall': 0.4, 'p10_recall': 0.745, 'p90_recall': 1.0}
+
+--- SuCo latency tail ---
+  suco latency @recall≥0.9: p50=6.357 p95=11.013 p99=12.779 p999=13.042 ms
+  suco latency @recall≥0.95: p50=8.996 p95=9.595 p99=9.802 p999=10.080 ms
+  suco latency @recall≥0.99: p50=23.767 p95=24.604 p99=25.463 p999=27.623 ms
+
+--- SuCo cold/warm cache ---
+  SuCo: {'param': 0.01, 'achieved_recall': 0.9502, 'target_recall': 0.95, 'page_cache_flushed': False, 'evict_buffer_mb': 2048, 'cold_first_ms': 10.727958, 'cold_mean_ms': 10.652874, 'cold_p95_ms': 11.761634, 'warm_mean_ms': 9.265405, 'warm_p95_ms': 17.301103, 'cold_warm_ratio': 1.15, 'n_cold': 30, 'n_warm': 500}
+
+--- SuCo MRE ---
+  suco MRE @recall≥0.9: mean=1.0013 median=1.0005 (approx-ratio^2=1.0018)
+  suco MRE @recall≥0.95: mean=1.0006 median=1.0000 (approx-ratio^2=1.0004)
+  suco MRE @recall≥0.99: mean=1.0001 median=1.0000 (approx-ratio^2=0.9993)
+
+======================================================================
+BENCHMARK: construction - gist1m
+======================================================================
+  SuCo: build=8.71s, peak_rss_delta=580.86MB, serialized=3968.23MB
+  SHG: build=1611.28s, peak_rss_delta=0.0MB, serialized=7701.95MB
+  CSPG: build=369.08s, peak_rss_delta=-1MB, serialized=4074.29MB
+  HNSW32: build=335.73s, peak_rss_delta=627.08MB, serialized=3921.63MB
+  HNSW48: build=1566.79s, peak_rss_delta=0.0MB, serialized=4043.66MB
+
+======================================================================
+BENCHMARK: unseen_robustness - gist1m
+======================================================================
+
+  Unseen split: keep=995000, query/held=5000
+  Computing brute-force GT for unseen queries (k=100)...
+
+  --- Rebuilding SuCo on kept set ---
+  SuCo: using override nsubspaces=40 for d=960 (half_dim=12)
+  SuCo (Ns=40, nc=50): build=9.06s
+
+======================================================================
+BENCHMARK: pareto - gist1m
+======================================================================
+
+======================================================================
+BENCHMARK: time_at_recall - gist1m
+======================================================================
+
+Results saved to /Users/dhm/Documents/SuCo/benchs/results_router/results_gist1m.json
+
+######################################################################
+# Dataset: SPACEV10M
+######################################################################
+
+Loading spacev10m...
+  Loaded in 0.9s: xb=(10000000, 100), xq=(29316, 100), gt=(29316, 100)
+  GT has IDs up to 1402020653 but base has only 10000000 — recomputing
+  Computing ground truth (n=10000000, nq=29316, k=100)...
+
+======================================================================
+BENCHMARK: features - spacev10m
+======================================================================
+  {'n': 10000000, 'd': 100, 'nq': 29316, 'lid_mle': 27.65382957458496, 'pdist_mean': 163.41273498535156, 'pdist_std': 11.928945541381836, 'kmeans_inertia_ratio_16': 0.8349083935454022}
+
+--- Building SuCo ---
+  SuCo: using override nsubspaces=10 for d=100 (half_dim=5)
+  SuCo (Ns=10, nc=50): build=9.94s
+  Saved to /Users/dhm/Documents/indices/spacev10m_suco_ns10.idx
+
+--- SuCo recall@1 curve (n_runs=3) ---
+  SuCo (0.0005): recall@1=0.9936, ms/q=8.3000±0.3781, qps=120±5
+  SuCo (0.001): recall@1=0.9959, ms/q=8.7533±0.0863, qps=114±1
+  SuCo (0.002): recall@1=0.9982, ms/q=9.3246±0.1453, qps=107±2
+  SuCo (0.005): recall@1=0.9989, ms/q=9.7391±0.1024, qps=103±1
+  SuCo (0.01): recall@1=0.9995, ms/q=10.8314±0.0792, qps=92±1
+  SuCo (0.02): recall@1=0.9999, ms/q=11.6474±0.1826, qps=86±1
+  SuCo (0.05): recall@1=1.0000, ms/q=17.3393±0.0691, qps=58±0
+  SuCo (0.1): recall@1=1.0000, ms/q=24.1966±0.6264, qps=41±1
+  SuCo (0.2): recall@1=1.0000, ms/q=32.4303±1.2938, qps=31±1
+
+--- SuCo recall@10 curve (n_runs=3) ---
+  SuCo (0.0005): recall@10=0.9707, ms/q=8.6920±0.0700, qps=115±1
+  SuCo (0.001): recall@10=0.9792, ms/q=8.8249±0.0769, qps=113±1
+  SuCo (0.002): recall@10=0.9881, ms/q=8.8885±0.0090, qps=113±0
+  SuCo (0.005): recall@10=0.9923, ms/q=9.5306±0.1349, qps=105±1
+  SuCo (0.01): recall@10=0.9949, ms/q=10.3366±0.1088, qps=97±1
+  SuCo (0.02): recall@10=0.9970, ms/q=12.2212±0.5397, qps=82±4
+  SuCo (0.05): recall@10=0.9974, ms/q=16.4736±0.0484, qps=61±0
+  SuCo (0.1): recall@10=0.9978, ms/q=23.3526±0.1701, qps=43±0
+  SuCo (0.2): recall@10=0.9978, ms/q=39.1137±7.4497, qps=26±5
+
+--- SuCo recall@20 curve (n_runs=3) ---
+  SuCo (0.0005): recall@20=0.9383, ms/q=11.1222±0.0037, qps=90±0
+  SuCo (0.001): recall@20=0.9556, ms/q=11.2205±0.0122, qps=89±0
+  SuCo (0.002): recall@20=0.9748, ms/q=11.5327±0.0051, qps=87±0
+  SuCo (0.005): recall@20=0.9842, ms/q=12.4756±0.0067, qps=80±0
+  SuCo (0.01): recall@20=0.9904, ms/q=13.8621±0.0577, qps=72±0
+  SuCo (0.02): recall@20=0.9961, ms/q=16.7698±0.3240, qps=60±1
+  SuCo (0.05): recall@20=0.9974, ms/q=15.4941±1.0915, qps=65±5
+  SuCo (0.1): recall@20=0.9988, ms/q=22.7049±1.0211, qps=44±2
+  SuCo (0.2): recall@20=0.9989, ms/q=31.1166±1.1235, qps=32±1
+
+--- SuCo recall@50 curve (n_runs=3) ---
+  SuCo (0.0005): recall@50=0.8617, ms/q=8.9091±0.1028, qps=112±1
+  SuCo (0.001): recall@50=0.8965, ms/q=8.3979±0.5273, qps=119±7
+  SuCo (0.002): recall@50=0.9377, ms/q=9.1828±0.2208, qps=109±3
+  SuCo (0.005): recall@50=0.9593, ms/q=9.5756±1.2723, qps=104±14
+  SuCo (0.01): recall@50=0.9748, ms/q=10.1566±1.1790, qps=98±11
+  SuCo (0.02): recall@50=0.9895, ms/q=11.5166±0.1898, qps=87±1
+  SuCo (0.05): recall@50=0.9937, ms/q=17.2255±0.6126, qps=58±2
+  SuCo (0.1): recall@50=0.9983, ms/q=22.5969±0.9681, qps=44±2
+  SuCo (0.2): recall@50=0.9986, ms/q=32.0828±1.4123, qps=31±1
+
+--- SuCo recall@100 curve (n_runs=3) ---
+  SuCo (0.0005): recall@100=0.7858, ms/q=8.8044±0.0441, qps=114±1
+  SuCo (0.001): recall@100=0.8353, ms/q=9.0148±0.1117, qps=111±1
+  SuCo (0.002): recall@100=0.8954, ms/q=9.2579±0.1188, qps=108±1
+  SuCo (0.005): recall@100=0.9295, ms/q=9.7164±0.0316, qps=103±0
+  SuCo (0.01): recall@100=0.9553, ms/q=10.6484±0.0580, qps=94±1
+  SuCo (0.02): recall@100=0.9801, ms/q=11.9242±0.0110, qps=84±0
+  SuCo (0.05): recall@100=0.9879, ms/q=16.5992±0.2029, qps=60±1
+  SuCo (0.1): recall@100=0.9970, ms/q=25.1763±0.2785, qps=40±0
+  SuCo (0.2): recall@100=0.9978, ms/q=38.8466±5.4534, qps=26±4
+
+--- SuCo robustness (k=20) ---
+  SuCo: {'k': 20, 'param': 0.005, 'param_name': 'candidate_ratio', 'mean_recall': 0.9842, 'median_recall': 1.0, 'min_recall': 0.35, 'max_recall': 1.0, 'q25_recall': 1.0, 'q75_recall': 1.0, 'ms_per_query': 10.5977}
+
+--- SuCo hard-query robustness ---
+  SuCo: easy={'n': 2932, 'mean_recall': 0.9892, 'median_recall': 1.0, 'min_recall': 0.0, 'p10_recall': 1.0, 'p90_recall': 1.0} hard={'n': 2933, 'mean_recall': 0.7827, 'median_recall': 0.8, 'min_recall': 0.25, 'p10_recall': 0.6, 'p90_recall': 0.95}
+
+--- SuCo latency tail ---
+  suco latency @recall≥0.9: p50=30.863 p95=34.023 p99=40.521 p999=55.999 ms
+  suco latency @recall≥0.95: p50=31.463 p95=32.468 p99=35.188 p999=44.458 ms
+  suco latency @recall≥0.99: p50=38.431 p95=40.086 p99=46.321 p999=95.986 ms
+
+--- SuCo cold/warm cache ---
+  SuCo: {'param': 0.001, 'achieved_recall': 0.95562, 'target_recall': 0.95, 'page_cache_flushed': False, 'evict_buffer_mb': 2048, 'cold_first_ms': 48.137833, 'cold_mean_ms': 42.813755, 'cold_p95_ms': 48.398029, 'warm_mean_ms': 31.058604, 'warm_p95_ms': 32.892227, 'cold_warm_ratio': 1.378, 'n_cold': 30, 'n_warm': 500}
+
+--- SuCo MRE ---
+  suco MRE @recall≥0.9: mean=1.0024 median=1.0000 (approx-ratio^2=5338381312.0000)
+  suco MRE @recall≥0.95: mean=1.0015 median=1.0000 (approx-ratio^2=4405444096.0000)
+  suco MRE @recall≥0.99: mean=1.0002 median=1.0000 (approx-ratio^2=0.9879)
+
+======================================================================
+BENCHMARK: construction - spacev10m
+======================================================================
+  SuCo: build=9.94s, peak_rss_delta=0.0MB, serialized=4577.85MB
+  SHG: build=3817.83s, peak_rss_delta=10432.78MB, serialized=11483.12MB
+  CSPG: build=1405.9s, peak_rss_delta=0.0MB, serialized=7936.45MB
+  HNSW32: build=940.27s, peak_rss_delta=0.0MB, serialized=6409.92MB
+  HNSW48: build=1146.04s, peak_rss_delta=0.0MB, serialized=7630.26MB
+
+======================================================================
+BENCHMARK: unseen_robustness - spacev10m
+======================================================================
+
+  Unseen split: keep=9995000, query/held=5000
+  Computing brute-force GT for unseen queries (k=100)...
+
+  --- Rebuilding SuCo on kept set ---
+  SuCo: using override nsubspaces=10 for d=100 (half_dim=5)
+  SuCo (Ns=10, nc=50): build=14.83s
+
+======================================================================
+BENCHMARK: pareto - spacev10m
+======================================================================
+
+======================================================================
+BENCHMARK: time_at_recall - spacev10m
+======================================================================
+
+Results saved to /Users/dhm/Documents/SuCo/benchs/results_router/results_spacev10m.json
