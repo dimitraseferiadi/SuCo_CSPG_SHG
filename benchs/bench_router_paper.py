@@ -7,10 +7,10 @@ Default-parameter benchmark of IndexSuCo / IndexSHG / IndexCSPG across the
 
 Indices and defaults (taken from each paper / report):
   - SuCo    (report 1, §3.4):           Ns=8, nc=50, α=0.05, β=0.005, niter=10
-  - SHG     (report 2, §4.2):           M=48, efConstruction=128, η=2
+  - SHG     (report 2, §4.2):           M=48, efConstruction=80, η=2
   - CSPG    (report 3, §4.2):           M=32, efConstruction=128, m=2, λ=0.5, ef1=1
   - HNSW32  (CSPG substrate baseline):  M=32, efConstruction=128
-  - HNSW48  (SHG substrate baseline):   M=48, efConstruction=128
+  - HNSW48  (SHG substrate baseline):   M=48, efConstruction=80
 
 Datasets:
   sift1m, sift10m, gist1m, deep1m, deep10m, spacev10m,

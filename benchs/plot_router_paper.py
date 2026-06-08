@@ -257,16 +257,20 @@ def plot_construction_bars(all_results, out_dir, formats):
         x = np.arange(len(datasets))
         width = 0.16
         fig, ax = plt.subplots(figsize=(max(8, 1.1 * len(datasets)), 4.2))
+        missing = []
         for i, idx in enumerate(INDICES):
-            ys = [tab[idx][DATASETS.index(ds)] for ds in datasets]
+            ys = np.array([tab[idx][DATASETS.index(ds)] for ds in datasets],
+                          dtype=float)
             offset = (i - (len(INDICES) - 1) / 2.0) * width
-            ax.bar(x + offset, np.where(np.isnan(ys), 0, ys), width,
+            # On a log axis, 0-height bars sit at log(0) = -inf and break
+            # autoscaling; plot NaN so missing bars are omitted from the
+            # scale instead.
+            heights = np.where(np.isnan(ys), np.nan if log else 0, ys)
+            ax.bar(x + offset, heights, width,
                    label=idx, color=INDEX_COLOR[idx])
-            # annotate missing
             for xi, yi in zip(x + offset, ys):
                 if np.isnan(yi):
-                    ax.text(xi, 0, "×", ha="center", va="bottom",
-                            color="gray", fontsize=8)
+                    missing.append(xi)
         ax.set_xticks(x)
         ax.set_xticklabels([DATASET_LABEL[d] for d in datasets],
                            rotation=30, ha="right", fontsize=9)
@@ -275,6 +279,14 @@ def plot_construction_bars(all_results, out_dir, formats):
             ax.set_yscale("log")
         ax.grid(True, which="both", axis="y", linestyle=":", alpha=0.4)
         ax.legend(ncol=len(INDICES), fontsize=9, loc="upper left")
+        # Annotate missing bars after the y-scale is finalized — placing
+        # the "×" at y=0 on a log axis is log(0) = -inf, which made
+        # bbox_inches="tight" blow the saved image up to >100k pixels tall.
+        if missing:
+            ymin, _ = ax.get_ylim()
+            for xi in missing:
+                ax.text(xi, ymin, "×", ha="center", va="bottom",
+                        color="gray", fontsize=8)
         save_fig(fig, out_dir, name, formats)
 
 
