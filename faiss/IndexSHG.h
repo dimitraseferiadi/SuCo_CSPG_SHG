@@ -88,10 +88,6 @@ struct ShortcutMap {
     int size() const {
         return (int)entries.size();
     }
-
-    // ---- serialization helpers ----
-    void write(FILE* f) const;
-    void read(FILE* f);
 };
 
 // ---------------------------------------------------------------------------
@@ -128,7 +124,7 @@ struct IndexSHG : IndexHNSWFlat {
 
     // --- compression ---
 
-    /// Compression branching factor. Paper (Section 4.1) uses η=2.
+    /// Compression branching factor. Paper (Section 3.1) uses η=2.
     int eta = 2;
 
     /// Maximum compression level (computed from d and eta).
@@ -221,10 +217,10 @@ struct IndexSHG : IndexHNSWFlat {
             idx_t node_id,
             int hnsw_level) const;
 
-    /// Distance cache with epoch-based invalidation.
-    /// Avoids O(ntotal) clear per query: only increments a counter.
-    /// Used to carry compressed distances from upper-level navigation into
-    /// the base-level search for cross-level pruning.
+    /// Distance cache with epoch-based invalidation: avoids an O(ntotal)
+    /// clear per query by only incrementing a counter. Reserved for
+    /// cross-level distance reuse; NOT instantiated by the current search
+    /// path, which uses a per-candidate compressed lower bound instead.
     struct DisCache {
         std::vector<float> values;
         std::vector<uint32_t> stamps;

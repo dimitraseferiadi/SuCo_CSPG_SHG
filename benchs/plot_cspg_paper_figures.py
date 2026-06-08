@@ -258,7 +258,7 @@ def plot_fig3(results, output_dir):
     # Shared legend at top
     handles, labels = axes[0].get_legend_handles_labels()
     fig.legend(handles, labels, loc="upper center", ncol=len(labels),
-               fontsize=9, bbox_to_anchor=(0.5, 1.05))
+               fontsize=9, bbox_to_anchor=(0.5, 1.04))
     # Remove per-axis legends
     for ax in axes:
         leg = ax.get_legend()
@@ -311,7 +311,7 @@ def _plot_qps_recall(results, output_dir, k):
 
     handles, labels = axes[0].get_legend_handles_labels()
     fig.legend(handles, labels, loc="upper center", ncol=len(labels),
-               fontsize=9, bbox_to_anchor=(0.5, 1.05))
+               fontsize=9, bbox_to_anchor=(0.5, 1.04))
     fig.suptitle(f"QPS vs Recall@{k} — HNSW vs CSPG-HNSW", y=1.06)
     fig.tight_layout()
     _save(fig, output_dir, f"fig3_qps_recall_k{k}")
@@ -367,7 +367,7 @@ def plot_fig4(results, output_dir):
 
     handles, labels = axes[0].get_legend_handles_labels()
     fig.legend(handles, labels, loc="upper center", ncol=len(labels),
-               fontsize=9, bbox_to_anchor=(0.5, 1.05))
+               fontsize=9, bbox_to_anchor=(0.5, 1.04))
     fig.suptitle("Query performance when varying the dataset size $n$", y=1.06)
     fig.tight_layout()
     _save(fig, output_dir, "fig4_varying_n")
@@ -420,7 +420,7 @@ def plot_fig5(results, output_dir):
     # Shared legend
     handles, labels_leg = axes[0].get_legend_handles_labels()
     fig.legend(handles, labels_leg, loc="upper center", ncol=len(labels_leg),
-               fontsize=9, bbox_to_anchor=(0.5, 1.05))
+               fontsize=9, bbox_to_anchor=(0.5, 1.03))
     for a in axes:
         leg = a.get_legend()
         if leg:
@@ -476,7 +476,7 @@ def plot_fig6(results, output_dir):
 
     handles, labels_leg = axes[0].get_legend_handles_labels()
     fig.legend(handles, labels_leg, loc="upper center", ncol=len(labels_leg),
-               fontsize=9, bbox_to_anchor=(0.5, 1.05))
+               fontsize=9, bbox_to_anchor=(0.5, 1.03))
 
     fig.suptitle(r"Query performance when varying the sampling ratio $\lambda$", y=1.06)
     fig.tight_layout()
@@ -528,7 +528,7 @@ def plot_fig7(results, output_dir):
 
     handles, labels_leg = axes[0].get_legend_handles_labels()
     fig.legend(handles, labels_leg, loc="upper center", ncol=len(labels_leg),
-               fontsize=9, bbox_to_anchor=(0.5, 1.05))
+               fontsize=9, bbox_to_anchor=(0.5, 1.03))
 
     fig.suptitle(r"Query performance when varying the candidate set size $ef_1$ in the first stage",
                  y=1.06)
@@ -588,7 +588,7 @@ def plot_fig8(results, output_dir):
 
     handles, labels_leg = axes[0].get_legend_handles_labels()
     fig.legend(handles, labels_leg, loc="upper center", ncol=len(labels_leg),
-               fontsize=9, bbox_to_anchor=(0.5, 1.05))
+               fontsize=9, bbox_to_anchor=(0.5, 1.03))
 
     fig.suptitle("Detour factor when varying the dataset size $n$", y=1.06)
     fig.tight_layout()

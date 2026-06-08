@@ -36,7 +36,7 @@
  *   If dis_compressed * eta^(level_diff) > current best, prune the candidate.
  *
  * FAISS optimizations used:
- *   - Forked greedy_update_nearest() with inline compressed distances + caching
+ *   - Forked greedy_update_nearest() with inline compressed distances
  *   - Forked search_from_candidates() with MinimaxHeap, batch-4 distances,
  *     and integrated SHG pruning (cross-level LB + on-the-fly compressed)
  *   - HeapBlockResultHandler for result collection
@@ -158,9 +158,8 @@ struct SHGDistanceComputer : DistanceComputer {
 // greedy_update_nearest_shg — forked from FAISS greedy_update_nearest()
 // ---------------------------------------------------------------------------
 // FAISS's greedy_update_nearest (HNSW.cpp:1100-1173) with batch-4 pattern,
-// modified to:
-//   1. Compute compressed distances inline (no DistanceComputer indirection)
-//   2. Cache every computed distance into DisCache for cross-level LB pruning
+// modified to compute the level-aware compressed distance inline, avoiding
+// the DistanceComputer virtual dispatch.
 
 static void greedy_update_nearest_shg(
         const HNSW& hnsw,
@@ -374,35 +373,6 @@ static void search_from_candidates_shg(
 }
 
 } // anonymous namespace
-
-// ---------------------------------------------------------------------------
-// ShortcutMap serialization
-// ---------------------------------------------------------------------------
-
-void ShortcutMap::write(FILE* f) const {
-    int n = (int)entries.size();
-    fwrite(&n, sizeof(int), 1, f);
-    for (auto& [dist, skip] : entries) {
-        fwrite(&dist, sizeof(float), 1, f);
-        fwrite(&skip, sizeof(int), 1, f);
-    }
-}
-
-void ShortcutMap::read(FILE* f) {
-    entries.clear();
-    int n;
-    size_t ret = fread(&n, sizeof(int), 1, f);
-    FAISS_THROW_IF_NOT(ret == 1);
-    for (int i = 0; i < n; ++i) {
-        float dist;
-        int skip;
-        ret = fread(&dist, sizeof(float), 1, f);
-        FAISS_THROW_IF_NOT(ret == 1);
-        ret = fread(&skip, sizeof(int), 1, f);
-        FAISS_THROW_IF_NOT(ret == 1);
-        entries[dist] = skip;
-    }
-}
 
 // ---------------------------------------------------------------------------
 // Constructor
@@ -1134,7 +1104,6 @@ IndexSHG::storage_idx_t IndexSHG::navigate_upper_levels(
 // Combines upper-level navigation (Phase 1) and base-level search (Phase 2)
 // into a single per-query OMP loop. Uses:
 //   - HeapBlockResultHandler for result collection
-//   - Per-thread DisCache (reused across queries via epoch invalidation)
 //   - Per-thread query_rep and scratch buffers
 //   - greedy_update_nearest_shg for upper levels
 //   - search_from_candidates_shg for base level (MinimaxHeap + batch-4)
