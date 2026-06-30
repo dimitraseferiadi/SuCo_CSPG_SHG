@@ -45,6 +45,7 @@ import numpy as np
 from paper_style import (
     apply_paper_style, color_for, marker_for,
     INDEX_COLOR as _INDEX_COLOR,
+    PAPER_BIG, SUPTITLE_FS, LEGEND_FS, MARKER_SZ, LINE_W, PANEL_W, PANEL_H,
 )
 
 COLORS = {
@@ -358,7 +359,7 @@ def fig8_param_alphabeta(fig8_rows, out):
 # FIGURES 11 & 12 – Recall-QPS  (paper Fig 11 / 12)
 # ═══════════════════════════════════════════════════════════════════════════
 
-def _recall_qps_panel(ax, data, ds_name):
+def _recall_qps_panel(ax, data, ds_name, legend=True, ms=4, lw=1.6):
     ds = data.get(ds_name, {})
     for m in METHODS_ORDER:
         rows = ds.get(m, [])
@@ -367,11 +368,12 @@ def _recall_qps_panel(ax, data, ds_name):
         pts = sorted([(r['r10'], r['qps']) for r in rows])
         ax.semilogy([p[0] for p in pts], [p[1] for p in pts],
                     linestyle=LSTYLE.get(m, '-'), marker=MARKERS.get(m, 'o'),
-                    color=COLORS.get(m, 'grey'), ms=4, lw=1.6, label=m)
+                    color=COLORS.get(m, 'grey'), ms=ms, lw=lw, label=m)
     ax.set_xlabel('Recall@10')
-    ax.set_ylabel('Queries per second')
+    ax.set_ylabel('QPS')
     ax.set_xlim(0.10, 1.02)
-    ax.legend(fontsize=6.5)
+    if legend:
+        ax.legend(fontsize=6.5)
     ax.grid(True, which='both', alpha=0.3)
 
 
@@ -399,6 +401,43 @@ def fig12_recall_qps_10M(data, out):
                  fontsize=10)
     fig.tight_layout()
     _save(fig, out, 'fig12_recall_qps_10M')
+
+
+def fig11_12_recall_qps_combined(data, out):
+    """Paper-style combined Recall@10 vs QPS: 1M-scale datasets on the top row,
+    10M-scale on the bottom row.  Same conspicuous styling (big tick values /
+    labels / markers on compact panels) as the router-paper figures."""
+    rows = [
+        [('SIFT1M',    'SIFT1M  (easy, d=128)'),
+         ('GIST1M',    'GIST1M  (hard, d=960)'),
+         ('Deep1M',    'Deep1M  (easy, d=96)')],
+        [('SIFT10M',   'SIFT10M  (easy, d=128)'),
+         ('Deep10M',   'Deep10M  (easy, d=96)'),
+         ('SpaceV10M', 'SpaceV10M  (hard, d=100)')],
+    ]
+    with plt.rc_context(PAPER_BIG):
+        fig, axes = plt.subplots(2, 3, figsize=(PANEL_W * 3, PANEL_H * 2),
+                                 squeeze=False)
+        for r, panel_row in enumerate(rows):
+            for c, (ds, label) in enumerate(panel_row):
+                ax = axes[r][c]
+                _recall_qps_panel(ax, data, ds, legend=False,
+                                  ms=MARKER_SZ, lw=LINE_W)
+                ax.set_title(label)
+                # Label only the outer edges to keep the compact grid clean.
+                if r != len(rows) - 1:
+                    ax.set_xlabel('')
+                if c != 0:
+                    ax.set_ylabel('')
+        # One shared, conspicuous legend along the bottom.
+        handles, labels = axes[0][0].get_legend_handles_labels()
+        fig.legend(handles, labels, loc='lower center', ncol=len(labels),
+                   frameon=False, fontsize=LEGEND_FS,
+                   bbox_to_anchor=(0.5, -0.02))
+        fig.suptitle('Recall@10 vs QPS',
+                     fontsize=SUPTITLE_FS)
+        fig.tight_layout(rect=[0, 0.04, 1, 0.97])
+        _save(fig, out, 'fig11_12_recall_qps_combined')
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -1039,6 +1078,7 @@ def main():
     fig8_param_alphabeta(fig8_rows, args.out)
     fig11_recall_qps_1M(data, args.out)
     fig12_recall_qps_10M(data, args.out)
+    fig11_12_recall_qps_combined(data, args.out)
     fig_suco_all_datasets(data, args.out)
     fig_indexing(data, args.out)
     fig_recall_heatmap(data, args.out)

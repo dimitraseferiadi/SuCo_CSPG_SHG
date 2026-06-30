@@ -42,6 +42,16 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
+# Conspicuous paper sizing — large tick values / labels / markers on compact
+# panels — lives in paper_style so every script shares one source of truth.
+from paper_style import (
+    apply_big_paper_style, INDEX_COLOR, INDEX_MARKER,
+    TICK_FS, LABEL_FS, TITLE_FS, SUPTITLE_FS, LEGEND_FS, ANNOT_FS,
+    MARKER_SZ, LINE_W, PANEL_W, PANEL_H,
+)
+
+apply_big_paper_style()
+
 
 # ---------------------------------------------------------------------------
 # Style (kept consistent with plot_router_paper.py)
@@ -49,21 +59,8 @@ import numpy as np
 
 INDICES = ["SuCo", "SHG", "CSPG", "HNSW32", "HNSW48"]
 
-INDEX_COLOR = {
-    "SuCo":   "#1f77b4",
-    "SHG":    "#f4a261",
-    "CSPG":   "#2ca02c",
-    "HNSW32": "#d62728",
-    "HNSW48": "#9467bd",
-}
-
-INDEX_MARKER = {
-    "SuCo":   "o",
-    "SHG":    "s",
-    "CSPG":   "D",
-    "HNSW32": "^",
-    "HNSW48": "v",
-}
+# INDEX_COLOR and INDEX_MARKER are imported from paper_style (canonical
+# cross-algorithm palette shared by every thesis figure).
 
 RECALL_TARGET_LABEL = {"r80": "0.80", "r90": "0.90", "r95": "0.95", "r99": "0.99"}
 
@@ -149,7 +146,7 @@ def _draw_vs_n_panel(ax, series, ylabel, title, log_y=True, xticks=None,
         xs = [p[0] for p in pts]
         ys = [p[1] for p in pts]
         ax.plot(xs, ys, marker=INDEX_MARKER[idx], color=INDEX_COLOR[idx],
-                label=idx, linewidth=1.6, markersize=5)
+                label=idx, linewidth=LINE_W, markersize=MARKER_SZ)
         plotted = True
     if not plotted:
         ax.text(0.5, 0.5, "no data", transform=ax.transAxes,
@@ -159,11 +156,11 @@ def _draw_vs_n_panel(ax, series, ylabel, title, log_y=True, xticks=None,
         ax.set_yscale("log")
     ax.set_xlabel("N (vectors)")
     ax.set_ylabel(ylabel)
-    ax.set_title(title, fontsize=10)
+    ax.set_title(title, fontsize=TITLE_FS)
     ax.grid(True, which="both", linestyle=":", alpha=0.4)
     if xticks is not None:
         ax.set_xticks(xticks)
-        ax.set_xticklabels([fmt_n(x) for x in xticks], fontsize=8)
+        ax.set_xticklabels([fmt_n(x) for x in xticks], fontsize=TICK_FS)
         ax.minorticks_off()
     return plotted
 
@@ -172,11 +169,11 @@ def _shared_legend(fig, order=None):
     order = order if order is not None else INDICES
     handles = [
         plt.Line2D([0], [0], color=INDEX_COLOR[idx],
-                   marker=INDEX_MARKER[idx], label=idx, linewidth=1.6)
+                   marker=INDEX_MARKER[idx], label=idx, linewidth=LINE_W)
         for idx in order
     ]
     fig.legend(handles=handles, loc="lower center",
-               ncol=len(order), frameon=False, fontsize=10,
+               ncol=len(order), frameon=False, fontsize=LEGEND_FS,
                bbox_to_anchor=(0.5, -0.02))
 
 
@@ -320,6 +317,104 @@ def plot_crossover_vs_n(loaded, out_dir, formats, k=10,
 
 
 # ---------------------------------------------------------------------------
+# Combined thesis figures
+# ---------------------------------------------------------------------------
+
+def _build_size_series(loaded, field):
+    series = {idx: [] for idx in INDICES}
+    for _, n, res in loaded:
+        cons = res.get("construction", {})
+        for idx in INDICES:
+            v = cons.get(idx, {}).get(field)
+            if v is None or v == -1:
+                continue
+            series[idx].append((n, v))
+    return series
+
+
+def _qps_series(loaded, k, target):
+    series = {idx: [] for idx in INDICES}
+    for _, n, res in loaded:
+        sec = (res.get("time_at_recall", {})
+                  .get(f"recall_k{k}", {}).get(target, {}))
+        for idx in INDICES:
+            v = sec.get(idx, {}).get("qps")
+            if v is None:
+                continue
+            series[idx].append((n, v))
+    return series
+
+
+def _crossover_series(loaded, k, tgt, others):
+    series = {idx: [] for idx in others}
+    for _, n, res in loaded:
+        cons = res.get("construction", {})
+        tar = (res.get("time_at_recall", {})
+                  .get(f"recall_k{k}", {}).get(tgt, {}))
+        base_build = cons.get(CROSSOVER_BASELINE, {}).get("build_time_s")
+        base_ms    = tar.get(CROSSOVER_BASELINE, {}).get("ms_per_query")
+        for idx in others:
+            build = cons.get(idx, {}).get("build_time_s")
+            ms    = tar.get(idx, {}).get("ms_per_query")
+            nstar = _crossover_query_count(base_build, base_ms, build, ms)
+            if nstar is None or nstar <= 0:
+                continue
+            series[idx].append((n, nstar))
+    return series
+
+
+def plot_build_and_size(loaded, out_dir, formats, name="fig_12_22"):
+    """build_time_vs_n and size_vs_n side by side."""
+    xticks = [n for _, n, _ in loaded]
+    fig, axes = plt.subplots(1, 2, figsize=(6.4 * 2, 4.2), squeeze=False)
+    _draw_vs_n_panel(axes[0][0], _build_size_series(loaded, "build_time_s"),
+                     ylabel="Build time (s)",
+                     title="Build time vs N (log-log)",
+                     log_y=True, xticks=xticks)
+    _draw_vs_n_panel(axes[0][1], _build_size_series(loaded, "size_mb"),
+                     ylabel="Serialised index size (MB)",
+                     title="Serialised index size vs N (log-log)",
+                     log_y=True, xticks=xticks)
+    _shared_legend(fig)
+    fig.tight_layout(rect=[0, 0.06, 1, 1])
+    save_fig(fig, out_dir, name, formats)
+
+
+def plot_qps_and_crossover(loaded, out_dir, formats, k=10,
+                           recall_targets=("r95", "r99"),
+                           qps_target="r95", name="fig_12_23"):
+    """qps_vs_n on top, crossover_vs_n (two recall panels) below."""
+    others = [idx for idx in INDICES if idx != CROSSOVER_BASELINE]
+    xticks = [n for _, n, _ in loaded]
+    ncols = len(recall_targets)
+    fig = plt.figure(figsize=(5.8 * ncols, 4.2 * 2))
+    gs = fig.add_gridspec(2, ncols, hspace=0.45)
+
+    ax_top = fig.add_subplot(gs[0, :])
+    _draw_vs_n_panel(
+        ax_top, _qps_series(loaded, k, qps_target),
+        ylabel=f"QPS at Recall@{k} >= {RECALL_TARGET_LABEL[qps_target]}",
+        title=f"QPS at matched recall vs N (k={k}, "
+              f"recall>={RECALL_TARGET_LABEL[qps_target]})",
+        log_y=True, xticks=xticks,
+    )
+
+    for j, tgt in enumerate(recall_targets):
+        ax = fig.add_subplot(gs[1, j])
+        _draw_vs_n_panel(
+            ax, _crossover_series(loaded, k, tgt, others),
+            ylabel=(f"crossover query volume N* vs {CROSSOVER_BASELINE}"
+                    if j == 0 else ""),
+            title=f"Recall@{k} >= {RECALL_TARGET_LABEL[tgt]}",
+            log_y=True, xticks=xticks, index_order=others,
+        )
+        ax.tick_params(axis="x", labelsize=TICK_FS - 3)
+    _shared_legend(fig)
+    fig.tight_layout(rect=[0, 0.05, 1, 1])
+    save_fig(fig, out_dir, name, formats)
+
+
+# ---------------------------------------------------------------------------
 # CSV tables
 # ---------------------------------------------------------------------------
 
@@ -393,7 +488,7 @@ def write_crossover_table(loaded, out_dir, k=10,
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("--results-dir", default="benchs/results_router")
+    p.add_argument("--results-dir", default="benchs/bigann_results")
     p.add_argument("--out-dir",     default="benchs/figures_router/bigann_scaling")
     p.add_argument("--formats", nargs="+", default=["png", "pdf"])
     args = p.parse_args()
@@ -407,6 +502,11 @@ def main():
     plot_qps_at_recall_vs_n(loaded,  args.out_dir, args.formats,
                             k=10, target="r95")
     plot_crossover_vs_n(loaded,      args.out_dir, args.formats, k=10)
+
+    # Combined thesis figures
+    plot_build_and_size(loaded,      args.out_dir, args.formats, name="fig_12_22")
+    plot_qps_and_crossover(loaded,   args.out_dir, args.formats, k=10,
+                           name="fig_12_23")
 
     write_construction_table(loaded, args.out_dir)
     write_qps_table(loaded,          args.out_dir, k=10, target="r95")

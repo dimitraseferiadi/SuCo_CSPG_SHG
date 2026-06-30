@@ -42,7 +42,10 @@ import numpy as np
 # ---------------------------------------------------------------------------
 # Paper-quality global style
 # ---------------------------------------------------------------------------
-from paper_style import apply_paper_style, color_for, marker_for
+from paper_style import (
+    apply_paper_style, color_for, marker_for,
+    PAPER_BIG, PANEL_W, PANEL_H, SUPTITLE_FS, LEGEND_FS, LINE_W, MARKER_SZ,
+)
 
 apply_paper_style()
 
@@ -227,11 +230,6 @@ def plot_recall_vs_time_core(results: dict[str, dict], output_dir: Path, k_key: 
     n_ds = len(datasets)
     cols = min(3, n_ds)
     rows = (n_ds + cols - 1) // cols
-    fig, axes = plt.subplots(rows, cols, figsize=(3.5 * cols, 3.0 * rows), constrained_layout=True)
-    if n_ds == 1:
-        axes = np.array([axes])
-    axes = axes.flatten()
-
     curve_spec = [
         ("SHG", ["SHG"]),
         ("HNSW", ["HNSW"]),
@@ -239,50 +237,80 @@ def plot_recall_vs_time_core(results: dict[str, dict], output_dir: Path, k_key: 
         ("IVFFlat", ["IVFFlat", "IVF-Flat", "IVF_FLAT"]),
     ]
 
-    for idx, ds in enumerate(datasets):
-        ax = axes[idx]
-        data = results[ds][k_key]
-        plotted_recalls: list[float] = []
+    # Conspicuous paper style (big tick values / labels / markers on compact
+    # panels), scoped to this figure so sibling SHG plots keep their look.
+    with plt.rc_context(PAPER_BIG):
+        fig, axes = plt.subplots(rows, cols,
+                                 figsize=(PANEL_W * cols, PANEL_H * rows),
+                                 constrained_layout=True)
+        if n_ds == 1:
+            axes = np.array([axes])
+        axes = axes.flatten()
 
-        for display_name, key_candidates in curve_spec:
-            points = find_series(data, key_candidates)
-            if not points:
-                continue
+        for idx, ds in enumerate(datasets):
+            ax = axes[idx]
+            data = results[ds][k_key]
+            plotted_recalls: list[float] = []
 
-            recalls = [p.get("recall", 0.0) for p in points]
-            times = [p.get("ms_per_query", 0.0) for p in points]
-            plotted_recalls.extend(recalls)
-            palette_key = display_name.upper()
-            ax.plot(
-                times,
-                recalls,
-                marker=MARKERS.get(palette_key, "o"),
-                color=COLORS.get(palette_key, "#333333"),
-                label=display_name,
-                zorder=CURVE_ZORDER.get(palette_key, 1),
-            )
+            for display_name, key_candidates in curve_spec:
+                points = find_series(data, key_candidates)
+                if not points:
+                    continue
 
-        ax.set_xscale("log")
-        ax.xaxis.set_major_formatter(mticker.FuncFormatter(lambda v, _: f"{v:g}"))
-        ax.set_xlabel("Time (ms/query)")
-        ax.set_ylabel(f"Recall@{k_val}")
-        ax.set_title(DATASET_LABELS.get(ds, ds))
-        ax.legend(loc="lower right")
-        set_recall_ylim(ax, plotted_recalls)
-        _clean_ax(ax)
+                recalls = [p.get("recall", 0.0) for p in points]
+                times = [p.get("ms_per_query", 0.0) for p in points]
+                plotted_recalls.extend(recalls)
+                palette_key = display_name.upper()
+                ax.plot(
+                    times,
+                    recalls,
+                    marker=MARKERS.get(palette_key, "o"),
+                    color=COLORS.get(palette_key, "#333333"),
+                    label=display_name,
+                    linestyle="-",
+                    linewidth=LINE_W,
+                    markersize=MARKER_SZ,
+                    zorder=CURVE_ZORDER.get(palette_key, 1),
+                )
 
-    for idx in range(n_ds, len(axes)):
-        axes[idx].set_visible(False)
+            ax.set_xscale("log")
+            ax.xaxis.set_major_formatter(mticker.FuncFormatter(lambda v, _: f"{v:g}"))
+            ax.set_title(DATASET_LABELS.get(ds, ds))
+            set_recall_ylim(ax, plotted_recalls)
+            _clean_ax(ax)
+            ax.xaxis.grid(True)  # add vertical grid lines to match the grid look
+            # Label only the outer edges to keep the compact grid clean.
+            ax.set_xlabel("Time (ms/query)" if idx + cols >= n_ds else "")
+            ax.set_ylabel(f"Recall@{k_val}" if idx % cols == 0 else "")
 
-    fig_name = (
-        "fig5_recall_vs_time_k20_shg_hnsw_panorama"
-        if k_val == 20
-        else "fig6_recall_vs_time_k50_shg_hnsw_panorama"
-    )
-    fig.savefig(output_dir / f"{fig_name}.pdf")
-    fig.savefig(output_dir / f"{fig_name}.png")
-    plt.close(fig)
-    print(f"  Saved {fig_name}")
+        for idx in range(n_ds, len(axes)):
+            axes[idx].set_visible(False)
+
+        # Single shared legend along the bottom (deduped across panels, ordered
+        # as in curve_spec) instead of one legend per subplot.
+        handle_map: dict[str, object] = {}
+        for ax in axes[:n_ds]:
+            for h, lbl in zip(*ax.get_legend_handles_labels()):
+                handle_map.setdefault(lbl, h)
+        ordered = [(handle_map[name], name) for name, _ in curve_spec
+                   if name in handle_map]
+        if ordered:
+            fig.legend([h for h, _ in ordered], [lbl for _, lbl in ordered],
+                       loc="outside lower center", ncol=len(ordered),
+                       frameon=False, fontsize=LEGEND_FS)
+
+        fig.suptitle(f"Recall@{k_val} vs query time",
+                     fontsize=SUPTITLE_FS)
+
+        fig_name = (
+            "fig5_recall_vs_time_k20_shg_hnsw_panorama"
+            if k_val == 20
+            else "fig6_recall_vs_time_k50_shg_hnsw_panorama"
+        )
+        fig.savefig(output_dir / f"{fig_name}.pdf")
+        fig.savefig(output_dir / f"{fig_name}.png")
+        plt.close(fig)
+        print(f"  Saved {fig_name}")
 
 
 def plot_ablation_core(results: dict[str, dict], output_dir: Path) -> None:

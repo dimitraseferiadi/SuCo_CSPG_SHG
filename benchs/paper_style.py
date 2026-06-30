@@ -186,6 +186,50 @@ def apply_paper_style() -> None:
     plt.rcParams.update(PAPER_RCPARAMS)
 
 
+# ---------------------------------------------------------------------------
+# Conspicuous "big" paper sizing — large tick values / labels / markers on
+# compact panels, for figures that get scaled right down into a paper column
+# and must stay legible.  This is the canonical look used by
+# ``plot_router_paper.py``; other scripts opt in either globally via
+# ``apply_big_paper_style()`` or per-figure via ``plt.rc_context(PAPER_BIG)``.
+# The default ``apply_paper_style()`` above is left untouched so scripts tuned
+# against the smaller defaults are unaffected.
+# ---------------------------------------------------------------------------
+TICK_FS     = 13    # axis tick values ("big axes values")
+LABEL_FS    = 15    # x/y axis labels
+TITLE_FS    = 15    # per-panel titles
+SUPTITLE_FS = 18    # figure super-title
+LEGEND_FS   = 12    # legends
+ANNOT_FS    = 9     # in-plot data annotations (scatter labels, heatmap cells)
+MARKER_SZ   = 8     # line-plot markers
+LINE_W      = 2.2   # line-plot widths
+PANEL_W     = 3.2   # per-subplot panel width (inches) for compact grids
+PANEL_H     = 2.8   # per-subplot panel height (inches) for compact grids
+
+PAPER_BIG = {
+    "axes.titlesize":    TITLE_FS,
+    "axes.labelsize":    LABEL_FS,
+    "xtick.labelsize":   TICK_FS,
+    "ytick.labelsize":   TICK_FS,
+    "legend.fontsize":   LEGEND_FS,
+    "lines.linewidth":   LINE_W,
+    "lines.markersize":  MARKER_SZ,
+    "axes.linewidth":    1.0,
+    "xtick.major.width": 1.0,
+    "ytick.major.width": 1.0,
+    "xtick.major.size":  4.5,
+    "ytick.major.size":  4.5,
+    "grid.linewidth":    0.7,
+}
+
+
+def apply_big_paper_style() -> None:
+    """Install the shared paper rcParams plus the conspicuous 'big' sizing."""
+    import matplotlib.pyplot as plt
+    plt.rcParams.update(PAPER_RCPARAMS)
+    plt.rcParams.update(PAPER_BIG)
+
+
 def grid_for(n: int, max_cols: int = 3) -> tuple[int, int]:
     """Return ``(rows, cols)`` for a panel grid of ``n`` subplots.
 

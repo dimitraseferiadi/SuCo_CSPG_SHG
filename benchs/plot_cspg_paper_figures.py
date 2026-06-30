@@ -41,6 +41,7 @@ import numpy as np
 from paper_style import (
     apply_paper_style, color_for, marker_for, shade, variant_palette,
     grid_for,
+    PAPER_BIG, SUPTITLE_FS, LEGEND_FS, MARKER_SZ, LINE_W, PANEL_W, PANEL_H,
 )
 import matplotlib.colors as _mcolors
 
@@ -227,47 +228,46 @@ def plot_fig3(results, output_dir):
 
     n_ds = len(datasets)
     _rows, _cols = grid_for(n_ds)
-    fig, axes = plt.subplots(_rows, _cols, figsize=(4.5 * _cols, 3.8 * _rows), squeeze=False)
-    axes = axes.flatten()
-    for _ax in axes[n_ds:]:
-        _ax.set_visible(False)
+    with plt.rc_context(PAPER_BIG):
+        fig, axes = plt.subplots(_rows, _cols,
+                                 figsize=(PANEL_W * _cols, PANEL_H * _rows),
+                                 squeeze=False)
+        axes = axes.flatten()
+        for _ax in axes[n_ds:]:
+            _ax.set_visible(False)
 
-    for idx, ds in enumerate(datasets):
-        ax = axes[idx]
-        data = results[ds][bm_key]
+        for idx, ds in enumerate(datasets):
+            ax = axes[idx]
+            data = results[ds][bm_key]
 
-        for label, pts in data.items():
-            if not pts:
-                continue
-            s = _style(label)
-            recalls = [p["recall"] for p in pts]
-            qps = [_ms_to_qps(p["ms_per_query"]) for p in pts]
-            ax.plot(recalls, qps,
-                    marker=s["marker"], color=s["color"], linestyle=s["ls"],
-                    label=s["label"], markersize=5, linewidth=1.5)
+            for label, pts in data.items():
+                if not pts:
+                    continue
+                s = _style(label)
+                recalls = [p["recall"] for p in pts]
+                qps = [_ms_to_qps(p["ms_per_query"]) for p in pts]
+                ax.plot(recalls, qps,
+                        marker=s["marker"], color=s["color"], linestyle=s["ls"],
+                        label=s["label"], markersize=MARKER_SZ, linewidth=LINE_W)
 
-        ax.set_xlabel("Recall@10")
-        ax.set_ylabel("QPS")
-        ax.set_title(DATASET_LABELS.get(ds, ds))
-        ax.ticklabel_format(axis="y", style="scientific", scilimits=(0, 0))
-        _auto_xlim(ax, data)
-        ax.grid(True, alpha=0.3)
-        if idx == 0:
-            ax.legend(loc="upper right", fontsize=8)
+            ax.set_title(DATASET_LABELS.get(ds, ds))
+            ax.ticklabel_format(axis="y", style="scientific", scilimits=(0, 0))
+            _auto_xlim(ax, data)
+            ax.grid(True, alpha=0.3)
+            # Label only the outer edges to keep the compact grid clean.
+            ax.set_xlabel("Recall@10" if idx + _cols >= n_ds else "")
+            ax.set_ylabel("QPS" if idx % _cols == 0 else "")
 
-    # Shared legend at top
-    handles, labels = axes[0].get_legend_handles_labels()
-    fig.legend(handles, labels, loc="upper center", ncol=len(labels),
-               fontsize=9, bbox_to_anchor=(0.5, 1.04))
-    # Remove per-axis legends
-    for ax in axes:
-        leg = ax.get_legend()
-        if leg:
-            leg.remove()
+        # One shared, conspicuous legend along the bottom.
+        handles, labels = axes[0].get_legend_handles_labels()
+        fig.legend(handles, labels, loc="lower center", ncol=len(labels),
+                   frameon=False, fontsize=LEGEND_FS,
+                   bbox_to_anchor=(0.5, -0.02))
 
-    fig.suptitle("QPS vs Recall@10 — HNSW vs CSPG-HNSW", y=1.06)
-    fig.tight_layout()
-    _save(fig, output_dir, "fig3_qps_recall_k10")
+        fig.suptitle("Recall@10 vs QPS",
+                     fontsize=SUPTITLE_FS)
+        fig.tight_layout(rect=[0, 0.04, 1, 0.97])
+        _save(fig, output_dir, "fig3_qps_recall_k10")
 
     # Also produce k=20 and k=50 variants if data is available
     for k in [20, 50]:
@@ -284,37 +284,41 @@ def _plot_qps_recall(results, output_dir, k):
 
     n_ds = len(datasets)
     _rows, _cols = grid_for(n_ds)
-    fig, axes = plt.subplots(_rows, _cols, figsize=(4.5 * _cols, 3.8 * _rows), squeeze=False)
-    axes = axes.flatten()
-    for _ax in axes[n_ds:]:
-        _ax.set_visible(False)
+    with plt.rc_context(PAPER_BIG):
+        fig, axes = plt.subplots(_rows, _cols,
+                                 figsize=(PANEL_W * _cols, PANEL_H * _rows),
+                                 squeeze=False)
+        axes = axes.flatten()
+        for _ax in axes[n_ds:]:
+            _ax.set_visible(False)
 
-    for idx, ds in enumerate(datasets):
-        ax = axes[idx]
-        data = results[ds][bm_key]
-        for label, pts in data.items():
-            if not pts:
-                continue
-            s = _style(label)
-            recalls = [p["recall"] for p in pts]
-            qps = [_ms_to_qps(p["ms_per_query"]) for p in pts]
-            ax.plot(recalls, qps,
-                    marker=s["marker"], color=s["color"], linestyle=s["ls"],
-                    label=s["label"], markersize=5, linewidth=1.5)
+        for idx, ds in enumerate(datasets):
+            ax = axes[idx]
+            data = results[ds][bm_key]
+            for label, pts in data.items():
+                if not pts:
+                    continue
+                s = _style(label)
+                recalls = [p["recall"] for p in pts]
+                qps = [_ms_to_qps(p["ms_per_query"]) for p in pts]
+                ax.plot(recalls, qps,
+                        marker=s["marker"], color=s["color"], linestyle=s["ls"],
+                        label=s["label"], markersize=MARKER_SZ, linewidth=LINE_W)
 
-        ax.set_xlabel(f"Recall@{k}")
-        ax.set_ylabel("QPS")
-        ax.set_title(DATASET_LABELS.get(ds, ds))
-        ax.ticklabel_format(axis="y", style="scientific", scilimits=(0, 0))
-        _auto_xlim(ax, data)
-        ax.grid(True, alpha=0.3)
+            ax.set_xlabel(f"Recall@{k}")
+            ax.set_ylabel("QPS")
+            ax.set_title(DATASET_LABELS.get(ds, ds))
+            ax.ticklabel_format(axis="y", style="scientific", scilimits=(0, 0))
+            _auto_xlim(ax, data)
+            ax.grid(True, alpha=0.3)
 
-    handles, labels = axes[0].get_legend_handles_labels()
-    fig.legend(handles, labels, loc="upper center", ncol=len(labels),
-               fontsize=9, bbox_to_anchor=(0.5, 1.04))
-    fig.suptitle(f"QPS vs Recall@{k} — HNSW vs CSPG-HNSW", y=1.06)
-    fig.tight_layout()
-    _save(fig, output_dir, f"fig3_qps_recall_k{k}")
+        handles, labels = axes[0].get_legend_handles_labels()
+        fig.legend(handles, labels, loc="upper center", ncol=len(labels),
+                   fontsize=LEGEND_FS, bbox_to_anchor=(0.5, 1.05))
+        fig.suptitle(f"QPS vs Recall@{k} — HNSW vs CSPG-HNSW", y=1.10,
+                     fontsize=SUPTITLE_FS)
+        fig.tight_layout()
+        _save(fig, output_dir, f"fig3_qps_recall_k{k}")
 
 
 # ---------------------------------------------------------------------------

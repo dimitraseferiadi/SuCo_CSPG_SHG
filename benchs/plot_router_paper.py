@@ -58,9 +58,15 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
-from paper_style import apply_paper_style, INDEX_COLOR, INDEX_MARKER
+# Conspicuous paper sizing — large tick values / labels / markers on compact
+# panels — lives in paper_style so every script shares one source of truth.
+from paper_style import (
+    apply_big_paper_style, INDEX_COLOR, INDEX_MARKER,
+    TICK_FS, LABEL_FS, TITLE_FS, SUPTITLE_FS, LEGEND_FS, ANNOT_FS,
+    MARKER_SZ, LINE_W, PANEL_W, PANEL_H,
+)
 
-apply_paper_style()
+apply_big_paper_style()
 
 
 # ---------------------------------------------------------------------------
@@ -160,7 +166,7 @@ def plot_pareto_single(ax, results, k, title=None, legend=True):
         ys = [p[1] for p in pareto]
         ax.plot(xs, ys,
                 marker=INDEX_MARKER[idx], color=INDEX_COLOR[idx],
-                label=idx, linewidth=1.6, markersize=5)
+                label=idx, linewidth=LINE_W, markersize=MARKER_SZ)
         plotted = True
     if not plotted:
         ax.text(0.5, 0.5, "no data", transform=ax.transAxes,
@@ -170,9 +176,9 @@ def plot_pareto_single(ax, results, k, title=None, legend=True):
     ax.set_ylabel("QPS")
     ax.grid(True, which="both", linestyle=":", alpha=0.4)
     if title:
-        ax.set_title(title, fontsize=10)
+        ax.set_title(title, fontsize=TITLE_FS)
     if legend and plotted:
-        ax.legend(fontsize=8, loc="lower left")
+        ax.legend(fontsize=LEGEND_FS, loc="lower left")
 
 
 def plot_pareto_per_dataset(all_results, out_dir, formats):
@@ -181,7 +187,7 @@ def plot_pareto_per_dataset(all_results, out_dir, formats):
         for k in K_LIST:
             if f"recall_k{k}" not in res:
                 continue
-            fig, ax = plt.subplots(figsize=(5.2, 3.6))
+            fig, ax = plt.subplots(figsize=(4.6, 3.4))
             plot_pareto_single(
                 ax, res, k,
                 title=f"{DATASET_LABEL[ds]} — Recall@{k} vs QPS",
@@ -201,7 +207,7 @@ def plot_pareto_grid(all_results, out_dir, formats):
         if not any(f"recall_k{k}" in all_results[ds] for ds in datasets):
             continue
         fig, axes = plt.subplots(
-            nrows, ncols, figsize=(4.0 * ncols, 3.0 * nrows), squeeze=False
+            nrows, ncols, figsize=(PANEL_W * ncols, PANEL_H * nrows), squeeze=False
         )
         for i, ds in enumerate(datasets):
             ax = axes[i // ncols][i % ncols]
@@ -214,15 +220,54 @@ def plot_pareto_grid(all_results, out_dir, formats):
         # one shared legend
         handles = [
             plt.Line2D([0], [0], color=INDEX_COLOR[idx],
-                       marker=INDEX_MARKER[idx], label=idx, linewidth=1.6)
+                       marker=INDEX_MARKER[idx], label=idx, linewidth=LINE_W)
             for idx in INDICES
         ]
         fig.legend(handles=handles, loc="lower center",
-                   ncol=len(INDICES), frameon=False, fontsize=10,
+                   ncol=len(INDICES), frameon=False, fontsize=LEGEND_FS,
                    bbox_to_anchor=(0.5, -0.02))
-        fig.suptitle(f"QPS vs Recall@{k} — all datasets", fontsize=13)
+        fig.suptitle(f"QPS vs Recall@{k} — all datasets", fontsize=SUPTITLE_FS)
         fig.tight_layout(rect=[0, 0.03, 1, 0.97])
         save_fig(fig, out_dir, f"pareto_grid_k{k}", formats)
+
+
+def plot_pareto_grid_subset(all_results, out_dir, formats, subset, name,
+                            k=10, ncols=3, suptitle=None):
+    """3xN pareto grid for a chosen subset of datasets (3 panels per row)."""
+    datasets = [ds for ds in subset if ds in all_results]
+    n = len(datasets)
+    if n == 0:
+        return
+    if not any(f"recall_k{k}" in all_results[ds] for ds in datasets):
+        return
+    nrows = (n + ncols - 1) // ncols
+    fig, axes = plt.subplots(
+        nrows, ncols, figsize=(PANEL_W * ncols, PANEL_H * nrows), squeeze=False
+    )
+    for i, ds in enumerate(datasets):
+        ax = axes[i // ncols][i % ncols]
+        plot_pareto_single(
+            ax, all_results[ds], k,
+            title=DATASET_LABEL[ds], legend=False,
+        )
+        # Label only the outer edges to keep the compact grid clean.
+        if i % ncols != 0:
+            ax.set_ylabel("")
+        if i + ncols < n:
+            ax.set_xlabel("")
+    for j in range(n, nrows * ncols):
+        axes[j // ncols][j % ncols].axis("off")
+    handles = [
+        plt.Line2D([0], [0], color=INDEX_COLOR[idx],
+                   marker=INDEX_MARKER[idx], label=idx, linewidth=LINE_W)
+        for idx in INDICES
+    ]
+    fig.legend(handles=handles, loc="lower center",
+               ncol=len(INDICES), frameon=False, fontsize=LEGEND_FS,
+               bbox_to_anchor=(0.5, -0.02))
+    fig.suptitle(suptitle or f"QPS vs Recall@{k}", fontsize=SUPTITLE_FS)
+    fig.tight_layout(rect=[0, 0.03, 1, 0.97])
+    save_fig(fig, out_dir, name, formats)
 
 
 # ---------------------------------------------------------------------------
@@ -273,12 +318,12 @@ def plot_construction_bars(all_results, out_dir, formats):
                     missing.append(xi)
         ax.set_xticks(x)
         ax.set_xticklabels([DATASET_LABEL[d] for d in datasets],
-                           rotation=30, ha="right", fontsize=9)
+                           rotation=30, ha="right", fontsize=TICK_FS)
         ax.set_ylabel(ylabel)
         if log:
             ax.set_yscale("log")
         ax.grid(True, which="both", axis="y", linestyle=":", alpha=0.4)
-        ax.legend(ncol=len(INDICES), fontsize=9, loc="upper left")
+        ax.legend(ncol=len(INDICES), fontsize=LEGEND_FS, loc="upper left")
         # Annotate missing bars after the y-scale is finalized — placing
         # the "×" at y=0 on a log axis is log(0) = -inf, which made
         # bbox_inches="tight" blow the saved image up to >100k pixels tall.
@@ -286,7 +331,7 @@ def plot_construction_bars(all_results, out_dir, formats):
             ymin, _ = ax.get_ylim()
             for xi in missing:
                 ax.text(xi, ymin, "×", ha="center", va="bottom",
-                        color="gray", fontsize=8)
+                        color="gray", fontsize=ANNOT_FS)
         save_fig(fig, out_dir, name, formats)
 
 
@@ -320,8 +365,8 @@ def plot_speedup_heatmap(all_results, out_dir, formats):
             continue
         mat = np.array(cells).T  # shape: (n_indices, n_cols)
 
-        fig, ax = plt.subplots(figsize=(max(8, 0.55 * len(col_labels)),
-                                        0.55 * len(INDICES) + 1.6))
+        fig, ax = plt.subplots(figsize=(max(8, 0.62 * len(col_labels)),
+                                        0.62 * len(INDICES) + 1.8))
         # log color scale, clipped
         with np.errstate(divide="ignore", invalid="ignore"):
             log_mat = np.log10(np.where(mat > 0, mat, np.nan))
@@ -331,13 +376,13 @@ def plot_speedup_heatmap(all_results, out_dir, formats):
         ax.set_yticks(np.arange(len(INDICES)))
         ax.set_yticklabels(INDICES)
         ax.set_xticks(np.arange(len(col_labels)))
-        ax.set_xticklabels(col_labels, rotation=60, ha="right", fontsize=8)
+        ax.set_xticklabels(col_labels, rotation=60, ha="right", fontsize=11)
         for i in range(mat.shape[0]):
             for j in range(mat.shape[1]):
                 v = mat[i, j]
                 if np.isfinite(v):
                     ax.text(j, i, f"{v:.2f}", ha="center", va="center",
-                            fontsize=7,
+                            fontsize=ANNOT_FS,
                             color="black" if abs(log_mat[i, j]) < 0.6 else "white")
         cbar = fig.colorbar(im, ax=ax, fraction=0.025, pad=0.02)
         cbar.set_label("log10(speedup vs HNSW32)")
@@ -372,14 +417,16 @@ def plot_latency_tail(all_results, out_dir, formats, target="r95"):
                    label=idx, color=INDEX_COLOR[idx])
         ax.set_xticks(x)
         ax.set_xticklabels([DATASET_LABEL[d] for d in datasets],
-                           rotation=45, ha="right", fontsize=8)
+                           rotation=45, ha="right", fontsize=TICK_FS)
         ax.set_yscale("log")
         ax.set_ylabel(f"{q} latency (ms)")
         ax.set_title(f"{q.upper()} @ recall {RECALL_TARGET_LABEL[target]}")
         ax.grid(True, axis="y", which="both", linestyle=":", alpha=0.4)
-        if qi == 0:
-            ax.legend(fontsize=8, ncol=2)
-    fig.tight_layout()
+    # One shared, conspicuous legend along the bottom.
+    handles, labels = axes[0].get_legend_handles_labels()
+    fig.legend(handles, labels, loc="lower center", ncol=len(labels),
+               frameon=False, fontsize=LEGEND_FS, bbox_to_anchor=(0.5, -0.02))
+    fig.tight_layout(rect=[0, 0.05, 1, 1])
     save_fig(fig, out_dir, f"latency_tail_{target}", formats)
 
 
@@ -421,16 +468,16 @@ def plot_mre(all_results, out_dir, formats, field="mre", name="mre_at_recall",
             for xi, bad in zip(x + offset, broken):
                 if bad:
                     ax.text(xi, MRE_OUTLIER_THRESHOLD - 1.0, "*",
-                            ha="center", va="bottom", color="red", fontsize=11)
+                            ha="center", va="bottom", color="red", fontsize=14)
         ax.set_xticks(x)
         ax.set_xticklabels([DATASET_LABEL[d] for d in datasets],
-                           rotation=45, ha="right", fontsize=8)
+                           rotation=45, ha="right", fontsize=TICK_FS)
         ax.set_ylabel(f"{stat_label} − 1")
         ax.set_title(f"{stat_label} at recall {RECALL_TARGET_LABEL[t]}")
         ax.set_yscale("symlog", linthresh=1e-4)
         ax.grid(True, axis="y", which="both", linestyle=":", alpha=0.4)
         if ti == 0:
-            ax.legend(fontsize=8)
+            ax.legend(fontsize=LEGEND_FS)
     fig.tight_layout()
     save_fig(fig, out_dir, name, formats)
 
@@ -448,7 +495,7 @@ def plot_cumulative_cost(all_results, out_dir, formats, k=10, recall_target="r95
     n = len(datasets)
     ncols = 4
     nrows = (n + ncols - 1) // ncols
-    fig, axes = plt.subplots(nrows, ncols, figsize=(4.0 * ncols, 3.0 * nrows),
+    fig, axes = plt.subplots(nrows, ncols, figsize=(PANEL_W * ncols, PANEL_H * nrows),
                              squeeze=False)
     for di, ds in enumerate(datasets):
         ax = axes[di // ncols][di % ncols]
@@ -462,11 +509,11 @@ def plot_cumulative_cost(all_results, out_dir, formats, k=10, recall_target="r95
                 continue
             cost = bt + nq_grid * ms / 1000.0
             ax.plot(nq_grid, cost, color=INDEX_COLOR[idx],
-                    marker=INDEX_MARKER[idx], markevery=8, markersize=4,
-                    label=idx, linewidth=1.4)
+                    marker=INDEX_MARKER[idx], markevery=8, markersize=MARKER_SZ,
+                    label=idx, linewidth=LINE_W)
             any_data = True
         ax.set_xscale("log"); ax.set_yscale("log")
-        ax.set_title(DATASET_LABEL[ds], fontsize=10)
+        ax.set_title(DATASET_LABEL[ds], fontsize=TITLE_FS)
         ax.grid(True, which="both", linestyle=":", alpha=0.4)
         if not any_data:
             ax.text(0.5, 0.5, "no data", transform=ax.transAxes,
@@ -478,12 +525,12 @@ def plot_cumulative_cost(all_results, out_dir, formats, k=10, recall_target="r95
     for j in range(n, nrows * ncols):
         axes[j // ncols][j % ncols].axis("off")
     handles = [plt.Line2D([0], [0], color=INDEX_COLOR[idx],
-                          marker=INDEX_MARKER[idx], label=idx, linewidth=1.4)
+                          marker=INDEX_MARKER[idx], label=idx, linewidth=LINE_W)
                for idx in INDICES]
     fig.legend(handles=handles, loc="lower center", ncol=len(INDICES),
-               frameon=False, fontsize=10, bbox_to_anchor=(0.5, -0.02))
+               frameon=False, fontsize=LEGEND_FS, bbox_to_anchor=(0.5, -0.02))
     fig.suptitle(f"Cumulative cost = build + nq·ms/q  at recall@{k} ≥ "
-                 f"{RECALL_TARGET_LABEL[recall_target]}", fontsize=13)
+                 f"{RECALL_TARGET_LABEL[recall_target]}", fontsize=SUPTITLE_FS)
     fig.tight_layout(rect=[0, 0.03, 1, 0.97])
     save_fig(fig, out_dir, f"cumulative_cost_k{k}_{recall_target}", formats)
 
@@ -497,7 +544,7 @@ def plot_k_sensitivity(all_results, out_dir, formats, recall_target="r95"):
     datasets = [ds for ds in DATASETS if ds in all_results]
     n = len(datasets); ncols = 4
     nrows = (n + ncols - 1) // ncols
-    fig, axes = plt.subplots(nrows, ncols, figsize=(4.0 * ncols, 3.0 * nrows),
+    fig, axes = plt.subplots(nrows, ncols, figsize=(PANEL_W * ncols, PANEL_H * nrows),
                              squeeze=False)
     for di, ds in enumerate(datasets):
         ax = axes[di // ncols][di % ncols]
@@ -512,11 +559,11 @@ def plot_k_sensitivity(all_results, out_dir, formats, recall_target="r95"):
                     xs.append(k); ys.append(ms)
             if xs:
                 ax.plot(xs, ys, color=INDEX_COLOR[idx],
-                        marker=INDEX_MARKER[idx], label=idx, linewidth=1.4)
+                        marker=INDEX_MARKER[idx], label=idx, linewidth=LINE_W)
                 any_data = True
         ax.set_xscale("log"); ax.set_yscale("log")
         ax.set_xticks(K_LIST); ax.set_xticklabels([str(k) for k in K_LIST])
-        ax.set_title(DATASET_LABEL[ds], fontsize=10)
+        ax.set_title(DATASET_LABEL[ds], fontsize=TITLE_FS)
         ax.grid(True, which="both", linestyle=":", alpha=0.4)
         if not any_data:
             ax.text(0.5, 0.5, "no data", transform=ax.transAxes,
@@ -528,12 +575,12 @@ def plot_k_sensitivity(all_results, out_dir, formats, recall_target="r95"):
     for j in range(n, nrows * ncols):
         axes[j // ncols][j % ncols].axis("off")
     handles = [plt.Line2D([0], [0], color=INDEX_COLOR[idx],
-                          marker=INDEX_MARKER[idx], label=idx, linewidth=1.4)
+                          marker=INDEX_MARKER[idx], label=idx, linewidth=LINE_W)
                for idx in INDICES]
     fig.legend(handles=handles, loc="lower center", ncol=len(INDICES),
-               frameon=False, fontsize=10, bbox_to_anchor=(0.5, -0.02))
+               frameon=False, fontsize=LEGEND_FS, bbox_to_anchor=(0.5, -0.02))
     fig.suptitle(f"k sensitivity: ms/query at recall ≥ "
-                 f"{RECALL_TARGET_LABEL[recall_target]}", fontsize=13)
+                 f"{RECALL_TARGET_LABEL[recall_target]}", fontsize=SUPTITLE_FS)
     fig.tight_layout(rect=[0, 0.03, 1, 0.97])
     save_fig(fig, out_dir, f"k_sensitivity_{recall_target}", formats)
 
@@ -561,11 +608,11 @@ def plot_cold_latency_abs(all_results, out_dir, formats):
                    label=idx, color=INDEX_COLOR[idx])
         ax.set_xticks(x)
         ax.set_xticklabels([DATASET_LABEL[d] for d in datasets],
-                           rotation=45, ha="right", fontsize=8)
+                           rotation=45, ha="right", fontsize=TICK_FS)
         ax.set_yscale("log")
         ax.set_title(title); ax.set_ylabel("ms")
         ax.grid(True, axis="y", which="both", linestyle=":", alpha=0.4)
-    axes[0].legend(ncol=len(INDICES), fontsize=8, loc="upper left")
+    axes[0].legend(ncol=len(INDICES), fontsize=LEGEND_FS, loc="upper left")
     fig.tight_layout()
     save_fig(fig, out_dir, "cold_warm_absolute", formats)
 
@@ -594,7 +641,7 @@ def plot_build_vs_size(all_results, out_dir, formats):
                    edgecolor="black", linewidth=0.5, alpha=0.85)
         plotted = True
         for x, y, a in zip(xs, ys, ann):
-            ax.annotate(DATASET_LABEL[a], (x, y), fontsize=6,
+            ax.annotate(DATASET_LABEL[a], (x, y), fontsize=ANNOT_FS,
                         color="dimgray", alpha=0.7,
                         xytext=(4, 2), textcoords="offset points")
     if not plotted:
@@ -604,7 +651,7 @@ def plot_build_vs_size(all_results, out_dir, formats):
     ax.set_ylabel("Build time (s, log)")
     ax.set_title("Construction tradeoff: build time vs serialized size")
     ax.grid(True, which="both", linestyle=":", alpha=0.4)
-    ax.legend(fontsize=9)
+    ax.legend(fontsize=LEGEND_FS)
     fig.tight_layout()
     save_fig(fig, out_dir, "build_vs_size", formats)
 
@@ -636,7 +683,7 @@ def plot_lid_vs_speedup(all_results, out_dir, formats, k=10, recall_target="r95"
                    edgecolor="black", linewidth=0.5, alpha=0.85)
         plotted = True
         for x, y, a in zip(xs, ys, ann):
-            ax.annotate(DATASET_LABEL[a], (x, y), fontsize=6,
+            ax.annotate(DATASET_LABEL[a], (x, y), fontsize=ANNOT_FS,
                         color="dimgray", alpha=0.7,
                         xytext=(4, 2), textcoords="offset points")
     if not plotted:
@@ -648,7 +695,7 @@ def plot_lid_vs_speedup(all_results, out_dir, formats, k=10, recall_target="r95"
                   f"{RECALL_TARGET_LABEL[recall_target]}")
     ax.set_title("Dataset difficulty (LID) vs achieved speedup")
     ax.grid(True, which="both", linestyle=":", alpha=0.4)
-    ax.legend(fontsize=9)
+    ax.legend(fontsize=LEGEND_FS)
     fig.tight_layout()
     save_fig(fig, out_dir, f"lid_vs_speedup_k{k}_{recall_target}", formats)
 
@@ -662,7 +709,7 @@ def plot_recall_vs_time_grid(all_results, out_dir, formats, k=10):
     datasets = [ds for ds in DATASETS if ds in all_results]
     n = len(datasets); ncols = 4
     nrows = (n + ncols - 1) // ncols
-    fig, axes = plt.subplots(nrows, ncols, figsize=(4.0 * ncols, 3.0 * nrows),
+    fig, axes = plt.subplots(nrows, ncols, figsize=(PANEL_W * ncols, PANEL_H * nrows),
                              squeeze=False)
     for di, ds in enumerate(datasets):
         ax = axes[di // ncols][di % ncols]
@@ -678,10 +725,10 @@ def plot_recall_vs_time_grid(all_results, out_dir, formats, k=10):
                 continue
             xs, ys = zip(*rs)
             ax.plot(xs, ys, marker=INDEX_MARKER[idx], color=INDEX_COLOR[idx],
-                    label=idx, linewidth=1.4, markersize=4)
+                    label=idx, linewidth=LINE_W, markersize=MARKER_SZ)
             any_data = True
         ax.set_yscale("log")
-        ax.set_title(DATASET_LABEL[ds], fontsize=10)
+        ax.set_title(DATASET_LABEL[ds], fontsize=TITLE_FS)
         ax.grid(True, which="both", linestyle=":", alpha=0.4)
         if not any_data:
             ax.text(0.5, 0.5, "no data", transform=ax.transAxes,
@@ -693,11 +740,11 @@ def plot_recall_vs_time_grid(all_results, out_dir, formats, k=10):
     for j in range(n, nrows * ncols):
         axes[j // ncols][j % ncols].axis("off")
     handles = [plt.Line2D([0], [0], color=INDEX_COLOR[idx],
-                          marker=INDEX_MARKER[idx], label=idx, linewidth=1.4)
+                          marker=INDEX_MARKER[idx], label=idx, linewidth=LINE_W)
                for idx in INDICES]
     fig.legend(handles=handles, loc="lower center", ncol=len(INDICES),
-               frameon=False, fontsize=10, bbox_to_anchor=(0.5, -0.02))
-    fig.suptitle(f"ms/query vs recall@{k} (log-y)", fontsize=13)
+               frameon=False, fontsize=LEGEND_FS, bbox_to_anchor=(0.5, -0.02))
+    fig.suptitle(f"ms/query vs recall@{k} (log-y)", fontsize=SUPTITLE_FS)
     fig.tight_layout(rect=[0, 0.03, 1, 0.97])
     save_fig(fig, out_dir, f"recall_vs_time_grid_k{k}", formats)
 
@@ -734,7 +781,7 @@ def plot_thread_scaling_grid(all_results, out_dir, formats, recall_target="r95")
     datasets = [ds for ds in DATASETS if ds in all_results]
     n = len(datasets); ncols = 4
     nrows = (n + ncols - 1) // ncols
-    fig, axes = plt.subplots(nrows, ncols, figsize=(4.0 * ncols, 3.0 * nrows),
+    fig, axes = plt.subplots(nrows, ncols, figsize=(PANEL_W * ncols, PANEL_H * nrows),
                              squeeze=False)
     any_global = False
     for di, ds in enumerate(datasets):
@@ -747,11 +794,11 @@ def plot_thread_scaling_grid(all_results, out_dir, formats, recall_target="r95")
             if not ts:
                 continue
             ax.plot(ts, qps, marker=INDEX_MARKER[idx], color=INDEX_COLOR[idx],
-                    label=idx, linewidth=1.4, markersize=5)
+                    label=idx, linewidth=LINE_W, markersize=MARKER_SZ)
             any_data = True
             max_t = max(max_t, ts[-1])
         ax.set_xscale("log", base=2); ax.set_yscale("log")
-        ax.set_title(DATASET_LABEL[ds], fontsize=10)
+        ax.set_title(DATASET_LABEL[ds], fontsize=TITLE_FS)
         ax.grid(True, which="both", linestyle=":", alpha=0.4)
         if not any_data:
             ax.text(0.5, 0.5, "no data", transform=ax.transAxes,
@@ -770,13 +817,13 @@ def plot_thread_scaling_grid(all_results, out_dir, formats, recall_target="r95")
     if not any_global:
         plt.close(fig); return
     handles = [plt.Line2D([0], [0], color=INDEX_COLOR[idx],
-                          marker=INDEX_MARKER[idx], label=idx, linewidth=1.4)
+                          marker=INDEX_MARKER[idx], label=idx, linewidth=LINE_W)
                for idx in INDICES]
     fig.legend(handles=handles, loc="lower center", ncol=len(INDICES),
-               frameon=False, fontsize=10, bbox_to_anchor=(0.5, -0.02))
+               frameon=False, fontsize=LEGEND_FS, bbox_to_anchor=(0.5, -0.02))
     fig.suptitle(f"Thread-scaling: QPS vs threads "
                  f"@ recall ≥ {RECALL_TARGET_LABEL[recall_target]} (k=10)",
-                 fontsize=13)
+                 fontsize=SUPTITLE_FS)
     fig.tight_layout(rect=[0, 0.03, 1, 0.97])
     save_fig(fig, out_dir, f"thread_scaling_qps_{recall_target}", formats)
 
@@ -786,7 +833,7 @@ def plot_thread_scaling_speedup(all_results, out_dir, formats, recall_target="r9
     datasets = [ds for ds in DATASETS if ds in all_results]
     n = len(datasets); ncols = 4
     nrows = (n + ncols - 1) // ncols
-    fig, axes = plt.subplots(nrows, ncols, figsize=(4.0 * ncols, 3.0 * nrows),
+    fig, axes = plt.subplots(nrows, ncols, figsize=(PANEL_W * ncols, PANEL_H * nrows),
                              squeeze=False)
     any_global = False
     for di, ds in enumerate(datasets):
@@ -800,7 +847,7 @@ def plot_thread_scaling_speedup(all_results, out_dir, formats, recall_target="r9
             if not ts or not spd_clean:
                 continue
             ax.plot(ts, spd, marker=INDEX_MARKER[idx], color=INDEX_COLOR[idx],
-                    label=idx, linewidth=1.4, markersize=5)
+                    label=idx, linewidth=LINE_W, markersize=MARKER_SZ)
             any_data = True
             max_t = max(max_t, ts[-1])
         if any_data:
@@ -811,7 +858,7 @@ def plot_thread_scaling_speedup(all_results, out_dir, formats, recall_target="r9
                     linestyle="--", alpha=0.6, label="ideal (linear)")
             ax.set_xticks(ideal); ax.set_xticklabels([str(t) for t in ideal])
             ax.set_xscale("log", base=2); ax.set_yscale("log", base=2)
-        ax.set_title(DATASET_LABEL[ds], fontsize=10)
+        ax.set_title(DATASET_LABEL[ds], fontsize=TITLE_FS)
         ax.grid(True, which="both", linestyle=":", alpha=0.4)
         if not any_data:
             ax.text(0.5, 0.5, "no data", transform=ax.transAxes,
@@ -825,15 +872,15 @@ def plot_thread_scaling_speedup(all_results, out_dir, formats, recall_target="r9
     if not any_global:
         plt.close(fig); return
     handles = [plt.Line2D([0], [0], color=INDEX_COLOR[idx],
-                          marker=INDEX_MARKER[idx], label=idx, linewidth=1.4)
+                          marker=INDEX_MARKER[idx], label=idx, linewidth=LINE_W)
                for idx in INDICES]
     handles.append(plt.Line2D([0], [0], color="black", linestyle="--",
                               linewidth=0.8, label="ideal"))
     fig.legend(handles=handles, loc="lower center", ncol=len(INDICES) + 1,
-               frameon=False, fontsize=10, bbox_to_anchor=(0.5, -0.02))
+               frameon=False, fontsize=LEGEND_FS, bbox_to_anchor=(0.5, -0.02))
     fig.suptitle(f"Thread-scaling: speedup vs 1 thread "
                  f"@ recall ≥ {RECALL_TARGET_LABEL[recall_target]} (k=10)",
-                 fontsize=13)
+                 fontsize=SUPTITLE_FS)
     fig.tight_layout(rect=[0, 0.03, 1, 0.97])
     save_fig(fig, out_dir, f"thread_scaling_speedup_{recall_target}", formats)
 
@@ -886,13 +933,13 @@ def plot_thread_scaling_efficiency_summary(all_results, out_dir, formats,
     ax.axhline(1.0, color="black", linewidth=0.7, linestyle="--", alpha=0.6)
     ax.set_xticks(x)
     ax.set_xticklabels([DATASET_LABEL[d] for d in datasets],
-                       rotation=30, ha="right", fontsize=9)
+                       rotation=30, ha="right", fontsize=TICK_FS)
     ax.set_ylabel("parallel efficiency  (speedup / threads)")
     ax.set_ylim(0, 1.1)
     ax.set_title(f"Parallel efficiency at {at_threads} threads "
                  f"@ recall ≥ {RECALL_TARGET_LABEL[recall_target]} (k=10)")
     ax.grid(True, axis="y", linestyle=":", alpha=0.4)
-    ax.legend(ncol=len(INDICES), fontsize=9, loc="upper left")
+    ax.legend(ncol=len(INDICES), fontsize=LEGEND_FS, loc="upper left")
     save_fig(fig, out_dir, f"thread_scaling_efficiency_t{at_threads}_{recall_target}",
              formats)
 
@@ -959,17 +1006,17 @@ def plot_robustness_box(all_results, out_dir, formats):
             color = INDEX_COLOR[idx]
             # whiskers
             ax.plot([x_center, x_center], [wh_lo, wh_hi],
-                    color=color, linewidth=1.0, alpha=0.7)
+                    color=color, linewidth=1.4, alpha=0.7)
             # box
             ax.add_patch(plt.Rectangle(
                 (x_center - width / 2.5, box_lo), width / 1.25, box_hi - box_lo,
-                facecolor=color, edgecolor="black", linewidth=0.6, alpha=0.7))
+                facecolor=color, edgecolor="black", linewidth=0.8, alpha=0.7))
             # median line
             ax.plot([x_center - width / 2.5, x_center + width / 2.5],
-                    [med, med], color="black", linewidth=1.0)
+                    [med, med], color="black", linewidth=1.6)
     ax.set_xticks(positions)
     ax.set_xticklabels([DATASET_LABEL[d] for d in datasets],
-                       rotation=30, ha="right", fontsize=9)
+                       rotation=30, ha="right", fontsize=TICK_FS)
     ax.set_ylabel("per-query recall@20")
     ax.set_ylim(0.0, 1.02)
     ax.grid(True, axis="y", linestyle=":", alpha=0.4)
@@ -977,7 +1024,7 @@ def plot_robustness_box(all_results, out_dir, formats):
         plt.Rectangle((0, 0), 1, 1, color=INDEX_COLOR[idx], label=idx, alpha=0.7)
         for idx in INDICES
     ]
-    ax.legend(handles=handles, ncol=len(INDICES), fontsize=9,
+    ax.legend(handles=handles, ncol=len(INDICES), fontsize=LEGEND_FS,
               loc="lower right")
     ax.set_title("Robustness — per-query recall@20 distribution "
                  "(min · 25–75% · median · max)")
@@ -1006,11 +1053,11 @@ def plot_hard_easy(all_results, out_dir, formats):
         ax.set_title(f"{split.capitalize()} 10% — mean recall@20")
         ax.set_xticks(x)
         ax.set_xticklabels([DATASET_LABEL[d] for d in datasets],
-                           rotation=45, ha="right", fontsize=8)
+                           rotation=45, ha="right", fontsize=TICK_FS)
         ax.set_ylim(0.0, 1.02)
         ax.grid(True, axis="y", linestyle=":", alpha=0.4)
     axes[0].set_ylabel("mean recall@20")
-    axes[0].legend(fontsize=8, ncol=2)
+    axes[0].legend(fontsize=LEGEND_FS, ncol=2)
     fig.tight_layout()
     save_fig(fig, out_dir, "hard_easy_recall", formats)
 
@@ -1038,11 +1085,11 @@ def plot_cold_warm(all_results, out_dir, formats):
     ax.axhline(1.0, color="black", linewidth=0.7, linestyle="--", alpha=0.6)
     ax.set_xticks(x)
     ax.set_xticklabels([DATASET_LABEL[d] for d in datasets],
-                       rotation=30, ha="right", fontsize=9)
+                       rotation=30, ha="right", fontsize=TICK_FS)
     ax.set_ylabel("cold / warm latency ratio")
     ax.set_title("Cold-cache vs warm-cache mean latency (≥1 = cold is slower)")
     ax.grid(True, axis="y", linestyle=":", alpha=0.4)
-    ax.legend(ncol=len(INDICES), fontsize=9, loc="upper left")
+    ax.legend(ncol=len(INDICES), fontsize=LEGEND_FS, loc="upper left")
     save_fig(fig, out_dir, "cold_warm_ratio", formats)
 
 
@@ -1065,12 +1112,12 @@ def plot_unseen_robustness(all_results, out_dir, formats):
                label=idx, color=INDEX_COLOR[idx])
     ax.set_xticks(x)
     ax.set_xticklabels([DATASET_LABEL[d] for d in datasets],
-                       rotation=30, ha="right", fontsize=9)
+                       rotation=30, ha="right", fontsize=TICK_FS)
     ax.set_ylabel("mean recall@20 on held-out queries")
     ax.set_ylim(0.0, 1.02)
     ax.grid(True, axis="y", linestyle=":", alpha=0.4)
     ax.set_title("Unseen-base robustness (rebuild without queries)")
-    ax.legend(ncol=len(INDICES), fontsize=9, loc="lower right")
+    ax.legend(ncol=len(INDICES), fontsize=LEGEND_FS, loc="lower right")
     save_fig(fig, out_dir, "unseen_robustness", formats)
 
 
@@ -1437,6 +1484,18 @@ def main():
     # Pareto curves
     plot_pareto_per_dataset(all_results, args.out_dir, args.formats)
     plot_pareto_grid(all_results, args.out_dir, args.formats)
+    plot_pareto_grid_subset(
+        all_results, args.out_dir, args.formats,
+        subset=["sift1m", "sift10m", "deep1m", "deep10m", "spacev10m", "msong"],
+        name="fig_12_2_lowd", k=10,
+        suptitle="QPS vs Recall@10",
+    )
+    plot_pareto_grid_subset(
+        all_results, args.out_dir, args.formats,
+        subset=["gist1m", "openai1m", "msturing10m", "uqv", "enron"],
+        name="fig_12_2_highd", k=10,
+        suptitle="QPS vs Recall@10",
+    )
 
     # Construction
     plot_construction_bars(all_results, args.out_dir, args.formats)
