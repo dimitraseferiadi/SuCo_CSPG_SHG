@@ -307,17 +307,19 @@ _BIGANN_GT_SIZES = (1, 2, 5, 10, 20, 50, 100, 200, 500, 1000)
 # ---------------------------------------------------------------------------
 
 
-def compute_ground_truth(xb, xq, k=100, batch_size=4096):
+def compute_ground_truth(xb, xq, k=100, batch_size=4096, metric="L2"):
     """Exact k-NN groundtruth by brute force, batched over queries."""
     import faiss
 
+    faiss_metric = (faiss.METRIC_INNER_PRODUCT if metric == "IP"
+                    else faiss.METRIC_L2)
     nq = xq.shape[0]
-    print(f"  computing groundtruth (nb={xb.shape[0]:,} nq={nq:,} k={k}) ...",
-          flush=True)
+    print(f"  computing groundtruth (nb={xb.shape[0]:,} nq={nq:,} k={k} "
+          f"metric={metric}) ...", flush=True)
     gt = np.empty((nq, k), dtype="int32")
     for start in range(0, nq, batch_size):
         end = min(start + batch_size, nq)
-        _, ids = faiss.knn(sanitize(xq[start:end]), xb, k, metric=faiss.METRIC_L2)
+        _, ids = faiss.knn(sanitize(xq[start:end]), xb, k, metric=faiss_metric)
         gt[start:end] = ids
     return gt
 
@@ -358,14 +360,14 @@ def _gt_cache_path(dirpath, tag, k=None, cache_dir=None, fingerprint=None):
 
 
 def _load_or_compute_gt(dirpath, tag, xb, xq, k, cache_dir=None,
-                        fingerprint=None):
+                        fingerprint=None, metric="L2"):
     """Return cached groundtruth, else compute it and try to cache."""
     path = _gt_cache_path(dirpath, tag, k, cache_dir, fingerprint)
     if os.path.exists(path):
         print(f"  groundtruth from cache: {path}")
         gt = np.load(path).astype("int32", copy=False)
     else:
-        gt = compute_ground_truth(xb, xq, k=_cache_k(k))
+        gt = compute_ground_truth(xb, xq, k=_cache_k(k), metric=metric)
         try:
             np.save(path, gt)
             print(f"  groundtruth cached to {path}")
@@ -840,21 +842,43 @@ class BenchDataset:
                 gt = read_ibin(self.gt_path)
             if gt.shape[0] > self.nq:
                 gt = gt[: self.nq]
-            if k is not None and gt.shape[1] > k:
-                gt = gt[:, :k]
-            if k is not None and gt.shape[1] < k:
-                raise ValueError(
-                    f"{self.gt_path} has only {gt.shape[1]} neighbours per query "
-                    f"but k={k} was requested"
-                )
-            return np.ascontiguousarray(gt)
+            if k is None or gt.shape[1] >= k:
+                if k is not None:
+                    gt = gt[:, :k]
+                return np.ascontiguousarray(gt)
+            # Some releases ship a shallow groundtruth -- enron and msong carry
+            # only 20 neighbours per query. Truncating the request to what the
+            # file holds would silently redefine recall@k, so compute the deeper
+            # groundtruth instead and cache it alongside.
+            print(f"  {os.path.basename(self.gt_path)} has only {gt.shape[1]} "
+                  f"neighbours per query but k={k} was requested; computing a "
+                  f"deeper groundtruth")
+            shallow = gt
+        else:
+            shallow = None
 
         if xb is None:
             xb = self.get_database()
         if xq is None:
             xq = self.get_queries()
-        return _load_or_compute_gt(self.dir, self.name, xb, xq, k,
-                                   self.gt_cache_dir, self.gt_fingerprint())
+        deep = _load_or_compute_gt(self.dir, self.name, xb, xq, k,
+                                   self.gt_cache_dir, self.gt_fingerprint(),
+                                   metric=self.metric)
+
+        if shallow is not None:
+            # The shipped file is shallow but should still be correct as far as
+            # it goes; disagreement means it belongs to a different base or
+            # query set, which is worth knowing before it reaches a recall plot.
+            agree = float((deep[:, 0] == shallow[:, 0]).mean())
+            if agree < 0.95:
+                print(f"  WARNING: the computed groundtruth agrees with "
+                      f"{os.path.basename(self.gt_path)} on only {agree:.1%} of "
+                      f"top-1 neighbours. That file may not match this base or "
+                      f"query set; the computed one is being used.")
+            else:
+                print(f"  (computed groundtruth agrees with the shipped "
+                      f"{shallow.shape[1]}-NN file on {agree:.1%} of top-1)")
+        return deep
 
     def gt_fingerprint(self):
         """Identity of the (base, query) pair, for naming computed groundtruth."""

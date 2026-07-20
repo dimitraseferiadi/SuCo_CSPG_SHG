@@ -40,6 +40,53 @@ DEFAULT_ORDER = [
 ]
 
 
+REQUIRED_INDEXES = {
+    "IndexSuCo": "suco",
+    "IndexSHG": "shg",
+    "IndexCSPG": "cspg",
+}
+
+
+def report_faiss():
+    """Report whether faiss is importable and carries the fork's index classes.
+
+    Non-fatal: dataset resolution is pure numpy, so it still runs without faiss.
+    Returns True when faiss is usable for --verify-gt.
+    """
+    try:
+        import faiss
+    except ImportError as e:
+        print(f"faiss   : NOT USABLE -- {type(e).__name__}: {e}")
+        if "libmkl" in str(e) or "so" in str(e):
+            print("          the extension module loaded but a shared library is "
+                  "missing;")
+            print("          for MKL builds try: conda install -c conda-forge mkl")
+        print("          --verify-gt and all benchmarks need a working faiss.")
+        return False
+
+    if faiss.__file__ is None:
+        print("faiss   : NOT USABLE -- resolved to an empty namespace package at "
+              f"{list(getattr(faiss, '__path__', []))}")
+        print("          This is the repo's C++ source directory shadowing the "
+              "real package;")
+        print("          run from a different working directory.")
+        return False
+
+    missing = [c for c in REQUIRED_INDEXES if not hasattr(faiss, c)]
+    print(f"faiss   : {faiss.__file__}")
+    if missing:
+        print(f"          WARNING: missing {', '.join(missing)} -- this is a "
+              f"stock faiss,")
+        print(f"          not this fork. --verify-gt will work, but benchmarks "
+              f"for "
+              f"{', '.join(REQUIRED_INDEXES[c] for c in missing)} cannot run.")
+        print("          Build this repo: make -C build -j swigfaiss && "
+              "(cd build/faiss/python && python setup.py install)")
+    else:
+        print("          IndexSuCo / IndexSHG / IndexCSPG all present")
+    return True
+
+
 def check(name, data_dir, read_sample=False):
     """Resolve one dataset; return True on success."""
     try:
@@ -172,6 +219,7 @@ def main():
     if not os.path.isdir(data_dir):
         sys.exit(f"ERROR: --data-dir {data_dir} is not a directory")
     print(f"contents: {', '.join(sorted(os.listdir(data_dir))[:20])}")
+    faiss_ok = report_faiss()
     print("-" * 72)
 
     failed = [n for n in names if not check(n, data_dir, args.read)]
@@ -181,7 +229,10 @@ def main():
     if failed:
         print(f"failed: {', '.join(failed)}")
 
-    if args.verify_gt:
+    if args.verify_gt and not faiss_ok:
+        print("-" * 72)
+        print("skipping --verify-gt: faiss is not usable (see above)")
+    elif args.verify_gt:
         print("-" * 72)
         print("verifying groundtruth against the base (brute force)")
         for n in names:
