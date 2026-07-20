@@ -571,8 +571,9 @@ faiss::CSPGStats cspg_stats_get() { return faiss::cspg_stats; }
 void cspg_stats_reset() { faiss::cspg_stats.reset(); }
 %}
 
-// IndexSHG: ignore the std::map member that SWIG cannot wrap automatically
-%ignore faiss::ShortcutMap::entries;
+// IndexSHG: ignore the PGM-index member that SWIG cannot wrap automatically
+%ignore faiss::ShortcutMap::pgm;
+%ignore faiss::ShortcutMap::pgm_index_t;
 %include  <faiss/IndexSHG.h>
 
 %include <faiss/impl/kmeans1d.h>

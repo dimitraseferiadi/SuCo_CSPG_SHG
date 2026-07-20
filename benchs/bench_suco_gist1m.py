@@ -70,10 +70,14 @@ import numpy as np
 # ---------------------------------------------------------------------------
 try:
     import faiss
-    from faiss.contrib.datasets import DatasetGIST1M, set_dataset_basedir
 except ImportError as e:
     sys.exit(f"Cannot import faiss: {e}\n"
              "Build FAISS with IndexSuCo and run from the repo root.")
+
+# Dataset resolution is shared with the CSPG and SHG suites.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from bench_datasets import get_dataset  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -1198,7 +1202,7 @@ def parse_args():
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     p.add_argument(
-        "--data-dir", default="data/",
+        "--data-dir", default=os.environ.get("DATA_DIR", "data/"),
         help="Root directory containing the gist1M/ subdirectory.",
     )
     p.add_argument(
@@ -1343,8 +1347,7 @@ def main():
         )
 
     print_header("Loading GIST1M dataset  (d=960, nb=1 000 000)")
-    set_dataset_basedir(args.data_dir)
-    ds = DatasetGIST1M()
+    ds = get_dataset("gist1m", args.data_dir)
 
     print(f"  data_dir  : {args.data_dir}")
     print(f"  d         : {ds.d}")

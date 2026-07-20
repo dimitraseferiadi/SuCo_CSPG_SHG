@@ -35,7 +35,6 @@ faiss.write_index / faiss.read_index for reuse across runs.
 import argparse
 import json
 import os
-import struct
 import sys
 import time
 import traceback
@@ -49,177 +48,24 @@ except ImportError:
 
 
 # ---------------------------------------------------------------------------
-# Dataset I/O helpers
+# Dataset I/O
 # ---------------------------------------------------------------------------
+# Path resolution and the fvecs/fbin/ibin readers live in bench_datasets.py so
+# that the SuCo, CSPG and SHG suites all agree on where the data is.
 
-def read_fvecs(fname):
-    """Read .fvecs file -> np.ndarray of float32."""
-    with open(fname, "rb") as f:
-        d = struct.unpack("i", f.read(4))[0]
-        f.seek(0)
-        n = os.path.getsize(fname) // (4 + d * 4)
-        data = np.zeros((n, d), dtype=np.float32)
-        for i in range(n):
-            dim = struct.unpack("i", f.read(4))[0]
-            assert dim == d, f"Dim mismatch at row {i}: {dim} vs {d}"
-            data[i] = np.frombuffer(f.read(d * 4), dtype=np.float32)
-    return data
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+from bench_datasets import get_dataset  # noqa: E402
 
-def read_ivecs(fname):
-    """Read .ivecs file -> np.ndarray of int32."""
-    with open(fname, "rb") as f:
-        d = struct.unpack("i", f.read(4))[0]
-        f.seek(0)
-        n = os.path.getsize(fname) // (4 + d * 4)
-        data = np.zeros((n, d), dtype=np.int32)
-        for i in range(n):
-            dim = struct.unpack("i", f.read(4))[0]
-            assert dim == d
-            data[i] = np.frombuffer(f.read(d * 4), dtype=np.int32)
-    return data
-
-
-def read_fbin(fname, dtype=np.float32):
-    """Read .fbin file: [n, d] int32 header, then n*d dtype values.
-    For cropped files where the header n exceeds actual data, compute n
-    from the file size."""
-    with open(fname, "rb") as f:
-        n, d = struct.unpack("ii", f.read(8))
-        file_size = os.path.getsize(fname)
-        actual_n = (file_size - 8) // (d * np.dtype(dtype).itemsize)
-        if actual_n < n:
-            n = actual_n
-        data = np.fromfile(f, dtype=dtype, count=n * d).reshape(n, d)
-    return data
-
-
-def read_ibin(fname):
-    """Read .bin ground truth: [n, k] int32 header, then n*k int32."""
-    with open(fname, "rb") as f:
-        n, k = struct.unpack("ii", f.read(8))
-        file_size = os.path.getsize(fname)
-        actual_n = (file_size - 8) // (k * 4)
-        if actual_n < n:
-            n = actual_n
-        data = np.fromfile(f, dtype=np.int32, count=n * k).reshape(n, k)
-    return data
-
-
-def read_enron_data(fname):
-    """Read enron.data_new: 3-int32 header (version, n, d), then n*d float32."""
-    with open(fname, "rb") as f:
-        header = np.fromfile(f, dtype=np.int32, count=3)
-        _version, n, d = int(header[0]), int(header[1]), int(header[2])
-        data = np.fromfile(f, dtype=np.float32, count=n * d).reshape(n, d)
-    return data
-
-
-def read_openai_parquet(data_dir, max_vectors=1_000_000):
-    """Read OpenAI embeddings from parquet files."""
-    try:
-        import pyarrow.parquet as pq
-    except ImportError:
-        sys.exit("pyarrow required for OpenAI dataset: pip install pyarrow")
-
-    parquet_dir = os.path.join(data_dir, "openai1m")
-    files = sorted([f for f in os.listdir(parquet_dir) if f.endswith(".parquet")])
-
-    all_vecs = []
-    total = 0
-    for fname in files:
-        if total >= max_vectors:
-            break
-        table = pq.read_table(os.path.join(parquet_dir, fname))
-        for col_name in ["emb", "embedding", "vector", "values"]:
-            if col_name in table.column_names:
-                break
-        else:
-            col_name = table.column_names[-1]
-
-        col = table[col_name]
-        for row in col:
-            if total >= max_vectors:
-                break
-            vec = np.array(row.as_py(), dtype=np.float32)
-            all_vecs.append(vec)
-            total += 1
-
-    return np.array(all_vecs, dtype=np.float32)
-
-
-# ---------------------------------------------------------------------------
-# Dataset loading
-# ---------------------------------------------------------------------------
 
 def load_dataset(name, data_dir):
     """Returns (xb, xq, gt)."""
-    name = name.lower()
-
-    if name == "openai":
-        gt_cache = os.path.join(data_dir, "openai1m", "openai_gt100.npy")
-        xb_cache = os.path.join(data_dir, "openai1m", "openai_xb.npy")
-        xq_cache = os.path.join(data_dir, "openai1m", "openai_xq.npy")
-
-        if os.path.exists(xb_cache) and os.path.exists(xq_cache):
-            xb = np.load(xb_cache)
-            xq = np.load(xq_cache)
-        else:
-            all_vecs = read_openai_parquet(data_dir, max_vectors=1_000_000)
-            nq = 10_000
-            xq = all_vecs[-nq:].copy()
-            xb = all_vecs[:-nq].copy()
-            del all_vecs
-            np.save(xb_cache, xb)
-            np.save(xq_cache, xq)
-
-        if os.path.exists(gt_cache):
-            gt = np.load(gt_cache)
-        else:
-            gt = compute_ground_truth(xb, xq, k=100)
-            np.save(gt_cache, gt)
-        return xb, xq, gt
-
-    elif name == "enron":
-        p = os.path.join(data_dir, "enron")
-        xb = read_enron_data(os.path.join(p, "enron.data_new"))
-        xq = read_fvecs(os.path.join(p, "enron_query.fvecs"))
-        gt = read_ivecs(os.path.join(p, "enron_groundtruth.ivecs"))
-        return xb, xq, gt
-
-    elif name == "gist1m":
-        p = os.path.join(data_dir, "gist1M")
-        xb = read_fvecs(os.path.join(p, "gist_base.fvecs"))
-        xq = read_fvecs(os.path.join(p, "gist_query.fvecs"))
-        gt = read_ivecs(os.path.join(p, "gist_groundtruth.ivecs"))
-        return xb, xq, gt
-
-    elif name == "msong":
-        p = os.path.join(data_dir, "msong")
-        xb = read_fvecs(os.path.join(p, "msong_base.fvecs"))
-        xq = read_fvecs(os.path.join(p, "msong_query.fvecs"))
-        gt = read_ivecs(os.path.join(p, "msong_groundtruth.ivecs"))
-        return xb, xq, gt
-
-    elif name == "uqv":
-        p = os.path.join(data_dir, "uqv")
-        xb = read_fvecs(os.path.join(p, "uqv_base.fvecs"))
-        xq = read_fvecs(os.path.join(p, "uqv_query.fvecs"))
-        gt = read_ivecs(os.path.join(p, "uqv_groundtruth.ivecs"))
-        return xb, xq, gt
-
-    elif name == "msturing10m":
-        p = os.path.join(data_dir, "msturing10m")
-        xb = read_fbin(os.path.join(p, "base1b.fbin.crop_nb_10000000"))
-        xq = read_fbin(os.path.join(p, "testQuery10K.fbin"))
-        gt = read_ibin(os.path.join(p, "msturing-gt-10M"))
-        # GT may have more rows than queries; truncate to match
-        if gt.shape[0] > xq.shape[0]:
-            gt = gt[: xq.shape[0]]
-        return xb, xq, gt
-
-    else:
-        raise ValueError(f"Unknown dataset: {name}")
+    ds = get_dataset(name, data_dir)
+    print(f"  {ds.describe()}")
+    xb = ds.get_database()
+    xq = ds.get_queries()
+    gt = ds.get_groundtruth(k=100, xb=xb, xq=xq)
+    return xb, xq, gt
 
 
 def compute_ground_truth(xb, xq, k=100):
@@ -820,7 +666,10 @@ def run_benchmarks(dataset_name, benchmarks, data_dir, index_dir, output_dir):
 
 def main():
     parser = argparse.ArgumentParser(description="SHG Paper Benchmark Suite")
-    parser.add_argument("--data-dir", default="/Users/dhm/Documents/data")
+    parser.add_argument("--data-dir",
+                        default=os.environ.get("DATA_DIR", "data/"),
+                        help="root directory holding the dataset subdirectories "
+                             "(default: $DATA_DIR, else data/)")
     parser.add_argument("--index-dir", default="/Users/dhm/Documents/indices")
     parser.add_argument("--output-dir", default=None)
     parser.add_argument("--dataset", default="all",

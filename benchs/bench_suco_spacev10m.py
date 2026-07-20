@@ -24,19 +24,19 @@ Usage
         --index-path /path/to/spacev10m.idx \\
         --flat-baseline --sweep --hnsw-sweep --ivfflat-sweep
 
-Dataset files expected under --data-dir
-    base.100M.i8bin          – 100M × 100 int8 base vectors
-    query.30K.i8bin          – 29 316 × 100 int8 query vectors
-    groundtruth.30K.i32bin   – 29 316 × 100 int32 GT against the *full* 100M
+Dataset files expected in spacev10m/ under --data-dir
+    spacev1b_base.i8bin.crop_nb_10000000  – 10M × 100 int8 base vectors
+    query.i8bin                           – 29 316 × 100 int8 query vectors
+    msspacev-gt-10M                       – groundtruth for the 10M crop
 
 Notes
 -----
 *  Vectors are stored as int8 and are cast to float32 before indexing.
    SpaceV int8 coords are in [-128, 127]; the cast is lossless for L2 search.
 
-*  The distributed GT file is computed against 100M vectors.  For an Nb-vector
-   sub-index the GT is recomputed here via IndexFlatL2 on the loaded subset.
-   Save the result with --gt-path to avoid recomputing on future runs.
+*  msspacev-gt-10M is the published groundtruth for the full 10M crop and is
+   used as-is.  Passing --nb smaller than 10M invalidates it, so the GT is
+   recomputed via IndexFlatL2 and cached under --gt-path in that case.
 
 *  Valid nsubspaces for d=100  (subspace_dim = d/Ns must be even):
    2, 5, 10, 25, 50  →  default: 10  (10 subspaces × 10 dims each)
@@ -59,35 +59,12 @@ except ImportError as e:
              "Build FAISS with IndexSuCo and run from the repo root.")
 
 # ---------------------------------------------------------------------------
-# SpaceV binary format helpers
+# Dataset resolution (shared with the CSPG and SHG suites)
 # ---------------------------------------------------------------------------
 
-def read_i8bin(path: str, max_n: int | None = None) -> np.ndarray:
-    """
-    Read a .i8bin file  (4-byte n, 4-byte d header, then n*d int8 values).
-    Returns float32 array of shape (min(n, max_n), d).
-    """
-    with open(path, "rb") as f:
-        n, d = np.frombuffer(f.read(8), dtype=np.uint32)
-        n = int(n); d = int(d)
-        if max_n is not None:
-            n = min(n, max_n)
-        data = np.frombuffer(f.read(n * d), dtype=np.int8)
-    return data.reshape(n, d).astype(np.float32)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-
-def read_i32bin(path: str, max_n: int | None = None) -> np.ndarray:
-    """
-    Read a .i32bin file  (4-byte n, 4-byte d header, then n*d int32 values).
-    Returns int32 array of shape (min(n, max_n), d).
-    """
-    with open(path, "rb") as f:
-        n, d = np.frombuffer(f.read(8), dtype=np.uint32)
-        n = int(n); d = int(d)
-        if max_n is not None:
-            n = min(n, max_n)
-        data = np.frombuffer(f.read(n * d * 4), dtype=np.int32)
-    return data.reshape(n, d)
+from bench_datasets import get_dataset  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -1223,7 +1200,7 @@ def parse_args():
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     p.add_argument(
-        "--data-dir", default="data/spacev10m/",
+        "--data-dir", default=os.environ.get("DATA_DIR", "data/"),
         help="Directory containing base.100M.i8bin, query.30K.i8bin, "
              "groundtruth.30K.i32bin.",
     )
@@ -1391,55 +1368,29 @@ def main():
     # Load dataset
     # ------------------------------------------------------------------
     print_header(f"Loading SpaceV10M dataset  (d=100, nb={args.nb:,})")
-    data_dir = args.data_dir
-
-    base_path  = os.path.join(data_dir, "base.100M.i8bin")
-    query_path = os.path.join(data_dir, "query.30K.i8bin")
-
-    for path in [base_path, query_path]:
-        if not os.path.exists(path):
-            sys.exit(f"Missing file: {path}")
-
-    print(f"  data_dir  : {data_dir}")
-    print(f"  nb (load) : {args.nb:,}")
+    ds = get_dataset("spacev10m", args.data_dir, nb=args.nb,
+                     gt_cache_dir=os.path.dirname(args.gt_path or "") or None)
+    print(f"  {ds.describe()}")
 
     print("  Loading base vectors …", end=" ", flush=True)
-    xb = read_i8bin(base_path, max_n=args.nb)
+    xb = ds.get_database()
     print(f"shape={xb.shape}  dtype={xb.dtype}")
 
     print("  Loading queries …", end=" ", flush=True)
-    xq = read_i8bin(query_path, max_n=args.nq)
+    xq = ds.get_queries(nq=args.nq)
     print(f"shape={xq.shape}")
 
     nq = xq.shape[0]
-    print(f"  d         : {d}")
-    print(f"  nb (base) : {xb.shape[0]:,}")
-    print(f"  nq        : {nq:,}")
     print(f"  maxtrain  : {args.maxtrain:,}")
     print(f"  OMP threads: {faiss.omp_get_max_threads()}")
 
     # ------------------------------------------------------------------
-    # Ground truth
+    # Ground truth (msspacev-gt-10M ships with the dataset; only computed
+    # when the base is cropped to something other than the published 10M)
     # ------------------------------------------------------------------
-    if args.gt_path and os.path.exists(args.gt_path):
-        print(f"  Loading precomputed GT from {args.gt_path} …", end=" ", flush=True)
-        gt = np.load(args.gt_path)
-        print(f"shape={gt.shape}")
-        if gt.shape[0] != nq:
-            sys.exit(f"GT file has {gt.shape[0]} queries but xq has {nq}; "
-                     "delete the GT file and rerun to recompute.")
-    else:
-        print(f"\n  Recomputing {args.k_gt}-NN ground truth with IndexFlatL2 …")
-        print(f"  (xb: {xb.shape}, xq: {xq.shape})")
-        print(f"  This may take several minutes and ~{xb.nbytes // 1024**3 + 1} GiB "
-              "of RAM for the flat index.")
-        t0 = time.perf_counter()
-        gt = compute_gt(xb, xq, k=args.k_gt)
-        t_gt = time.perf_counter() - t0
-        print(f"  GT computed in {fmt_time(t_gt)}  shape={gt.shape}")
-        if args.gt_path:
-            np.save(args.gt_path, gt)
-            print(f"  GT saved to {args.gt_path}")
+    print("  Loading ground truth …", end=" ", flush=True)
+    gt = ds.get_groundtruth(k=args.k_gt, xb=xb, xq=xq)[:nq]
+    print(f"shape={gt.shape}")
 
     # ------------------------------------------------------------------
     # Training sample

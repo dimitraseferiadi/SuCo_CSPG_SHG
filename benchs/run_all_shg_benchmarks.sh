@@ -14,8 +14,8 @@
 #   ./benchs/run_all_shg_benchmarks.sh enron msong
 #
 # Environment variables:
-#   DATA_DIR    - path to datasets    (default: /Users/dhm/Documents/data)
-#   INDEX_DIR   - path to save indices (default: /Users/dhm/Documents/indices)
+#   DATA_DIR    - path to datasets    (default: $DATA_DIR, else <repo>/data)
+#   INDEX_DIR   - path to save indices (default: $INDEX_DIR, else <repo>/indices)
 #   OUTPUT_DIR  - path for results     (default: benchs/results)
 
 set -euo pipefail
@@ -23,8 +23,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_DIR="$(dirname "$SCRIPT_DIR")"
 
-DATA_DIR="${DATA_DIR:-/Users/dhm/Documents/data}"
-INDEX_DIR="${INDEX_DIR:-/Users/dhm/Documents/indices}"
+DATA_DIR="${DATA_DIR:-${REPO_DIR:-$PWD}/data}"
+INDEX_DIR="${INDEX_DIR:-${REPO_DIR:-$PWD}/indices}"
 OUTPUT_DIR="${OUTPUT_DIR:-${SCRIPT_DIR}/results}"
 
 BENCH_SCRIPT="${SCRIPT_DIR}/bench_shg_paper.py"
@@ -51,6 +51,10 @@ echo "============================================================"
 echo ""
 
 mkdir -p "${INDEX_DIR}" "${OUTPUT_DIR}"
+
+# Fail fast if a dataset is missing or mis-pathed
+python "${SCRIPT_DIR}/check_datasets.py" --data-dir "${DATA_DIR}" "${DATASETS[@]}" \
+    || { echo "Dataset check failed - fix paths before running."; exit 1; }
 
 # Run benchmarks for each dataset
 for ds in "${DATASETS[@]}"; do

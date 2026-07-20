@@ -17,8 +17,8 @@
 #     ./benchs/run_all_cspg_benchmarks.sh sift1m deep1m
 #
 # Environment variables:
-#   DATA_DIR    — path to dataset root   (default: /Users/dhm/Documents/data)
-#   INDEX_DIR   — path for saved indices  (default: /Users/dhm/Documents/indices)
+#   DATA_DIR    — path to dataset root   (default: $DATA_DIR, else <repo>/data)
+#   INDEX_DIR   — path for saved indices  (default: $INDEX_DIR, else <repo>/indices)
 #   OUTPUT_DIR  — path for result JSON    (default: benchs/results_cspg)
 #   BENCHMARKS  — space-separated list    (default: all)
 #   INDEX_TYPES — index families to run   (default: "cspg hnsw")
@@ -32,8 +32,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_DIR="$(dirname "$SCRIPT_DIR")"
 
-DATA_DIR="${DATA_DIR:-/Users/dhm/Documents/data}"
-INDEX_DIR="${INDEX_DIR:-/Users/dhm/Documents/indices}"
+DATA_DIR="${DATA_DIR:-${REPO_DIR:-$PWD}/data}"
+INDEX_DIR="${INDEX_DIR:-${REPO_DIR:-$PWD}/indices}"
 OUTPUT_DIR="${OUTPUT_DIR:-${SCRIPT_DIR}/results_cspg}"
 BENCHMARKS="${BENCHMARKS:-construction recall_k10 recall_k20 recall_k50 robustness}"
 INDEX_TYPES="${INDEX_TYPES:-cspg hnsw}"
@@ -76,6 +76,10 @@ echo "  CSPG params: M=${CSPG_M_ARG}, efC=${CSPG_EFC}, m=${CSPG_M}, λ=${CSPG_LA
 echo "============================================================"
 
 mkdir -p "${INDEX_DIR}" "${OUTPUT_DIR}"
+
+# Fail fast if a dataset is missing or mis-pathed
+python "${SCRIPT_DIR}/check_datasets.py" --data-dir "${DATA_DIR}" --suite cspg \
+    || { echo "Dataset check failed - fix paths before running."; exit 1; }
 
 for ds in "${DATASETS[@]}"; do
     echo ""

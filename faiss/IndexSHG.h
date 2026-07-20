@@ -23,11 +23,12 @@
  *      independently of the HNSW graph levels: maxFixLevel_ is determined by
  *      repeatedly dividing d by eta until (dim/eta < eta), and each HNSW graph
  *      level l uses compressed level min(l, maxFixLevel_).
- *   2. Learned shortcut: a sorted map from (approximate distance -> skip count)
- *      built using the PGM-index / sorted-map pattern.  Given the approximate
- *      distance between the query and the current entry point, the shortcut
- *      returns the number of HNSW levels that can safely be skipped.
- *      Training uses kNN density estimation (Lemma 2 in the paper).
+ *   2. Learned shortcut: a piecewise linear model mapping (approximate
+ *      distance -> skip count), fitted with the PGM-index over the training
+ *      samples.  Given the approximate distance between the query and the
+ *      current entry point, the shortcut returns the number of HNSW levels
+ *      that can safely be skipped.  Training samples come from kNN density
+ *      estimation (Lemma 2 in the paper).
  *
  * Usage
  * -----
@@ -42,51 +43,143 @@
 
 #include <faiss/IndexHNSW.h>
 #include <faiss/impl/HNSW.h>
+#include <faiss/impl/pgm/pgm_index.hpp>
 
+#include <algorithm>
 #include <cmath>
-#include <map>
+#include <cstddef>
 #include <utility>
 #include <vector>
 
 namespace faiss {
 
 // ---------------------------------------------------------------------------
-// ShortcutMap
+// ShortcutMap — the learned shortcut f(dis) of Definition 4
 // ---------------------------------------------------------------------------
 
 /**
- * Sorted-map shortcut model mapping approximate-distance -> skip count.
+ * Learned shortcut mapping approximate-distance -> skip count.
  *
- * This mirrors the DynamicPGMIndex usage in the original code: a sorted
- * collection of (distance, skip_count) pairs.  At query time,
- * lower_bound(dist) returns the skip count for the nearest distance key.
+ * Definition 4 of the paper trains a set of piecewise linear functions
+ *   f(dis) = {(dis_1, slope_1, intercept_1), (dis_2, slope_2, intercept_2), ...}
+ * over the distance-level tuples S = {(dis_0, h_0), (dis_1, h_1), ...} produced
+ * by Algorithm 2 lines 13-18.  Queries evaluate f via lower_bound(dis).
  *
- * We use std::map for simplicity and correctness; the PGM-index is an
- * optimization that does not change the algorithm.
+ * We back this with the PGM-index, as the SHG authors do (their heds.h holds a
+ * `pgm::DynamicPGMIndex<dist_t, int> Shortcuts`).  The PGM-index *is* a set of
+ * epsilon-bounded piecewise linear models over the sorted keys, which is
+ * exactly the f(dis) of Definition 4 — and it delivers the space-efficiency
+ * the paper argues for in Section 4.1: a few hundred bytes of model replaces
+ * the ~48 bytes/entry of red-black tree nodes a std::map would need.
+ *
+ * We use the *static* pgm::PGMIndex rather than the dynamic variant: the
+ * shortcut is trained once by IndexSHG::build_shortcut() and is read-only for
+ * the lifetime of the index, so the dynamic variant's insert path is dead
+ * weight.  Training is therefore two-phase — insert_or_assign() accumulates
+ * samples, finalize() sorts them and fits the model.
+ *
+ * Layout after finalize(): keys[] is sorted and deduplicated, values[i] is the
+ * skip count for keys[i], and pgm indexes keys[].
  */
 struct ShortcutMap {
-    std::map<float, int> entries; ///< distance -> skip_count
+    /// Epsilon for the piecewise linear fit: search narrows to a window of
+    /// 2*Epsilon+1 keys. Matches the DynamicPGMIndex default the authors use.
+    static constexpr size_t pgm_epsilon = 16;
 
-    /// Insert or update (distance -> skip) mapping.
+    using pgm_index_t = pgm::PGMIndex<float, pgm_epsilon>;
+
+    std::vector<float> keys;   ///< approximate distances (sorted after finalize)
+    std::vector<int> values;   ///< skip counts, parallel to keys
+    pgm_index_t pgm;           ///< piecewise linear model over keys
+    bool trained = false;      ///< true once finalize() has fitted the model
+
+    /// Record a (distance -> skip) training sample.  Samples may arrive in any
+    /// order and may repeat keys; finalize() resolves both.  Invalidates the
+    /// model, so finalize() must be called before predict().
     void insert_or_assign(float dist, int skip) {
-        entries[dist] = skip;
+        keys.push_back(dist);
+        values.push_back(skip);
+        trained = false;
     }
 
-    /// Return predicted skip count via lower_bound lookup.
-    /// Returns 1 if no entry is found.
+    /// Sort and deduplicate the samples, then fit the piecewise linear model.
+    /// For repeated keys the last-inserted value wins, matching the
+    /// std::map::operator[] semantics this replaces.
+    void finalize() {
+        size_t n = keys.size();
+        if (n > 0) {
+            std::vector<uint32_t> ord(n);
+            for (size_t i = 0; i < n; ++i) {
+                ord[i] = (uint32_t)i;
+            }
+            // Sort by key, breaking ties by insertion order so that the last
+            // sample for a duplicate key is the one we keep below.
+            std::sort(ord.begin(), ord.end(), [this](uint32_t a, uint32_t b) {
+                return keys[a] != keys[b] ? keys[a] < keys[b] : a < b;
+            });
+
+            std::vector<float> sorted_keys;
+            std::vector<int> sorted_values;
+            sorted_keys.reserve(n);
+            sorted_values.reserve(n);
+            for (size_t i = 0; i < n; ++i) {
+                float k = keys[ord[i]];
+                int v = values[ord[i]];
+                if (!sorted_keys.empty() && sorted_keys.back() == k) {
+                    sorted_values.back() = v; // later sample wins
+                } else {
+                    sorted_keys.push_back(k);
+                    sorted_values.push_back(v);
+                }
+            }
+            keys.swap(sorted_keys);
+            values.swap(sorted_values);
+        }
+        build_model();
+    }
+
+    /// (Re)fit the model over keys[], which must already be sorted and unique.
+    /// Used by finalize() and when deserializing an index.
+    void build_model() {
+        pgm = keys.empty() ? pgm_index_t()
+                           : pgm_index_t(keys.begin(), keys.end());
+        trained = !keys.empty();
+    }
+
+    /// Return the predicted skip count for an approximate distance, i.e. the
+    /// value of the first sample whose distance is >= dist.  Returns 1 (skip a
+    /// single level, the HNSW default) when dist is past the last sample.
     int predict(float dist) const {
-        if (entries.empty()) return 1;
-        auto it = entries.lower_bound(dist);
-        if (it == entries.end()) return 1;
-        return it->second;
+        if (!trained) return 1;
+        // The model narrows the search to a window of 2*Epsilon+1 keys that is
+        // guaranteed to bracket the true lower_bound.
+        auto range = pgm.search(dist);
+        size_t hi = std::min(range.hi, keys.size());
+        auto it = std::lower_bound(
+                keys.begin() + range.lo, keys.begin() + hi, dist);
+        size_t pos = (size_t)(it - keys.begin());
+        if (pos >= keys.size()) return 1;
+        return values[pos];
     }
 
     bool is_trained() const {
-        return !entries.empty();
+        return trained;
     }
 
     int size() const {
-        return (int)entries.size();
+        return (int)keys.size();
+    }
+
+    void clear() {
+        keys.clear();
+        values.clear();
+        pgm = pgm_index_t();
+        trained = false;
+    }
+
+    /// Bytes held by the fitted model, excluding the keys/values samples.
+    size_t model_size_in_bytes() const {
+        return trained ? pgm.size_in_bytes() : 0;
     }
 };
 

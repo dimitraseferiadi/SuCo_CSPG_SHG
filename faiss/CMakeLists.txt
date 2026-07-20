@@ -262,6 +262,8 @@ set(FAISS_HEADERS
   impl/mapped_io.h
   impl/kmeans1d.h
   impl/lattice_Zn.h
+  impl/pgm/pgm_index.hpp
+  impl/pgm/piecewise_linear_model.hpp
   impl/platform_macros.h
   impl/pq4_fast_scan.h
   impl/residual_quantizer_encode_steps.h

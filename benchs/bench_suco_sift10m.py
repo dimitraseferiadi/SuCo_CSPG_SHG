@@ -7,31 +7,29 @@ on the SIFT10M dataset  (d=128, uint8 SIFT features).
 
 Dataset
 -------
-SIFT10M is distributed as a single MATLAB v7.3 (HDF5) file:
-    SIFT10Mfeatures.mat   – 11 164 866 × 128  uint8 SIFT descriptors  (key: "fea")
+The first --nb vectors of the BIGANN base, with the official 10 000-query set
+and the published groundtruth for that crop:
 
-Because there is no official query / ground-truth split, this script:
-  • uses the first  --nb   vectors (default 10 000 000) as the base index,
-  • uses the next   --nq   vectors (default      10 000) from the remainder
-    as held-out query vectors, and
-  • recomputes exact k-NN ground truth on the fly with IndexFlatL2.
+    sift100M/bigann_base_100M.bvecs   – uint8 SIFT descriptors
+    sift100M/bigann_query.bvecs       – 10 000 × 128
+    sift100M/gnd/idx_10M.ivecs        – groundtruth for the 10M crop
+
+Because the groundtruth ships with the dataset, nothing is recomputed here.
 
 Usage
 -----
 # Basic run – single SuCo configuration:
-    python benchs/bench_suco_sift10m.py \\
-        --mat-path /path/to/SIFT10Mfeatures.mat
+    python benchs/bench_suco_sift10m.py --data-dir /path/to/data/
 
 # Save the SuCo index so subsequent runs skip the build step:
-    python benchs/bench_suco_sift10m.py \\
-        --mat-path /path/to/SIFT10Mfeatures.mat \\
+    python benchs/bench_suco_sift10m.py --data-dir /path/to/data/ \\
         --index-path /path/to/sift10m.idx
 
 # Parameter sweep over (Ns, nc, α, β):
-    python benchs/bench_suco_sift10m.py --mat-path ... --sweep
+    python benchs/bench_suco_sift10m.py --data-dir ... --sweep
 
 # All comparisons in one shot:
-    python benchs/bench_suco_sift10m.py --mat-path ... \\
+    python benchs/bench_suco_sift10m.py --data-dir ... \\
         --index-path /path/to/sift10m.idx \\
         --flat-baseline --sweep --hnsw-sweep --ivfflat-sweep \\
         --ivfpq-sweep --opqpq-sweep
@@ -70,52 +68,12 @@ except ImportError as e:
              "Build FAISS with IndexSuCo and run from the repo root.")
 
 # ---------------------------------------------------------------------------
-# SIFT10M data loader
+# Dataset resolution (shared with the CSPG and SHG suites)
 # ---------------------------------------------------------------------------
 
-def load_sift10m(mat_path: str, nb: int, nq: int) -> tuple[np.ndarray, np.ndarray]:
-    """
-    Load SIFT10Mfeatures.mat (HDF5/mat v7.3).
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-    Returns
-    -------
-    xb : float32 array of shape (nb,  128)  – base vectors
-    xq : float32 array of shape (nq,  128)  – query vectors (held-out slice)
-    """
-    try:
-        import h5py
-    except ImportError:
-        sys.exit("h5py is required to read SIFT10Mfeatures.mat.  "
-                 "Install it with:  pip install h5py")
-
-    if not os.path.exists(mat_path):
-        sys.exit(f"Missing file: {mat_path}")
-
-    with h5py.File(mat_path, "r") as f:
-        fea = f["fea"]          # shape (N, 128), uint8
-        total_n = fea.shape[0]
-        d       = fea.shape[1]
-
-        if nb + nq > total_n:
-            sys.exit(
-                f"Requested nb={nb:,} + nq={nq:,} = {nb+nq:,} vectors, "
-                f"but the file only contains {total_n:,}.  "
-                "Lower --nb or --nq."
-            )
-
-        print(f"  mat file  : {mat_path}")
-        print(f"  total_n   : {total_n:,}   d={d}")
-
-        print(f"  Loading base vectors [0 .. {nb:,}) …", end=" ", flush=True)
-        xb = fea[:nb, :].astype(np.float32)
-        print(f"shape={xb.shape}  dtype={xb.dtype}")
-
-        print(f"  Loading query vectors [{nb:,} .. {nb+nq:,}) …",
-              end=" ", flush=True)
-        xq = fea[nb:nb + nq, :].astype(np.float32)
-        print(f"shape={xq.shape}")
-
-    return xb, xq
+from bench_datasets import get_dataset  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -1251,18 +1209,18 @@ def parse_args():
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     p.add_argument(
-        "--mat-path",
-        default="data/SIFT10M/SIFT10Mfeatures.mat",
-        help="Path to SIFT10Mfeatures.mat (HDF5 v7.3, key 'fea', "
-             "shape (11164866, 128), uint8).",
+        "--data-dir", default=os.environ.get("DATA_DIR", "data/"),
+        help="Root data directory holding sift100M/ (default: $DATA_DIR, "
+             "else data/).",
     )
     p.add_argument(
         "--nb", type=int, default=10_000_000,
-        help="Number of base vectors to index (at most 11 164 866 − nq).",
+        help="Number of base vectors to index. Official groundtruth exists "
+             "for 1M, 2M, 5M, 10M, 20M, 50M and 100M.",
     )
     p.add_argument(
-        "--nq", type=int, default=10_000,
-        help="Number of query vectors (taken from the slice after the base).",
+        "--nq", type=int, default=None,
+        help="Number of query vectors (default: the full 10 000-query set).",
     )
     p.add_argument(
         "--maxtrain", type=int, default=500_000,
@@ -1275,12 +1233,13 @@ def parse_args():
     # ---- ground truth ----
     p.add_argument(
         "--gt-path", default="",
-        help="Path to a precomputed .npy GT file (shape [nq, k_gt]).  "
-             "If the file does not exist it will be computed and saved here.",
+        help="Directory to cache a computed GT in. Only consulted for crop "
+             "sizes that have no official gnd/idx_<N>M.ivecs file; the "
+             "standard 1M/2M/5M/10M/... crops use the published groundtruth.",
     )
     p.add_argument(
         "--k-gt", type=int, default=100,
-        help="Number of ground-truth neighbours to store when recomputing.",
+        help="Number of ground-truth neighbours to load or compute.",
     )
     # ---- SuCo parameters ----
     p.add_argument(
@@ -1418,39 +1377,30 @@ def main():
     # ------------------------------------------------------------------
     # Load dataset
     # ------------------------------------------------------------------
-    print_header(f"Loading SIFT10M dataset  (d=128, nb={args.nb:,}, nq={args.nq:,})")
-    xb, xq = load_sift10m(args.mat_path, nb=args.nb, nq=args.nq)
-    nq = xq.shape[0]
+    print_header(f"Loading SIFT10M dataset  (d=128, nb={args.nb:,})")
+    ds = get_dataset("sift10m", args.data_dir, nb=args.nb,
+                     gt_cache_dir=os.path.dirname(args.gt_path or "") or None)
+    print(f"  {ds.describe()}")
 
-    print(f"  d         : {d}")
-    print(f"  nb (base) : {xb.shape[0]:,}")
-    print(f"  nq        : {nq:,}")
+    print("  Loading base …", end=" ", flush=True)
+    xb = ds.get_database()
+    print(f"shape={xb.shape}  dtype={xb.dtype}")
+
+    print("  Loading queries …", end=" ", flush=True)
+    xq = ds.get_queries(nq=args.nq)
+    nq = xq.shape[0]
+    print(f"shape={xq.shape}")
+
     print(f"  maxtrain  : {args.maxtrain:,}")
     print(f"  OMP threads: {faiss.omp_get_max_threads()}")
 
     # ------------------------------------------------------------------
-    # Ground truth
+    # Ground truth (published with BIGANN for this crop; computed only if the
+    # crop size has no official gnd/idx_<N>M.ivecs file)
     # ------------------------------------------------------------------
-    if args.gt_path and os.path.exists(args.gt_path):
-        print(f"  Loading precomputed GT from {args.gt_path} …",
-              end=" ", flush=True)
-        gt = np.load(args.gt_path)
-        print(f"shape={gt.shape}")
-        if gt.shape[0] != nq:
-            sys.exit(f"GT file has {gt.shape[0]} queries but xq has {nq}; "
-                     "delete the GT file and rerun to recompute.")
-    else:
-        print(f"\n  Recomputing {args.k_gt}-NN ground truth with IndexFlatL2 …")
-        print(f"  (xb: {xb.shape}, xq: {xq.shape})")
-        ram_gb = xb.nbytes / 1024**3
-        print(f"  Flat index will need ≈{ram_gb:.1f} GiB of RAM.")
-        t0 = time.perf_counter()
-        gt = compute_gt(xb, xq, k=args.k_gt)
-        t_gt = time.perf_counter() - t0
-        print(f"  GT computed in {fmt_time(t_gt)}  shape={gt.shape}")
-        if args.gt_path:
-            np.save(args.gt_path, gt)
-            print(f"  GT saved to {args.gt_path}")
+    print("  Loading ground truth …", end=" ", flush=True)
+    gt = ds.get_groundtruth(k=args.k_gt, xb=xb, xq=xq)[:nq]
+    print(f"shape={gt.shape}")
 
     # ------------------------------------------------------------------
     # Training sample

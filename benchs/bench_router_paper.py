@@ -45,7 +45,6 @@ import json
 import os
 import platform as _platform
 import resource as _resource
-import struct
 import sys
 import time
 import traceback
@@ -209,260 +208,29 @@ def index_size_mb(idx):
 
 
 # ===========================================================================
-# Dataset I/O helpers
+# Dataset I/O
 # ===========================================================================
+# Path resolution and the vector-format readers live in bench_datasets.py so
+# that the SuCo, CSPG, SHG and router suites all agree on where the data is.
+# The bigann* scaling names are aliases of the corresponding sift crops there.
 
-def read_fvecs(path, n=None):
-    with open(path, "rb") as f:
-        d = struct.unpack("i", f.read(4))[0]
-    row_bytes = 4 + d * 4
-    total = os.path.getsize(path) // row_bytes
-    if n is None or n > total:
-        n = total
-    arr = np.memmap(path, dtype=np.uint8, mode="r")[: n * row_bytes].reshape(n, row_bytes)
-    return np.ascontiguousarray(arr[:, 4:].view(np.float32).reshape(n, d), dtype=np.float32)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-
-def read_ivecs(path):
-    with open(path, "rb") as f:
-        d = struct.unpack("i", f.read(4))[0]
-    row_bytes = 4 + d * 4
-    n = os.path.getsize(path) // row_bytes
-    arr = np.memmap(path, dtype=np.uint8, mode="r")[: n * row_bytes].reshape(n, row_bytes)
-    return np.ascontiguousarray(arr[:, 4:].view(np.int32).reshape(n, d))
+from bench_datasets import (  # noqa: E402
+    compute_ground_truth,
+    get_dataset,
+)
 
 
-def read_fbin(path, dtype=np.float32):
-    """Header (n,d) int32, then n*d values of dtype. Caps n by file size."""
-    itemsize = np.dtype(dtype).itemsize
-    with open(path, "rb") as f:
-        n_hdr, d = struct.unpack("ii", f.read(8))
-    actual_n = (os.path.getsize(path) - 8) // (d * itemsize)
-    n = min(n_hdr, actual_n)
-    return np.fromfile(path, dtype=dtype, count=n * d, offset=8).reshape(n, d)
-
-
-def read_ibin(path):
-    return read_fbin(path, dtype=np.int32)
-
-
-def read_bvecs(path, n=None):
-    """bvecs: each row is [int32 d][d uint8 values]. Returns float32."""
-    with open(path, "rb") as f:
-        d = struct.unpack("i", f.read(4))[0]
-    row_bytes = 4 + d
-    total = os.path.getsize(path) // row_bytes
-    if n is None or n > total:
-        n = total
-    arr = np.memmap(path, dtype=np.uint8, mode="r")[: n * row_bytes].reshape(n, row_bytes)
-    return np.ascontiguousarray(arr[:, 4:].astype(np.float32))
-
-
-def read_enron(path):
-    with open(path, "rb") as f:
-        hdr = np.fromfile(f, dtype=np.int32, count=3)
-        _, n, d = int(hdr[0]), int(hdr[1]), int(hdr[2])
-        data = np.fromfile(f, dtype=np.float32, count=n * d).reshape(n, d)
-    return data
-
-
-def compute_ground_truth(xb, xq, k=100):
-    print(f"  Computing ground truth (n={xb.shape[0]}, nq={xq.shape[0]}, k={k})...")
-    _, I = faiss.knn(xq, xb, k, metric=faiss.METRIC_L2)
-    return I.astype(np.int32)
-
-
-# ===========================================================================
-# Dataset loaders — one branch per dataset
-# ===========================================================================
-
-def load_dataset(name, data_dir):
-    name = name.lower()
-
-    if name == "sift1m":
-        p = os.path.join(data_dir, "sift1M")
-        return (read_fvecs(os.path.join(p, "sift_base.fvecs")),
-                read_fvecs(os.path.join(p, "sift_query.fvecs")),
-                read_ivecs(os.path.join(p, "sift_groundtruth.ivecs")))
-
-    if name == "sift10m":
-        return _load_sift10m(data_dir)
-
-    if name == "gist1m":
-        p = os.path.join(data_dir, "gist1M")
-        return (read_fvecs(os.path.join(p, "gist_base.fvecs")),
-                read_fvecs(os.path.join(p, "gist_query.fvecs")),
-                read_ivecs(os.path.join(p, "gist_groundtruth.ivecs")))
-
-    if name == "deep1m":
-        p = os.path.join(data_dir, "deep1b")
-        xb = read_fvecs(os.path.join(p, "base.fvecs"), n=1_000_000)
-        xq = read_fvecs(os.path.join(p, "deep1B_queries.fvecs"), n=10_000)
-        gt = read_ivecs(os.path.join(p, "deep1M_groundtruth.ivecs"))
-        if gt.shape[0] > xq.shape[0]:
-            gt = gt[: xq.shape[0]]
-        return xb, xq, gt
-
-    if name == "deep10m":
-        p = os.path.join(data_dir, "deep1b")
-        xb = read_fvecs(os.path.join(p, "base.fvecs"), n=10_000_000)
-        xq = read_fvecs(os.path.join(p, "deep1B_queries.fvecs"), n=10_000)
-        gt = read_ivecs(os.path.join(p, "deep10M_groundtruth.ivecs"))
-        if gt.shape[0] > xq.shape[0]:
-            gt = gt[: xq.shape[0]]
-        return xb, xq, gt
-
-    if name == "spacev10m":
-        p = os.path.join(data_dir, "spacev10m")
-        with open(os.path.join(p, "base.100M.i8bin"), "rb") as f:
-            n_hdr, d = struct.unpack("ii", f.read(8))
-        n_use = min(10_000_000, n_hdr)
-        xb = np.fromfile(
-            os.path.join(p, "base.100M.i8bin"),
-            dtype=np.int8, count=n_use * d, offset=8,
-        ).reshape(n_use, d).astype(np.float32)
-        with open(os.path.join(p, "query.30K.i8bin"), "rb") as f:
-            nq, dq = struct.unpack("ii", f.read(8))
-        if dq != d:
-            raise RuntimeError(f"SpaceV dim mismatch: base d={d}, query d={dq}")
-        xq = np.fromfile(
-            os.path.join(p, "query.30K.i8bin"),
-            dtype=np.int8, count=nq * dq, offset=8,
-        ).reshape(nq, dq).astype(np.float32)
-        gt = read_ibin(os.path.join(p, "groundtruth.30K.i32bin"))
-        if gt.shape[0] > xq.shape[0]:
-            gt = gt[: xq.shape[0]]
-        return xb, xq, gt
-
-    if name == "msong":
-        p = os.path.join(data_dir, "msong")
-        return (read_fvecs(os.path.join(p, "msong_base.fvecs")),
-                read_fvecs(os.path.join(p, "msong_query.fvecs")),
-                read_ivecs(os.path.join(p, "msong_groundtruth.ivecs")))
-
-    if name == "enron":
-        p = os.path.join(data_dir, "enron")
-        return (read_enron(os.path.join(p, "enron.data_new")),
-                read_fvecs(os.path.join(p, "enron_query.fvecs")),
-                read_ivecs(os.path.join(p, "enron_groundtruth.ivecs")))
-
-    if name == "openai1m":
-        p = os.path.join(data_dir, "openai1m")
-        xb = np.ascontiguousarray(np.load(os.path.join(p, "openai_xb.npy")), dtype=np.float32)
-        xq = np.ascontiguousarray(np.load(os.path.join(p, "openai_xq.npy")), dtype=np.float32)
-        gt = np.load(os.path.join(p, "openai_gt100.npy")).astype(np.int32)
-        return xb, xq, gt
-
-    if name == "msturing10m":
-        p = os.path.join(data_dir, "msturing10m")
-        xb = read_fbin(os.path.join(p, "base1b.fbin.crop_nb_10000000"))
-        xq = read_fbin(os.path.join(p, "testQuery10K.fbin"))
-        gt = read_ibin(os.path.join(p, "msturing-gt-10M"))
-        if gt.shape[0] > xq.shape[0]:
-            gt = gt[: xq.shape[0]]
-        return xb, xq, gt
-
-    if name == "uqv":
-        p = os.path.join(data_dir, "uqv")
-        return (read_fvecs(os.path.join(p, "uqv_base.fvecs")),
-                read_fvecs(os.path.join(p, "uqv_query.fvecs")),
-                read_ivecs(os.path.join(p, "uqv_groundtruth.ivecs")))
-
-    if name in BIGANN_SIZES:
-        return _load_bigann_subset(data_dir, BIGANN_SIZES[name])
-
-    raise ValueError(f"Unknown dataset: {name!r}")
-
-
-_BIGANN_GT_FILES = {
-    1_000_000:   "idx_1M.ivecs",
-    2_000_000:   "idx_2M.ivecs",
-    5_000_000:   "idx_5M.ivecs",
-    10_000_000:  "idx_10M.ivecs",
-    20_000_000:  "idx_20M.ivecs",
-    50_000_000:  "idx_50M.ivecs",
-    100_000_000: "idx_100M.ivecs",
-}
-
-
-def _load_bigann_subset(data_dir, n):
-    p = os.path.join(data_dir, "sift100M")
-    base_path = os.path.join(p, "bigann_base_100M.bvecs")
-    if n > 100_000_000:
-        raise ValueError(
-            f"bigann subset n={n} exceeds the 100M base file at {base_path}"
-        )
-    xb = read_bvecs(base_path, n=n)
-    xq = read_bvecs(os.path.join(p, "bigann_query.bvecs"))
-
-    if n in _BIGANN_GT_FILES:
-        gt_path = os.path.join(p, "gnd", _BIGANN_GT_FILES[n])
-        gt = read_ivecs(gt_path)
-        # Provided GT has k=1000; trim to 100 to match SEARCH_K and other datasets.
-        gt = np.ascontiguousarray(gt[:, :100].astype(np.int32))
-    else:
-        cache = os.path.join(p, "gnd", f"computed_gt_{n}_k100.ivecs.npy")
-        if os.path.exists(cache):
-            gt = np.load(cache).astype(np.int32)
-        else:
-            gt = compute_ground_truth(xb, xq, k=100)
-            try:
-                np.save(cache, gt)
-                print(f"  Cached GT to {cache}")
-            except Exception as e:
-                print(f"  Could not cache GT: {e}")
-
+def load_dataset(name, data_dir, index_dir=None):
+    """Returns (xb, xq, gt)."""
+    ds = get_dataset(name, data_dir, gt_cache_dir=index_dir)
+    print(f"  {ds.describe()}")
+    xb = ds.get_database()
+    xq = ds.get_queries()
+    gt = ds.get_groundtruth(k=100, xb=xb, xq=xq)
     if gt.shape[0] > xq.shape[0]:
         gt = gt[: xq.shape[0]]
-    return xb, xq, gt
-
-
-def _load_sift10m(data_dir, nb=10_000_000, nq=10_000):
-    p = os.path.join(data_dir, "SIFT10M", "SIFT10Mfeatures.mat")
-    if not os.path.exists(p):
-        raise FileNotFoundError(f"SIFT10M features file not found: {p}")
-    try:
-        from scipy.io import loadmat
-        data = loadmat(p)
-        key = next((k for k in data.keys() if not k.startswith("_")), None)
-        raw = np.asarray(data[key])
-        del data
-    except NotImplementedError:
-        import h5py
-        with h5py.File(p, "r") as f:
-            key = next((k for k in ("fea", "features", "X", "data") if k in f), None)
-            if key is None:
-                key = next(k for k in f.keys() if getattr(f[k], "ndim", 0) == 2)
-            dset = f[key]
-            need = nb + nq
-            if dset.shape[1] == 128:
-                raw = np.empty((need, 128), dtype=np.float32)
-                dset.read_direct(raw, np.s_[:need, :])
-            else:
-                raw = np.ascontiguousarray(dset[:, :need].T.astype(np.float32))
-    if raw.shape[1] != 128:
-        raw = raw.T
-    x = np.ascontiguousarray(raw, dtype=np.float32)
-    xb, xq = x[:nb], x[nb : nb + nq]
-
-    gt_path = None
-    for cand in [
-        os.path.join(data_dir, "sift10m_gt.npy"),
-        os.path.join(data_dir, "SIFT10M", "sift10m_gt.npy"),
-    ]:
-        if os.path.exists(cand):
-            gt_path = cand
-            break
-    if gt_path:
-        gt = np.load(gt_path).astype(np.int32)
-    else:
-        gt = compute_ground_truth(xb, xq, 100)
-        cache = os.path.join(data_dir, "SIFT10M", "sift10m_gt.npy")
-        try:
-            np.save(cache, gt)
-            print(f"  Cached GT to {cache}")
-        except Exception as e:
-            print(f"  Could not cache GT: {e}")
     return xb, xq, gt
 
 
@@ -1212,7 +980,7 @@ def run_benchmarks(dataset, benchmarks, index_types, data_dir, index_dir, output
 
     print(f"\nLoading {dataset}...")
     t0 = time.time()
-    xb, xq, gt = load_dataset(dataset, data_dir)
+    xb, xq, gt = load_dataset(dataset, data_dir, index_dir)
     print(f"  Loaded in {time.time()-t0:.1f}s: xb={xb.shape}, xq={xq.shape}, gt={gt.shape}")
 
     if gt.max() >= xb.shape[0]:
@@ -1437,7 +1205,7 @@ def run_benchmarks(dataset, benchmarks, index_types, data_dir, index_dir, output
 def main():
     global N_RUNS
     ap = argparse.ArgumentParser(description="Router-training benchmark suite")
-    ap.add_argument("--data-dir",   default="/Users/dhm/Documents/data")
+    ap.add_argument("--data-dir",   default=os.environ.get("DATA_DIR", "data/"))
     ap.add_argument("--index-dir",  default="/Users/dhm/Documents/indices")
     ap.add_argument("--output-dir", default=None)
     ap.add_argument("--dataset",    nargs="+", default=["all"],

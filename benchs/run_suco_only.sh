@@ -6,18 +6,19 @@
 #   ./benchs/run_suco_only.sh [options]
 #
 # Options:
-#   --data-dir DIR       Root data directory (default: data/)
-#   --index-dir DIR      Where to cache built index files (default: data/indices/)
+#   --data-dir DIR       Root data directory (default: $DATA_DIR, else data/)
+#   --index-dir DIR      Where to cache built index files (default: $INDEX_DIR)
 #   --log-dir DIR        Where to write the log file (default: logs/)
-#   --nb NB              Deep dataset size: 1000000, 10000000, 100000000 (default: 1000000)
-#   --sift10m-mat PATH   Path to SIFT10Mfeatures.mat (default: data/SIFT10M/SIFT10Mfeatures.mat)
-#   --spacev10m-dir DIR  Directory with SpaceV10M .i8bin files (default: data/spacev10m/)
+#   --nb NB              Deep dataset size: 1000000 or 10000000 (default: 1000000)
 #   --dry-run            Print commands without running them
 #   --sift-only          Run only SIFT1M sweep
 #   --gist-only          Run only GIST1M sweep
 #   --deep-only          Run only Deep sweep
 #   --sift10m-only       Run only SIFT10M sweep
 #   --spacev10m-only     Run only SpaceV10M sweep
+#
+# On the HPC, point DATA_DIR at the shared copy, e.g.
+#   DATA_DIR=$WORK/dhm/data INDEX_DIR=$WORK/dhm/indices ./benchs/run_suco_only.sh
 #   -h, --help           Show this help and exit
 
 set -euo pipefail
@@ -26,12 +27,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 # ---- defaults ----------------------------------------------------------------
-DATA_DIR="$ROOT_DIR/data/"
-INDEX_DIR="$ROOT_DIR/data/indices/"
-LOG_DIR="$ROOT_DIR/logs/"
+DATA_DIR="${DATA_DIR:-$ROOT_DIR/data/}"
+INDEX_DIR="${INDEX_DIR:-$ROOT_DIR/data/indices/}"
+LOG_DIR="${LOG_DIR:-$ROOT_DIR/logs/}"
 DEEP_NB=1000000
-SIFT10M_MAT="$ROOT_DIR/data/SIFT10M/SIFT10Mfeatures.mat"
-SPACEV10M_DIR="$ROOT_DIR/data/spacev10m/"
 DRY_RUN=0
 RUN_SIFT=1
 RUN_GIST=1
@@ -46,8 +45,6 @@ while [[ $# -gt 0 ]]; do
         --index-dir)      INDEX_DIR="$2";      shift 2 ;;
         --log-dir)        LOG_DIR="$2";        shift 2 ;;
         --nb)             DEEP_NB="$2";        shift 2 ;;
-        --sift10m-mat)    SIFT10M_MAT="$2";    shift 2 ;;
-        --spacev10m-dir)  SPACEV10M_DIR="$2";  shift 2 ;;
         --dry-run)        DRY_RUN=1;            shift   ;;
         --sift-only)      RUN_GIST=0; RUN_DEEP=0; RUN_SIFT10M=0; RUN_SPACEV10M=0; shift ;;
         --gist-only)      RUN_SIFT=0; RUN_DEEP=0; RUN_SIFT10M=0; RUN_SPACEV10M=0; shift ;;
@@ -80,6 +77,12 @@ source "$VENV"
 
 PYTHON="python"
 
+# Fail fast if a dataset is missing or mis-pathed, before any node time is spent
+if [[ $DRY_RUN -eq 0 ]]; then
+    "$PYTHON" "$SCRIPT_DIR/check_datasets.py" --data-dir "$DATA_DIR" --suite suco \
+        || { echo "Dataset check failed - fix paths before running."; exit 1; }
+fi
+
 section() {
     echo ""
     echo "##########################################################################"
@@ -104,8 +107,6 @@ section "SuCo-only Sweep Runner  —  $(date)"
 echo "  data-dir     : $DATA_DIR"
 echo "  index-dir    : $INDEX_DIR"
 echo "  deep-nb      : $DEEP_NB"
-echo "  sift10m-mat  : $SIFT10M_MAT"
-echo "  spacev10m-dir: $SPACEV10M_DIR"
 [[ $DRY_RUN -eq 1 ]] && echo "  *** DRY RUN - commands will not execute ***"
 
 # ---- SIFT1M ------------------------------------------------------------------
@@ -131,7 +132,6 @@ if [[ $RUN_DEEP -eq 1 ]]; then
     case "$DEEP_NB" in
         1000000)   DEEP_TAG="Deep1M"   ;;
         10000000)  DEEP_TAG="Deep10M"  ;;
-        100000000) DEEP_TAG="Deep100M" ;;
         *)         DEEP_TAG="Deep${DEEP_NB}" ;;
     esac
 
@@ -147,7 +147,7 @@ fi
 if [[ $RUN_SIFT10M -eq 1 ]]; then
     section "SIFT10M SuCo sweep"
     run_bench "$PYTHON" "$SCRIPT_DIR/bench_suco_sift10m.py" \
-        --mat-path "$SIFT10M_MAT" \
+        --data-dir "$DATA_DIR" \
         --gt-path "$INDEX_DIR/sift10m_gt.npy" \
         --index-path "$INDEX_DIR/sift10m.idx" \
         --sweep
@@ -157,7 +157,7 @@ fi
 if [[ $RUN_SPACEV10M -eq 1 ]]; then
     section "SpaceV10M SuCo sweep"
     run_bench "$PYTHON" "$SCRIPT_DIR/bench_suco_spacev10m.py" \
-        --data-dir "$SPACEV10M_DIR" \
+        --data-dir "$DATA_DIR" \
         --gt-path "$INDEX_DIR/spacev10m_gt.npy" \
         --index-path "$INDEX_DIR/spacev10m.idx" \
         --sweep

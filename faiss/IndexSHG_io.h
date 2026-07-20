@@ -18,6 +18,7 @@
 #pragma once
 
 #include <faiss/IndexSHG.h>
+#include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/io.h>
 #include <faiss/impl/io_macros.h>
 
@@ -66,12 +67,16 @@ inline void write_index_shg_extra(const IndexSHG* idx, IOWriter* f) {
                 cv_size);
     }
 
-    // shortcut map
-    int sc_size = (int)idx->shortcut.entries.size();
+    // Learned shortcut: only the training samples are written. They are
+    // already sorted and deduplicated by ShortcutMap::finalize(), so the
+    // on-disk layout is unchanged from the previous std::map-backed version.
+    // The piecewise linear model is refitted on read rather than serialized —
+    // fitting is O(samples) and the sample count is small.
+    int sc_size = idx->shortcut.size();
     WRITE1(sc_size);
-    for (const auto& kv : idx->shortcut.entries) {
-        WRITE1(kv.first);
-        WRITE1(kv.second);
+    for (int i = 0; i < sc_size; ++i) {
+        WRITE1(idx->shortcut.keys[i]);
+        WRITE1(idx->shortcut.values[i]);
     }
 }
 
@@ -115,14 +120,16 @@ inline void read_index_shg_extra(IndexSHG* idx, IOReader* f) {
 
     int sc_size = 0;
     READ1(sc_size);
-    idx->shortcut.entries.clear();
+    FAISS_THROW_IF_NOT_MSG(sc_size >= 0, "IndexSHG: corrupt shortcut size");
+    idx->shortcut.clear();
+    idx->shortcut.keys.resize(sc_size);
+    idx->shortcut.values.resize(sc_size);
     for (int i = 0; i < sc_size; ++i) {
-        float dist;
-        int skip;
-        READ1(dist);
-        READ1(skip);
-        idx->shortcut.entries[dist] = skip;
+        READ1(idx->shortcut.keys[i]);
+        READ1(idx->shortcut.values[i]);
     }
+    // Samples were written sorted and deduplicated; refit the model over them.
+    idx->shortcut.build_model();
 }
 
 } // namespace faiss

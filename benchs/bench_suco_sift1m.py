@@ -32,10 +32,13 @@ Download from http://corpus-texmex.irisa.fr/ (ANN_SIFT1M, ~161 MB):
     mv sift/* . && rmdir sift && rm ANN_SIFT1M.tar.gz
 
 Expected files (relative to --data-dir):
-    sift1M/sift_base.fvecs          – 1 000 000 × 128  (~512 MB)
-    sift1M/sift_learn.fvecs         –   100 000 × 128  (~51 MB)
-    sift1M/sift_query.fvecs         –    10 000 × 128  (~5 MB)
-    sift1M/sift_groundtruth.ivecs   –    10 000 × 100  (~4 MB)
+    sift100M/bigann_base_100M.bvecs – base vectors, cropped to the first 1M
+    sift100M/bigann_query.bvecs     –    10 000 × 128
+    sift100M/bigann_learn.bvecs     – training vectors
+    sift100M/gnd/idx_1M.ivecs       – groundtruth for the 1M crop
+
+A classic ANN_SIFT1M release (sift1M/sift_base.fvecs and friends) is still
+accepted as a fallback.
 
 Notes on nsubspaces for d=128
 ------------------------------
@@ -62,10 +65,14 @@ import numpy as np
 # ---------------------------------------------------------------------------
 try:
     import faiss
-    from faiss.contrib.datasets import DatasetSIFT1M, set_dataset_basedir
 except ImportError as e:
     sys.exit(f"Cannot import faiss: {e}\n"
              "Build FAISS with IndexSuCo and run from the repo root.")
+
+# Dataset resolution is shared with the CSPG and SHG suites.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from bench_datasets import get_dataset  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -1189,7 +1196,7 @@ def parse_args():
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     p.add_argument(
-        "--data-dir", default="data/",
+        "--data-dir", default=os.environ.get("DATA_DIR", "data/"),
         help="Root directory containing the sift1M/ subdirectory.",
     )
     p.add_argument(
@@ -1332,8 +1339,7 @@ def main():
         )
 
     print_header("Loading SIFT1M dataset  (d=128, nb=1 000 000, nq=10 000)")
-    set_dataset_basedir(args.data_dir)
-    ds = DatasetSIFT1M()
+    ds = get_dataset("sift1m", args.data_dir)
 
     print(f"  data_dir  : {args.data_dir}")
     print(f"  d         : {ds.d}")

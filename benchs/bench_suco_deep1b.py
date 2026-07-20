@@ -2,43 +2,32 @@
 """
 benchs/bench_suco_deep1m.py
 
-Benchmark and end-to-end accuracy test for faiss.IndexSuCo on the Deep1M,
-Deep10M, and Deep100M subsets of Deep1B (d=96).
+Benchmark and end-to-end accuracy test for faiss.IndexSuCo on the Deep1M and
+Deep10M subsets of Deep1B (d=96).
 
 Usage
 -----
 # Deep1M (default):
-    python benchs/bench_suco_deep1m.py --data-dir /path/to/data/
+    python benchs/bench_suco_deep1b.py --data-dir /path/to/data/
 
 # Deep10M:
-    python benchs/bench_suco_deep1m.py --data-dir /path/to/data/ --nb 10000000
-
-# Deep100M:
-    python benchs/bench_suco_deep1m.py --data-dir /path/to/data/ --nb 100000000
+    python benchs/bench_suco_deep1b.py --data-dir /path/to/data/ --nb 10000000
 
 # Parameter sweep:
-    python benchs/bench_suco_deep1m.py --nb 10000000 --sweep
+    python benchs/bench_suco_deep1b.py --nb 10000000 --sweep
 
 # Save/load a pre-built index to speed up repeated query benchmarks:
-    python benchs/bench_suco_deep1m.py --nb 1000000 --index-path /tmp/suco.idx
+    python benchs/bench_suco_deep1b.py --nb 1000000 --index-path /tmp/suco.idx
 
-Dataset preparation
--------------------
-Run prepare_deep1m.py once to build base.fvecs / learn.fvecs:
-  # Deep1M / Deep10M  (base00 + learn00 already sufficient):
-    python benchs/prepare_deep1m.py --data-dir /home/dhm/data/ --nb 10000000
+Expected files (in deep10m/ under --data-dir)
+---------------------------------------------
+  base.10M.fbin  or  deep10M.fvecs  – base vectors, cropped to --nb
+  deep1B_queries.fvecs              – 10 000 query vectors
+  deep1M_groundtruth.ivecs          – ground-truth for the 1M crop
+  deep10M_groundtruth.ivecs         – ground-truth for the 10M crop
 
-  # Deep100M  (download base01-03 first, then prepare):
-    python benchs/downloadDeep1B.py --data-dir /home/dhm/data/ --base-chunks 1 2 3
-    python benchs/prepare_deep1m.py --data-dir /home/dhm/data/ --nb 100000000 --nt 5000000
-
-Expected files (relative to --data-dir):
-  deep1b/base.fvecs                  – prepared base vectors (≥ --nb vectors)
-  deep1b/learn.fvecs                 – prepared training vectors
-  deep1b/deep1B_queries.fvecs        – 10 000 query vectors
-  deep1b/deep1M_groundtruth.ivecs    – ground-truth for 1M subset
-  deep1b/deep10M_groundtruth.ivecs   – ground-truth for 10M subset
-  deep1b/deep100M_groundtruth.ivecs  – ground-truth for 100M subset
+The groundtruth files are indexed by position in deep1B_queries.fvecs, so that
+query file is required even though the base is cropped.
 """
 
 import argparse
@@ -53,11 +42,14 @@ import numpy as np
 # ---------------------------------------------------------------------------
 try:
     import faiss
-    from faiss.contrib.datasets import DatasetDeep1B, set_dataset_basedir
-    from faiss.contrib.vecs_io import fvecs_mmap
 except ImportError as e:
     sys.exit(f"Cannot import faiss: {e}\n"
              "Build FAISS with IndexSuCo and run from the repo root.")
+
+# Dataset resolution is shared with the CSPG and SHG suites.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from bench_datasets import get_dataset  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -1241,7 +1233,7 @@ def parse_args():
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     p.add_argument(
-        "--data-dir", default="data/",
+        "--data-dir", default=os.environ.get("DATA_DIR", "data/"),
         help="Root directory that contains the deep1b/ subdirectory.",
     )
     p.add_argument(
@@ -1400,14 +1392,8 @@ def main():
     # Load dataset
     # ------------------------------------------------------------------
     print_header(f"Loading {dataset_name} dataset  (nb={args.nb:,})")
-    set_dataset_basedir(args.data_dir)
-    ds = DatasetDeep1B(nb=args.nb)
-
-    print(f"  data_dir  : {args.data_dir}")
-    print(f"  dataset   : {dataset_name}")
-    print(f"  d         : {ds.d}")
-    print(f"  nb (base) : {ds.nb:,}")
-    print(f"  nq        : {ds.nq:,}")
+    ds = get_dataset(f"deep{args.nb // 1_000_000}m", args.data_dir, nb=args.nb)
+    print(f"  {ds.describe()}")
     print(f"  maxtrain  : {args.maxtrain:,}")
     print(f"  OMP threads: {faiss.omp_get_max_threads()}")
 
@@ -1417,15 +1403,14 @@ def main():
 
     # Load base vectors into RAM when small enough (≤10M → ≤3.84 GB).
     # For larger datasets keep a memory-mapped view to avoid 35+ GiB allocations.
-    base_fvecs = os.path.join(args.data_dir.rstrip("/"), "deep1b", "base.fvecs")
     RAM_THRESHOLD = 10_000_000
     if args.nb <= RAM_THRESHOLD:
         print("  Loading base into RAM …", end=" ", flush=True)
-        xb = np.array(fvecs_mmap(base_fvecs)[:args.nb])   # contiguous RAM copy
+        xb = ds.get_database()
         print(f"shape={xb.shape}  dtype={xb.dtype}  (loaded into RAM)")
     else:
         print("  Mapping base (mmap) …", end=" ", flush=True)
-        xb = fvecs_mmap(base_fvecs)[:args.nb]             # pages load on demand
+        xb = ds.database_mmap()                        # pages load on demand
         print(f"shape={xb.shape}  dtype={xb.dtype}  (not loaded into RAM)")
 
     print("  Loading train …", end=" ", flush=True)
@@ -1433,7 +1418,7 @@ def main():
     print(f"shape={xt.shape}")
 
     print("  Loading ground truth …", end=" ", flush=True)
-    gt = ds.get_groundtruth(k=100)                     # (10000, 100)
+    gt = ds.get_groundtruth(k=100, xb=xb, xq=xq)       # (10000, 100)
     print(f"shape={gt.shape}")
 
     # ------------------------------------------------------------------

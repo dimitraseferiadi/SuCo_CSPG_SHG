@@ -50,15 +50,14 @@ import matplotlib.pyplot as plt
 # ---------------------------------------------------------------------------
 try:
     import faiss
-    from faiss.contrib.datasets import (
-        DatasetSIFT1M,
-        DatasetGIST1M,
-        DatasetDeep1B,
-        set_dataset_basedir,
-    )
 except ImportError as e:
     sys.exit(f"Cannot import faiss: {e}\n"
              "Build FAISS with IndexSuCo and install the Python bindings.")
+
+# Dataset resolution is shared with the CSPG and SHG suites.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from bench_datasets import get_dataset  # noqa: E402
 
 
 # ============================================================================
@@ -497,7 +496,7 @@ def parse_args() -> argparse.Namespace:
         description="SuCo vs HNSW vs IVFFlat: full Recall–QPS Pareto sweep.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    p.add_argument("--data-dir", default="data/",
+    p.add_argument("--data-dir", default=os.environ.get("DATA_DIR", "data/"),
                    help="Root directory with SIFT1M / GIST1M / Deep1B data.")
 
     # Per-dataset index paths (optional — build from scratch if omitted)
@@ -543,18 +542,17 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    set_dataset_basedir(args.data_dir)
 
     all_results: list[dict] = []
 
     # ── SIFT1M (d=128) ──────────────────────────────────────────────────────
     if not args.skip_sift:
         print_section("Loading SIFT1M")
-        ds = DatasetSIFT1M()
+        ds = get_dataset("sift1m", args.data_dir)
         xb = ds.get_database()
         xq = ds.get_queries()
         xt = ds.get_train(maxtrain=100_000)
-        gt = ds.get_groundtruth(k=100)
+        gt = ds.get_groundtruth(k=100, xb=xb, xq=xq)
         print(f"  base={xb.shape}  queries={xq.shape}  train={xt.shape}  gt={gt.shape}")
 
         all_results += run_dataset(
@@ -573,11 +571,11 @@ def main() -> None:
     # ── GIST1M (d=960) ──────────────────────────────────────────────────────
     if not args.skip_gist:
         print_section("Loading GIST1M")
-        ds = DatasetGIST1M()
+        ds = get_dataset("gist1m", args.data_dir)
         xb = ds.get_database()
         xq = ds.get_queries()
         xt = ds.get_train(maxtrain=100_000)
-        gt = ds.get_groundtruth(k=100)
+        gt = ds.get_groundtruth(k=100, xb=xb, xq=xq)
         print(f"  base={xb.shape}  queries={xq.shape}  train={xt.shape}  gt={gt.shape}")
 
         all_results += run_dataset(
@@ -596,11 +594,11 @@ def main() -> None:
     # ── Deep1M (d=96) ────────────────────────────────────────────────────────
     if not args.skip_deep:
         print_section("Loading Deep1M")
-        ds = DatasetDeep1B(nb=10**6)
+        ds = get_dataset("deep1m", args.data_dir)
         xb = ds.get_database()
         xq = ds.get_queries()
         xt = ds.get_train(maxtrain=500_000)
-        gt = ds.get_groundtruth(k=100)
+        gt = ds.get_groundtruth(k=100, xb=xb, xq=xq)
         print(f"  base={xb.shape}  queries={xq.shape}  train={xt.shape}  gt={gt.shape}")
 
         all_results += run_dataset(

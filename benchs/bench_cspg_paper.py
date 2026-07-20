@@ -43,7 +43,6 @@ import argparse
 import gc
 import json
 import os
-import struct
 import sys
 import time
 import traceback
@@ -125,424 +124,46 @@ DEFAULT_INDEX_TYPES = ["cspg", "hnsw"]
 
 
 # ===========================================================================
-# Dataset I/O  (identical helpers to bench_shg_paper.py)
+# Dataset I/O
 # ===========================================================================
+# Path resolution and the vector-format readers live in bench_datasets.py so
+# that the SuCo, CSPG and SHG suites all agree on where the data is.
 
-def read_fvecs(fname):
-    with open(fname, "rb") as f:
-        d = struct.unpack("i", f.read(4))[0]
-        f.seek(0)
-        n = os.path.getsize(fname) // (4 + d * 4)
-        data = np.zeros((n, d), dtype=np.float32)
-        for i in range(n):
-            dim = struct.unpack("i", f.read(4))[0]
-            assert dim == d, f"Dim mismatch row {i}: {dim} vs {d}"
-            data[i] = np.frombuffer(f.read(d * 4), dtype=np.float32)
-    return data
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-
-def read_ivecs(fname):
-    with open(fname, "rb") as f:
-        d = struct.unpack("i", f.read(4))[0]
-        f.seek(0)
-        n = os.path.getsize(fname) // (4 + d * 4)
-        data = np.zeros((n, d), dtype=np.int32)
-        for i in range(n):
-            dim = struct.unpack("i", f.read(4))[0]
-            assert dim == d
-            data[i] = np.frombuffer(f.read(d * 4), dtype=np.int32)
-    return data
+from bench_datasets import (  # noqa: E402
+    compute_ground_truth,
+    dataset_size,
+    get_dataset,
+    groundtruth_available,
+)
+from bench_datasets import (  # noqa: E402
+    load_dataset_queries_only as _ds_queries_only,
+)
 
 
-def read_fbin(fname, dtype=np.float32):
-    with open(fname, "rb") as f:
-        n, d = struct.unpack("ii", f.read(8))
-        file_size = os.path.getsize(fname)
-        actual_n = (file_size - 8) // (d * np.dtype(dtype).itemsize)
-        if actual_n < n:
-            n = actual_n
-        data = np.fromfile(f, dtype=dtype, count=n * d).reshape(n, d)
-    return data
+def load_dataset(name, data_dir, index_dir=None):
+    """Returns (xb, xq, gt).
 
-
-def read_ibin(fname):
-    with open(fname, "rb") as f:
-        n, k = struct.unpack("ii", f.read(8))
-        file_size = os.path.getsize(fname)
-        actual_n = (file_size - 8) // (k * 4)
-        if actual_n < n:
-            n = actual_n
-        data = np.fromfile(f, dtype=np.int32, count=n * k).reshape(n, k)
-    return data
-
-
-def read_enron_data(fname):
-    with open(fname, "rb") as f:
-        header = np.fromfile(f, dtype=np.int32, count=3)
-        _version, n, d = int(header[0]), int(header[1]), int(header[2])
-        data = np.fromfile(f, dtype=np.float32, count=n * d).reshape(n, d)
-    return data
-
-
-def read_openai_parquet(data_dir, max_vectors=1_000_000):
-    try:
-        import pyarrow.parquet as pq
-    except ImportError:
-        sys.exit("pyarrow required for OpenAI dataset: pip install pyarrow")
-    parquet_dir = os.path.join(data_dir, "openai1m")
-    files = sorted([f for f in os.listdir(parquet_dir) if f.endswith(".parquet")])
-    all_vecs, total = [], 0
-    for fname in files:
-        if total >= max_vectors:
-            break
-        table = pq.read_table(os.path.join(parquet_dir, fname))
-        for col_name in ["emb", "embedding", "vector", "values"]:
-            if col_name in table.column_names:
-                break
-        else:
-            col_name = table.column_names[-1]
-        for row in table[col_name]:
-            if total >= max_vectors:
-                break
-            all_vecs.append(np.array(row.as_py(), dtype=np.float32))
-            total += 1
-    return np.array(all_vecs, dtype=np.float32)
-
-
-def _first_existing_path(paths):
-    for p in paths:
-        if p and os.path.exists(p):
-            return p
-    return None
-
-
-def _find_dataset_dir(data_dir, candidates, required_file):
-    for name in candidates:
-        p = os.path.join(data_dir, name)
-        if os.path.exists(os.path.join(p, required_file)):
-            return p
-    return None
-
-
-def _read_fvecs_mmap(path, n=None):
-    """Read fvecs via FAISS mmap helper when available; fallback to read_fvecs."""
-    try:
-        vecs_io = __import__("faiss.contrib.vecs_io", fromlist=["fvecs_mmap"])
-        fvecs_mmap = vecs_io.fvecs_mmap
-
-        x = fvecs_mmap(path)
-        if n is not None:
-            x = x[:n]
-        return np.ascontiguousarray(x.astype(np.float32, copy=False))
-    except Exception:
-        x = read_fvecs(path)
-        if n is not None:
-            x = x[:n]
-        return np.ascontiguousarray(x.astype(np.float32, copy=False))
-
-
-def _load_sift10m(data_dir, nb=10_000_000, nq=10_000):
-    """Load SIFT10M vectors from MATLAB/HDF5 file and GT from .npy/.ivecs."""
-    mat_path = _first_existing_path([
-        os.path.join(data_dir, "SIFT10M", "SIFT10Mfeatures.mat"),
-        os.path.join(data_dir, "sift10m", "SIFT10Mfeatures.mat"),
-        os.path.join(data_dir, "SIFT10Mfeatures.mat"),
-    ])
-    if mat_path is None:
-        raise FileNotFoundError(
-            "Could not find SIFT10Mfeatures.mat. Expected one of: "
-            "<data_dir>/SIFT10M/SIFT10Mfeatures.mat, "
-            "<data_dir>/sift10m/SIFT10Mfeatures.mat, or <data_dir>/SIFT10Mfeatures.mat"
-        )
-
-    try:
-        from scipy.io import loadmat
-
-        data = loadmat(mat_path)
-        key = next((k for k in data.keys() if not k.startswith("_")), None)
-        if key is None:
-            raise RuntimeError(f"No feature matrix found in {mat_path}")
-        raw = np.asarray(data[key])
-        del data
-    except NotImplementedError:
-        try:
-            import h5py
-        except ImportError as e:
-            raise RuntimeError(
-                "SIFT10M .mat appears to be MATLAB v7.3 (HDF5). Install h5py."
-            ) from e
-
-        with h5py.File(mat_path, "r") as f:
-            preferred = ["fea", "features", "X", "data"]
-            key = next((k for k in preferred if k in f), None)
-            if key is None:
-                key = next((k for k in f.keys() if getattr(f[k], "ndim", 0) == 2), None)
-            if key is None:
-                raise RuntimeError(f"Could not find 2D feature dataset in {mat_path}")
-            dset = f[key]
-            # Only read the rows we need (nb + nq) to avoid loading full dataset
-            need = nb + nq
-            if dset.ndim != 2:
-                raise RuntimeError(f"Expected 2D feature dataset in {mat_path}, got shape {dset.shape}")
-            if dset.shape[1] == 128:
-                raw = np.empty((need, 128), dtype=np.float32)
-                dset.read_direct(raw, np.s_[:need, :])
-            elif dset.shape[0] == 128:
-                raw = np.ascontiguousarray(dset[:, :need].T.astype(np.float32))
-            else:
-                raise RuntimeError(f"Cannot infer SIFT10M matrix layout from shape {dset.shape}")
-
-    if raw.ndim != 2:
-        raise RuntimeError(f"Expected 2D feature matrix in {mat_path}, got {raw.shape}")
-    if raw.shape[1] == 128:
-        x = np.ascontiguousarray(raw, dtype=np.float32)
-    elif raw.shape[0] == 128:
-        x = np.ascontiguousarray(raw.T, dtype=np.float32)
-    else:
-        raise RuntimeError(f"Cannot infer SIFT10M matrix layout from shape {raw.shape}")
-
-    if x.shape[0] < nb + nq:
-        raise ValueError(
-            f"SIFT10M file has {x.shape[0]} vectors but requires at least {nb + nq}"
-        )
-    xb = x[:nb]
-    xq = x[nb: nb + nq]
-
-    gt_path = _first_existing_path([
-        os.path.join(data_dir, "sift10m_gt.npy"),
-        os.path.join(data_dir, "SIFT10M", "sift10m_gt.npy"),
-        os.path.join(data_dir, "sift10m", "sift10m_gt.npy"),
-        os.path.join(data_dir, "SIFT10M", "sift_groundtruth.ivecs"),
-        os.path.join(data_dir, "sift10m", "sift_groundtruth.ivecs"),
-    ])
-    if gt_path is None:
-        gt = compute_ground_truth(xb, xq, 100)
-    elif gt_path.endswith(".npy"):
-        gt = np.load(gt_path)
-    else:
-        gt = read_ivecs(gt_path)
-
-    if gt.shape[0] > xq.shape[0]:
-        gt = gt[:xq.shape[0]]
+    Sub-samples such as sift0.5m have no published groundtruth; it is computed
+    once and cached in index_dir so later runs can skip loading the base.
+    """
+    ds = get_dataset(name, data_dir, gt_cache_dir=index_dir)
+    print(f"  {ds.describe()}")
+    xb = ds.get_database()
+    xq = ds.get_queries()
+    gt = ds.get_groundtruth(k=100, xb=xb, xq=xq)
     return xb, xq, gt
 
 
-def load_dataset(name, data_dir):
-    """Returns (xb, xq, gt)."""
-    name = name.lower()
-
-    if name == "sift1m":
-        p = _find_dataset_dir(data_dir, ["sift1M", "sift1m", "sift"], "sift_base.fvecs")
-        if p is None:
-            raise FileNotFoundError(
-                "Could not find SIFT1M under data_dir. Expected one of "
-                "sift1M/, sift1m/, or sift/ with sift_base.fvecs"
-            )
-        xb = _read_fvecs_mmap(os.path.join(p, "sift_base.fvecs"))
-        xq = _read_fvecs_mmap(os.path.join(p, "sift_query.fvecs"))
-        gt = read_ivecs(os.path.join(p, "sift_groundtruth.ivecs"))
-        return xb, xq, gt
-
-    elif name == "deep1m":
-        p = os.path.join(data_dir, "deep1b")
-        xb = _read_fvecs_mmap(os.path.join(p, "base.fvecs"), n=1_000_000)
-        xq = _read_fvecs_mmap(os.path.join(p, "deep1B_queries.fvecs"), n=10_000)
-        gt_path = _first_existing_path([
-            os.path.join(p, "deep1M_groundtruth.ivecs"),
-            os.path.join(p, "deep1M_groundtruth.npy"),
-        ])
-        if gt_path is None:
-            gt = compute_ground_truth(xb, xq, 100)
-        elif gt_path.endswith(".npy"):
-            gt = np.load(gt_path)
-        else:
-            gt = read_ivecs(gt_path)
-        if gt.shape[0] > xq.shape[0]:
-            gt = gt[:xq.shape[0]]
-        return xb, xq, gt
-
-    elif name == "gist1m":
-        p = _find_dataset_dir(data_dir, ["gist1M", "gist1m", "gist"], "gist_base.fvecs")
-        if p is None:
-            raise FileNotFoundError(
-                "Could not find GIST1M under data_dir. Expected one of "
-                "gist1M/, gist1m/, or gist/ with gist_base.fvecs"
-            )
-        xb = _read_fvecs_mmap(os.path.join(p, "gist_base.fvecs"))
-        xq = _read_fvecs_mmap(os.path.join(p, "gist_query.fvecs"))
-        gt = read_ivecs(os.path.join(p, "gist_groundtruth.ivecs"))
-        return xb, xq, gt
-
-    elif name == "uqv1m":
-        p = _find_dataset_dir(data_dir, ["uqv", "uqv1m", "UQV"], "uqv_base.fvecs")
-        if p is None:
-            raise FileNotFoundError(
-                "Could not find UQV under data_dir. Expected one of "
-                "uqv/, uqv1m/, or UQV/ with uqv_base.fvecs"
-            )
-        xb = _read_fvecs_mmap(os.path.join(p, "uqv_base.fvecs"))
-        xq = _read_fvecs_mmap(os.path.join(p, "uqv_query.fvecs"))
-        gt = read_ivecs(os.path.join(p, "uqv_groundtruth.ivecs"))
-        return xb, xq, gt
-
-    elif name == "openai1m":
-        p = os.path.join(data_dir, "openai1m")
-        xb = np.load(os.path.join(p, "openai_xb.npy"), mmap_mode="r")
-        xb = np.ascontiguousarray(xb, dtype=np.float32)
-        xq = np.load(os.path.join(p, "openai_xq.npy"), mmap_mode="r")
-        xq = np.ascontiguousarray(xq, dtype=np.float32)
-        gt = np.load(os.path.join(p, "openai_gt100.npy")).astype(np.int32)
-        return xb, xq, gt
-
-    elif name == "sift10m":
-        return _load_sift10m(data_dir)
-
-    elif name in VARYING_N_SCALES:
-        nb = VARYING_N_SCALES[name]
-        xb, xq, _ = _load_sift10m(data_dir, nb=nb, nq=10_000)
-        # Find or compute ground truth for this sub-sample
-        gt_fname = f"gt_{name}_k100.npy"
-        gt_dirs = [data_dir]
-        for sub in ("SIFT10M", "sift10m", "sift"):
-            p = os.path.join(data_dir, sub)
-            if os.path.isdir(p):
-                gt_dirs.append(p)
-        gt_cached = _first_existing_path([os.path.join(d, gt_fname) for d in gt_dirs])
-        if gt_cached:
-            gt = np.load(gt_cached).astype(np.int32)
-            print(f"  GT loaded from {gt_cached}")
-        else:
-            gt = compute_ground_truth(xb, xq, k=100)
-            save_to = os.path.join(gt_dirs[-1], gt_fname)
-            try:
-                np.save(save_to, gt)
-                print(f"  GT saved to {save_to}")
-            except Exception as e:
-                print(f"  Could not cache GT: {e}")
-        return xb, xq, gt
-
-    else:
-        raise ValueError(f"Unknown dataset: {name!r}")
-
-
-def _get_dataset_size(name):
+def _get_dataset_size(name, data_dir=None):
     """Return n (number of base vectors) without loading them."""
-    sizes = {"sift1m": 1_000_000, "deep1m": 1_000_000, "gist1m": 1_000_000,
-             "uqv1m": 1_000_000, "openai1m": 990_000, "sift10m": 10_000_000}
-    name = name.lower()
-    if name in sizes:
-        return sizes[name]
-    if name in VARYING_N_SCALES:
-        return VARYING_N_SCALES[name]
-    raise ValueError(f"Unknown dataset size for {name!r}")
+    return dataset_size(name, data_dir)
 
 
 def load_dataset_queries_only(name, data_dir, index_dir=None):
     """Load only xq and gt (no base vectors). Used when all indices are cached."""
-    name = name.lower()
-
-    if name == "sift1m":
-        p = _find_dataset_dir(data_dir, ["sift1M", "sift1m", "sift"], "sift_base.fvecs")
-        xq = _read_fvecs_mmap(os.path.join(p, "sift_query.fvecs"))
-        gt = read_ivecs(os.path.join(p, "sift_groundtruth.ivecs"))
-
-    elif name == "deep1m":
-        p = os.path.join(data_dir, "deep1b")
-        xq = _read_fvecs_mmap(os.path.join(p, "deep1B_queries.fvecs"), n=10_000)
-        gt_path = _first_existing_path([
-            os.path.join(p, "deep1M_groundtruth.ivecs"),
-            os.path.join(p, "deep1M_groundtruth.npy"),
-        ])
-        if gt_path is None:
-            raise FileNotFoundError("deep1m ground truth not found and xb not loaded")
-        gt = np.load(gt_path) if gt_path.endswith(".npy") else read_ivecs(gt_path)
-        if gt.shape[0] > xq.shape[0]:
-            gt = gt[:xq.shape[0]]
-
-    elif name == "gist1m":
-        p = _find_dataset_dir(data_dir, ["gist1M", "gist1m", "gist"], "gist_base.fvecs")
-        xq = _read_fvecs_mmap(os.path.join(p, "gist_query.fvecs"))
-        gt = read_ivecs(os.path.join(p, "gist_groundtruth.ivecs"))
-
-    elif name == "openai1m":
-        p = os.path.join(data_dir, "openai1m")
-        xq = np.ascontiguousarray(
-            np.load(os.path.join(p, "openai_xq.npy"), mmap_mode="r"), dtype=np.float32)
-        gt = np.load(os.path.join(p, "openai_gt100.npy")).astype(np.int32)
-
-    elif name == "sift10m":
-        # Queries were split from the .mat file at offset 10M; load from cache
-        _gt_candidates = [
-            os.path.join(data_dir, "sift10m_gt.npy"),
-            os.path.join(data_dir, "SIFT10M", "sift10m_gt.npy"),
-            os.path.join(data_dir, "sift10m", "sift10m_gt.npy"),
-            os.path.join(data_dir, "SIFT10M", "sift_groundtruth.ivecs"),
-            os.path.join(data_dir, "sift10m", "sift_groundtruth.ivecs"),
-        ]
-        if index_dir:
-            _gt_candidates.insert(0, os.path.join(index_dir, "sift10m_gt.npy"))
-        gt_path = _first_existing_path(_gt_candidates)
-        if gt_path is None:
-            raise FileNotFoundError("sift10m ground truth not found and xb not loaded")
-        gt = np.load(gt_path) if gt_path.endswith(".npy") else read_ivecs(gt_path)
-
-        # Load only query vectors from the .mat file (rows 10M..10M+10K)
-        nb, nq = 10_000_000, 10_000
-        mat_path = _first_existing_path([
-            os.path.join(data_dir, "SIFT10M", "SIFT10Mfeatures.mat"),
-            os.path.join(data_dir, "sift10m", "SIFT10Mfeatures.mat"),
-            os.path.join(data_dir, "SIFT10Mfeatures.mat"),
-        ])
-        try:
-            import h5py
-            with h5py.File(mat_path, "r") as f:
-                preferred = ["fea", "features", "X", "data"]
-                key = next((k for k in preferred if k in f), None)
-                if key is None:
-                    key = next((k for k in f.keys() if getattr(f[k], "ndim", 0) == 2), None)
-                dset = f[key]
-                if dset.shape[1] == 128:
-                    xq = np.ascontiguousarray(dset[nb:nb+nq, :], dtype=np.float32)
-                else:
-                    xq = np.ascontiguousarray(dset[:, nb:nb+nq].T, dtype=np.float32)
-        except Exception:
-            # Fallback: load full dataset (shouldn't normally happen)
-            xb_full, xq, _ = _load_sift10m(data_dir)
-            del xb_full
-
-        if gt.shape[0] > xq.shape[0]:
-            gt = gt[:xq.shape[0]]
-
-    elif name in VARYING_N_SCALES:
-        # Queries are the same as sift10m; GT is scale-specific.
-        xq, _ = load_dataset_queries_only("sift10m", data_dir, index_dir)
-        gt_fname = f"gt_{name}_k100.npy"
-        gt_candidates = []
-        if index_dir:
-            gt_candidates.append(os.path.join(index_dir, gt_fname))
-        gt_candidates += [
-            os.path.join(data_dir, gt_fname),
-            os.path.join(data_dir, "SIFT10M", gt_fname),
-            os.path.join(data_dir, "sift10m", gt_fname),
-        ]
-        gt_path = _first_existing_path(gt_candidates)
-        if gt_path is None:
-            raise FileNotFoundError(
-                f"GT for {name} not found. Run once without cached indices "
-                f"so the base vectors are loaded and GT is computed."
-            )
-        gt = np.load(gt_path).astype(np.int32)
-
-    else:
-        raise ValueError(f"Unknown dataset: {name!r}")
-
-    return xq, gt
-
-
-def compute_ground_truth(xb, xq, k=100):
-    print(f"  Computing ground truth (n={xb.shape[0]}, nq={xq.shape[0]}, k={k})…")
-    _, I = faiss.knn(xq, xb, k, metric=faiss.METRIC_L2)
-    return I
+    return _ds_queries_only(name, data_dir, k=100, gt_cache_dir=index_dir)
 
 
 # ===========================================================================
@@ -902,16 +523,8 @@ def run_benchmarks(dataset_name, benchmarks, index_types, data_dir, index_dir, o
         )
 
     # For varying-n datasets, GT is scale-specific and must be cached separately
-    _vn_gt_cached = True
-    if dataset_name in VARYING_N_SCALES:
-        _vn_gt_fname = f"gt_{dataset_name}_k100.npy"
-        _vn_gt_candidates = [
-            os.path.join(index_dir, _vn_gt_fname),
-            os.path.join(data_dir, _vn_gt_fname),
-            os.path.join(data_dir, "SIFT10M", _vn_gt_fname),
-            os.path.join(data_dir, "sift10m", _vn_gt_fname),
-        ]
-        _vn_gt_cached = _first_existing_path(_vn_gt_candidates) is not None
+    _vn_gt_cached = groundtruth_available(dataset_name, data_dir,
+                                          gt_cache_dir=index_dir)
 
     _need_xb = not (_all_cached and _rob_cached and _vn_gt_cached)
 
@@ -926,10 +539,10 @@ def run_benchmarks(dataset_name, benchmarks, index_types, data_dir, index_dir, o
         xq = np.zeros((0, 0), dtype=np.float32)
         gt = np.zeros((0, 0), dtype=np.int32)
         d = 128  # placeholder; actual per-scale d used inside detour_factor loop
-        n = _get_dataset_size(dataset_name)
+        n = _get_dataset_size(dataset_name, data_dir)
         print(f"  (main load skipped — detour_factor only)")
     elif _need_xb:
-        xb, xq, gt = load_dataset(dataset_name, data_dir)
+        xb, xq, gt = load_dataset(dataset_name, data_dir, index_dir)
         print(f"  Done in {time.time()-t0:.1f}s | "
               f"xb={xb.shape}  xq={xq.shape}  gt={gt.shape}")
         if gt.max() >= xb.shape[0]:
@@ -937,19 +550,13 @@ def run_benchmarks(dataset_name, benchmarks, index_types, data_dir, index_dir, o
             gt = compute_ground_truth(xb, xq, gt.shape[1])
         d = xb.shape[1]
         n = int(xb.shape[0])
-        # Cache varying-n GT in index_dir so future runs can skip xb loading
-        if dataset_name in VARYING_N_SCALES:
-            _vn_save = os.path.join(index_dir, f"gt_{dataset_name}_k100.npy")
-            if not os.path.exists(_vn_save):
-                np.save(_vn_save, gt)
-                print(f"  Varying-n GT cached → {_vn_save}")
     else:
         xb = None
         xq, gt = load_dataset_queries_only(dataset_name, data_dir, index_dir)
         print(f"  Queries only in {time.time()-t0:.1f}s | "
               f"xq={xq.shape}  gt={gt.shape}  (xb skipped — all indices cached)")
         d = xq.shape[1]
-        n = _get_dataset_size(dataset_name)
+        n = _get_dataset_size(dataset_name, data_dir)
 
     all_results = {"dataset": dataset_name, "n": n, "d": d, "nq": int(xq.shape[0])}
 
@@ -1479,7 +1086,7 @@ def run_benchmarks(dataset_name, benchmarks, index_types, data_dir, index_dir, o
                 if scale_idx is None:
                     print(f"    Loading SIFT10M sub-sample n={nb_scale:,}…")
                     try:
-                        xb_scale, xq_scale, gt_scale = load_dataset(scale_name, data_dir)
+                        xb_scale, xq_scale, gt_scale = load_dataset(scale_name, data_dir, index_dir)
                     except Exception as e:
                         print(f"    Skipping {scale_label}: {e}")
                         continue
@@ -1504,7 +1111,7 @@ def run_benchmarks(dataset_name, benchmarks, index_types, data_dir, index_dir, o
                     except FileNotFoundError as e:
                         print(f"    GT missing — building from scratch: {e}")
                         try:
-                            xb_scale, xq_scale, gt_scale = load_dataset(scale_name, data_dir)
+                            xb_scale, xq_scale, gt_scale = load_dataset(scale_name, data_dir, index_dir)
                             del xb_scale
                             gc.collect()
                         except Exception as e2:
@@ -1586,7 +1193,7 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
-        "--data-dir", default="/Users/dhm/Documents/data",
+        "--data-dir", default=os.environ.get("DATA_DIR", "data/"),
         help="Root directory containing dataset sub-folders",
     )
     parser.add_argument(

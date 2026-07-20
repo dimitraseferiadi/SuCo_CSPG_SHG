@@ -29,7 +29,9 @@
  *   For each node o in the graph, at each HNSW level x >= 2:
  *     - find nearest graph neighbour at level x, compute distance disx
  *     - check density condition to find how many levels can be skipped
- *     - store (disx, skip_count) into a sorted map (PGM-index in original)
+ *     - store (disx, skip_count) as a training sample
+ *   The samples are then fitted with a PGM-index, giving the piecewise linear
+ *   f(dis) of Definition 4 (as in the authors' implementation).
  *   At search time: lower_bound(dist) returns skip count.
  *
  * Lower-bound pruning (Theorem 1):
@@ -944,12 +946,14 @@ void IndexSHG::build_shortcuts_density() {
         }
     }
 
-    // Insert all samples into the shortcut map
+    // Algorithm 2 line 19: train the learned shortcut f(.) on the samples S.
+    shortcut.clear();
     while (!density_skipLevels.empty()) {
         auto top = density_skipLevels.top();
         density_skipLevels.pop();
         shortcut.insert_or_assign(-top.first, top.second);
     }
+    shortcut.finalize(); // fits the piecewise linear model (PGM-index)
 }
 
 // ---------------------------------------------------------------------------
@@ -998,8 +1002,11 @@ void IndexSHG::build_shortcut() {
     build_shortcuts_density();
 
     if (verbose) {
-        printf("IndexSHG::build_shortcut: shortcut has %d entries\n",
-               shortcut.size());
+        printf("IndexSHG::build_shortcut: shortcut has %d samples, "
+               "PGM model = %zu bytes (%zu segments)\n",
+               shortcut.size(),
+               shortcut.model_size_in_bytes(),
+               shortcut.is_trained() ? shortcut.pgm.segments_count() : 0);
     }
 }
 
