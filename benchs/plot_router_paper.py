@@ -92,7 +92,8 @@ DATASET_LABEL = {
     "uqv":        "UQ-V",
 }
 
-INDICES = ["SuCo", "SHG", "CSPG", "HNSW32", "HNSW48"]
+INDICES = ["SuCo", "SHG", "CSPG", "HNSW32", "HNSW48",
+           "OPQ-IVFPQ"]  # + "IVFPQ-FastScan" when re-enabled in bench_router_paper.py
 
 # INDEX_COLOR and INDEX_MARKER are imported from paper_style (canonical
 # cross-algorithm palette shared by every thesis figure).
@@ -130,15 +131,17 @@ def save_fig(fig, out_dir, name, formats):
 
 
 def pareto_upper(points):
-    """Given list of (recall, qps), keep only the Pareto-best by recall."""
+    """Given list of (recall, qps, ...) tuples, keep only the Pareto-best by
+    recall. Any trailing fields (e.g. qps_std) ride along unchanged."""
     if not points:
         return []
     pts = sorted(points, key=lambda p: p[0])
     out = []
     best_qps = -1.0
-    for r, q in reversed(pts):
+    for p in reversed(pts):
+        r, q = p[0], p[1]
         if q > best_qps:
-            out.append((r, q))
+            out.append(p)
             best_qps = q
     return list(reversed(out))
 
@@ -155,7 +158,7 @@ def plot_pareto_single(ax, results, k, title=None, legend=True):
         rows = section.get(idx)
         if not rows:
             continue
-        pts = [(r["recall"], r["qps"]) for r in rows
+        pts = [(r["recall"], r["qps"], r.get("qps_std") or 0.0) for r in rows
                if r.get("recall") is not None and r.get("qps")]
         if not pts:
             continue
@@ -164,9 +167,19 @@ def plot_pareto_single(ax, results, k, title=None, legend=True):
             continue
         xs = [p[0] for p in pareto]
         ys = [p[1] for p in pareto]
+        errs = [p[2] for p in pareto]
         ax.plot(xs, ys,
                 marker=INDEX_MARKER[idx], color=INDEX_COLOR[idx],
                 label=idx, linewidth=LINE_W, markersize=MARKER_SZ)
+        if any(e > 0 for e in errs):
+            # Shaded ±1 std band rather than errorbar() caps: with five
+            # overlapping index curves on a log-y axis, crossing errorbar
+            # whiskers are unreadable while a translucent band is not.
+            # Clip the lower edge away from zero so log-scale stays finite.
+            lo = [max(y - e, y * 0.05) for y, e in zip(ys, errs)]
+            hi = [y + e for y, e in zip(ys, errs)]
+            ax.fill_between(xs, lo, hi, color=INDEX_COLOR[idx],
+                             alpha=0.15, linewidth=0)
         plotted = True
     if not plotted:
         ax.text(0.5, 0.5, "no data", transform=ax.transAxes,
@@ -1251,9 +1264,15 @@ def table_speedup(all_results, out_dir):
             for idx in INDICES:
                 row = [DATASET_LABEL[ds], idx]
                 for rt in RECALL_TARGETS:
-                    v = tar.get(rt, {}).get(idx, {}).get(
-                        "speedup_vs_HNSW32")
-                    row.append(_fmt(v, 3))
+                    cell = tar.get(rt, {}).get(idx, {})
+                    v = cell.get("speedup_vs_HNSW32")
+                    v_std = cell.get("speedup_vs_HNSW32_std")
+                    if v is None:
+                        row.append(_fmt(v, 3))
+                    elif v_std:
+                        row.append(f"{_fmt(v, 3)} ± {_fmt(v_std, 2)}")
+                    else:
+                        row.append(_fmt(v, 3))
                     if v is not None:
                         any_data = True
                 rows.append(row)
@@ -1382,14 +1401,19 @@ def table_hard_easy(all_results, out_dir):
 def table_cold_warm(all_results, out_dir):
     datasets = [ds for ds in DATASETS if ds in all_results]
     header = ["Dataset", "Index", "cold mean (ms)", "cold p95 (ms)",
-              "warm mean (ms)", "warm p95 (ms)", "cold/warm"]
+              "warm mean (ms)", "warm p95 (ms)", "cold/warm", "regime"]
+    # Human-readable label for the cold-eviction regime actually achieved.
+    mode_label = {"page_cache": "disk", "cpu_cache": "CPU$"}
     rows = []
+    modes_seen = set()
     for ds in datasets:
         cw = all_results[ds].get("cold_warm", {})
         for idx in INDICES:
             r = cw.get(idx)
             if not r:
                 continue
+            mode = r.get("cold_mode", "cpu_cache")
+            modes_seen.add(mode)
             rows.append([
                 DATASET_LABEL[ds], idx,
                 _fmt(r.get("cold_mean_ms"), 3),
@@ -1397,11 +1421,15 @@ def table_cold_warm(all_results, out_dir):
                 _fmt(r.get("warm_mean_ms"), 3),
                 _fmt(r.get("warm_p95_ms"), 3),
                 _fmt(r.get("cold_warm_ratio"), 2),
+                mode_label.get(mode, mode),
             ])
     if rows:
+        caption = ("Cold-cache vs warm-cache mean and p95 latency. The regime "
+                   "column reports whether the cold state was page-cache-cold "
+                   "(index evicted from RAM via posix\\_fadvise, `disk') or "
+                   "CPU-cache-cold only (`CPU').")
         write_table(out_dir, "cold_warm", header, rows,
-                    caption="Cold-cache vs warm-cache mean and p95 latency.",
-                    label="cold-warm")
+                    caption=caption, label="cold-warm")
 
 
 def table_unseen_robustness(all_results, out_dir):

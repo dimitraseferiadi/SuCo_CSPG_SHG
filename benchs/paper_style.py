@@ -22,19 +22,23 @@ import re
 CANONICAL_INDICES = ("SuCo", "SHG", "CSPG", "HNSW32", "HNSW48")
 
 INDEX_COLOR = {
-    "SuCo":   "#1f77b4",
-    "SHG":    "#f4a261",
-    "CSPG":   "#2ca02c",
-    "HNSW32": "#d62728",
-    "HNSW48": "#9467bd",
+    "SuCo":           "#1f77b4",
+    "SHG":            "#f4a261",
+    "CSPG":           "#2ca02c",
+    "HNSW32":         "#d62728",
+    "HNSW48":         "#9467bd",
+    "OPQ-IVFPQ":      "#8c564b",   # quantisation family (accuracy / memory point)
+    "IVFPQ-FastScan": "#bcbd22",   # quantisation family (throughput point)
 }
 
 INDEX_MARKER = {
-    "SuCo":   "o",
-    "SHG":    "s",
-    "CSPG":   "D",
-    "HNSW32": "^",
-    "HNSW48": "v",
+    "SuCo":           "o",
+    "SHG":            "s",
+    "CSPG":           "D",
+    "HNSW32":         "^",
+    "HNSW48":         "v",
+    "OPQ-IVFPQ":      "X",
+    "IVFPQ-FastScan": "P",
 }
 
 

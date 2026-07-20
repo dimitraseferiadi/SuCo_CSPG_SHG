@@ -347,9 +347,8 @@ def recall_time_curve(idx, label, xq, gt, k, search_fn_factory,
     nq   = xq.shape[0]
     k_gt = min(k, gt.shape[1])
 
-    prev_threads = faiss.omp_get_max_threads()
-    faiss.omp_set_num_threads(1)   # single-threaded timing matches the paper
-
+    # Time at the OpenMP default (omp_get_max_threads()) for consistency with
+    # the SuCo and cross-algorithm (router) benchmarks.
     points = []
     for param in param_values:
         search_fn = search_fn_factory(param)
@@ -381,7 +380,6 @@ def recall_time_curve(idx, label, xq, gt, k, search_fn_factory,
         print(f"    {label} (param={param:5d}): "
               f"recall={mean_r:.4f}, time={ms_q:.4f} ms/q")
 
-    faiss.omp_set_num_threads(prev_threads)
     points.sort(key=lambda x: x["recall"])
     return points
 
@@ -433,9 +431,8 @@ def detour_factor_curve(idx, xq, gt, k=10, ef2_sweep=None, ef1=1,
     nq = xq.shape[0]
     k_gt = min(k, gt.shape[1])
 
-    prev_threads = faiss.omp_get_max_threads()
-    faiss.omp_set_num_threads(1)
-
+    # Time at the OpenMP default (omp_get_max_threads()) for consistency with
+    # the SuCo and cross-algorithm (router) benchmarks.
     points = []
     for ef2 in ef2_sweep:
         search_fn = _cspg_search_fn(ef2, ef1)
@@ -470,7 +467,6 @@ def detour_factor_curve(idx, xq, gt, k=10, ef2_sweep=None, ef1=1,
         print(f"    ef2={ef2:5d}: recall={mean_r:.4f}  w={w:.3f}  "
               f"L={L} B={B}  ({ms_q:.4f} ms/q)")
 
-    faiss.omp_set_num_threads(prev_threads)
     points.sort(key=lambda x: x["recall"])
     return points
 

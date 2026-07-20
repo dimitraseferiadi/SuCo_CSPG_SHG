@@ -84,6 +84,21 @@ def report_faiss():
               "(cd build/faiss/python && python setup.py install)")
     else:
         print("          IndexSuCo / IndexSHG / IndexCSPG all present")
+
+    # Quantisation-family baselines (opq_ivfpq / ivfpq_fastscan in the router
+    # bench) are built via index_factory. FastScan in particular is absent from
+    # some older/stripped FAISS builds; verify both keys construct now rather
+    # than discovering it mid-run on a multi-hour compute job.
+    for tag, key in (("OPQ-IVFPQ", "OPQ8_64,IVF64,PQ8x8"),
+                     # ("FastScan",  "OPQ8_64,IVF64,PQ8x4fs"),  # re-enable with FastScan
+                     ):
+        try:
+            faiss.index_factory(64, key, faiss.METRIC_L2)
+            print(f"          {tag} factory OK ('{key}')")
+        except Exception as e:
+            print(f"          WARNING: {tag} factory FAILED ('{key}') -- "
+                  f"{type(e).__name__}: {e}")
+            print("          --families quant will not run against this build.")
     return True
 
 
@@ -159,12 +174,9 @@ def verify_gt(name, data_dir, nq_sample=32):
         return True
 
     print(f"[....] {name}: verifying {gt_src}")
-    xb = ds.get_database()
     xq = ds.get_queries()[:nq_sample]
     gt = ds.get_groundtruth(k=10)[:nq_sample]
-
-    metric = faiss.METRIC_INNER_PRODUCT if ds.metric == "IP" else faiss.METRIC_L2
-    _, ids = faiss.knn(xq, xb, 10, metric=metric)
+    ids = _knn_streamed(ds, xq, 10)
 
     top1 = float((ids[:, 0] == gt[:, 0]).mean())
     # ties at equal distance are legitimate, so also allow top-1 in true top-10

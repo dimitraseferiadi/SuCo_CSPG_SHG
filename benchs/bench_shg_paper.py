@@ -250,9 +250,8 @@ def recall_time_curve(idx, label, xq, gt, k, search_factory, param_values,
     nq = xq.shape[0]
     k_gt = min(k, gt.shape[1])
 
-    prev_threads = faiss.omp_get_max_threads()
-    faiss.omp_set_num_threads(1)
-
+    # Time at the OpenMP default (omp_get_max_threads()) for consistency with
+    # the SuCo and cross-algorithm (router) benchmarks.
     results = []
 
     for param in param_values:
@@ -287,8 +286,6 @@ def recall_time_curve(idx, label, xq, gt, k, search_factory, param_values,
         })
         print(f"  {label} (ef/nprobe={param}): "
               f"recall={mean_recall:.4f}, time={mean_time_ms:.4f} ms/q")
-
-    faiss.omp_set_num_threads(prev_threads)
 
     results.sort(key=lambda x: x["recall"])
     return results

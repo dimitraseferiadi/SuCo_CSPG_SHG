@@ -104,6 +104,24 @@ SUCO_CANDIDATE_RATIO_VALUES = [
     0.0005, 0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2,
 ]
 
+# ---------------------------------------------------------------------------
+# Quantisation-family baselines: OPQ-IVFPQ (accuracy / memory point) and
+# IVFPQ-FastScan (throughput point).  The current five indexes are all
+# full-precision / exact-distance, so the memory and MRE axes are only tested
+# among methods that store raw vectors.  On HPC (AVX-512 + conventional DRAM)
+# the unified-memory scan artifact that forced IVFFlat's exclusion on the M4
+# (§10.1.3) no longer applies, so the quantisation family is measured fairly.
+# ---------------------------------------------------------------------------
+IVFPQ_NLIST_C       = 4              # nlist = C * round(sqrt(n)), clamped below
+IVFPQ_NLIST_CLAMP   = (64, 65536)
+IVFPQ_TRAIN_CAP     = 500_000        # subsample cap for OPQ + k-means training
+IVFPQ_PQ_NBITS      = 8              # 8-bit codes for the ADC baseline
+FASTSCAN_NBITS      = 4              # FastScan requires 4-bit codes
+IVFPQ_TARGET_SUBDIM = 4              # aim for ~4 input dims per PQ sub-quantiser
+
+# nprobe is the IVF recall knob (mirrors the §10.4 grid, extended for high recall).
+NPROBE_VALUES = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024]
+
 # Recall@k values to record.
 RECALL_KS = (1, 10, 20, 50, 100)
 SEARCH_K = max(RECALL_KS)
@@ -185,8 +203,22 @@ PER_INDEX_BENCHMARKS = {
 # Benchmarks computed once per dataset (need rebuild or aggregate over results).
 DATASET_BENCHMARKS = {"features", "unseen_robustness", "pareto", "time_at_recall"}
 
-ALL_INDEX_TYPES = ["suco", "shg", "cspg", "hnsw32", "hnsw48"]
+ALL_INDEX_TYPES = [
+    "suco", "shg", "cspg", "hnsw32", "hnsw48",
+    "opq_ivfpq",                            # quantisation family (see below)
+    # "ivfpq_fastscan",                     # FastScan disabled for now — re-enable here + in BUILDERS/SEARCH_FACTORY/ROBUSTNESS_BUDGET/INDEX_FAMILIES
+]
+# The quantisation baselines are opt-in so existing runs reproduce unchanged;
+# request them with --families quant (or --families all / --index-type all).
 DEFAULT_INDEX_TYPES = ["suco", "shg", "cspg", "hnsw32", "hnsw48"]
+
+# Named index-family groups for the --families CLI gate.
+INDEX_FAMILIES = {
+    "graph":     ["hnsw32", "hnsw48", "shg", "cspg"],
+    "collision": ["suco"],
+    "quant":     ["opq_ivfpq"],             # + "ivfpq_fastscan" when re-enabled
+    "all":       list(ALL_INDEX_TYPES),
+}
 
 
 # ---------------------------------------------------------------------------
@@ -348,12 +380,75 @@ def build_index_hnsw48(xb, d):
     return _build_hnsw(xb, d, HNSW48_M, HNSW48_EFC, "HNSW48")
 
 
+# --- Quantisation family --------------------------------------------------
+
+def _pick_ivf_nlist(n):
+    nlist = IVFPQ_NLIST_C * int(round(n ** 0.5))
+    lo, hi = IVFPQ_NLIST_CLAMP
+    # Also cap so the (subsampled) training set gives >= 64 points/centroid,
+    # otherwise IVF k-means is undertrained and FAISS warns; the training set
+    # is min(n, IVFPQ_TRAIN_CAP).
+    train_pts = min(n, IVFPQ_TRAIN_CAP)
+    hi = min(hi, max(lo, train_pts // 64))
+    return int(max(lo, min(nlist, hi)))
+
+
+def _pick_pq_params(d, nbits):
+    """Return (m, d2): m PQ sub-quantisers over an OPQ output dim d2 that is a
+    multiple of m and close to d.  OPQ supplies the rotation + (d -> d2)
+    projection, so there is NO d % m == 0 requirement on the raw dimension —
+    which is also why this family, unlike SuCo, can index Enron (d=1369)."""
+    m = max(4, min(d // IVFPQ_TARGET_SUBDIM, 64))
+    if nbits == 4:                       # FastScan packs code pairs; keep m even
+        m -= m % 2
+    d2 = m * max(2, round(d / m))        # multiple of m, ~d
+    return int(m), int(d2)
+
+
+def _train_and_add(idx, xb, label):
+    t0 = time.time()
+    n = xb.shape[0]
+    if n > IVFPQ_TRAIN_CAP:
+        rs = np.random.RandomState(1234)
+        sub = rs.choice(n, IVFPQ_TRAIN_CAP, replace=False)
+        idx.train(np.ascontiguousarray(xb[sub]))
+    else:
+        idx.train(xb)
+    idx.add(xb)
+    t_total = time.time() - t0
+    print(f"  {label}: build={t_total:.2f}s")
+    return idx, t_total
+
+
+def build_index_opq_ivfpq(xb, d):
+    n = xb.shape[0]
+    nlist = _pick_ivf_nlist(n)
+    m, d2 = _pick_pq_params(d, IVFPQ_PQ_NBITS)
+    key = f"OPQ{m}_{d2},IVF{nlist},PQ{m}x{IVFPQ_PQ_NBITS}"
+    idx = faiss.index_factory(d, key, faiss.METRIC_L2)
+    return _train_and_add(idx, xb, f"OPQ-IVFPQ [{key}]")
+
+
+def build_index_ivfpq_fastscan(xb, d):
+    n = xb.shape[0]
+    nlist = _pick_ivf_nlist(n)
+    m, d2 = _pick_pq_params(d, FASTSCAN_NBITS)
+    # 'fs' => FastScan (SIMD 4-bit).  To lift the recall ceiling on hard/high-d
+    # data, append ',RFlat' (exact re-rank) — but that stores raw vectors and
+    # forfeits the memory win, so keep it a SEPARATE variant, not the default.
+    key = f"OPQ{m}_{d2},IVF{nlist},PQ{m}x{FASTSCAN_NBITS}fs"
+    idx = faiss.index_factory(d, key, faiss.METRIC_L2)
+    return _train_and_add(idx, xb, f"IVFPQ-FastScan [{key}]")
+
+
 BUILDERS = {
-    "suco":   ("SuCo",   build_index_suco),
-    "shg":    ("SHG",    build_index_shg),
-    "cspg":   ("CSPG",   build_index_cspg),
-    "hnsw32": ("HNSW32", build_index_hnsw32),
-    "hnsw48": ("HNSW48", build_index_hnsw48),
+    "suco":           ("SuCo",           build_index_suco),
+    "shg":            ("SHG",            build_index_shg),
+    "cspg":           ("CSPG",           build_index_cspg),
+    "hnsw32":         ("HNSW32",         build_index_hnsw32),
+    "hnsw48":         ("HNSW48",         build_index_hnsw48),
+    "opq_ivfpq":      ("OPQ-IVFPQ",      build_index_opq_ivfpq),
+    # "ivfpq_fastscan": ("IVFPQ-FastScan", build_index_ivfpq_fastscan),  # disabled for now
 }
 
 
@@ -483,13 +578,49 @@ def _make_hnsw_search_factory():
     return factory
 
 
+def _make_ivf_search_factory():
+    def factory(nprobe):
+        def fn(idx, xq, k):
+            # reach the inner IVF through the OPQ pretransform wrapper.
+            # (Mutating nprobe mirrors the SuCo candidate_ratio style above; if
+            # this loop is ever parallelised across param points, switch to
+            # faiss.SearchParametersIVF(nprobe=...) passed via params=.)
+            faiss.extract_index_ivf(idx).nprobe = int(nprobe)
+            return idx.search(xq, k)
+        return fn
+    return factory
+
+
 SEARCH_FACTORY = {
-    "suco":   (_make_suco_search_factory(), SUCO_CANDIDATE_RATIO_VALUES, "candidate_ratio"),
-    "shg":    (_make_shg_search_factory(),  EF_SEARCH_VALUES,            "efSearch"),
-    "cspg":   (_make_cspg_search_factory(), EF_SEARCH_VALUES,            "efSearch"),
-    "hnsw32": (_make_hnsw_search_factory(), EF_SEARCH_VALUES,            "efSearch"),
-    "hnsw48": (_make_hnsw_search_factory(), EF_SEARCH_VALUES,            "efSearch"),
+    "suco":           (_make_suco_search_factory(), SUCO_CANDIDATE_RATIO_VALUES, "candidate_ratio"),
+    "shg":            (_make_shg_search_factory(),  EF_SEARCH_VALUES,            "efSearch"),
+    "cspg":           (_make_cspg_search_factory(), EF_SEARCH_VALUES,            "efSearch"),
+    "hnsw32":         (_make_hnsw_search_factory(), EF_SEARCH_VALUES,            "efSearch"),
+    "hnsw48":         (_make_hnsw_search_factory(), EF_SEARCH_VALUES,            "efSearch"),
+    "opq_ivfpq":      (_make_ivf_search_factory(),  NPROBE_VALUES,              "nprobe"),
+    # "ivfpq_fastscan": (_make_ivf_search_factory(),  NPROBE_VALUES,              "nprobe"),  # disabled for now
 }
+
+# Fixed search budget per family for the robustness experiments, and the
+# per-kind knob name.  These generalise the old two-way "suco vs graph" split
+# so a third param type (nprobe) is handled without special-casing each site.
+ROBUSTNESS_BUDGET = {
+    "suco":           ROBUSTNESS_CANDIDATE_RATIO,   # 0.005
+    "shg":            ROBUSTNESS_EFSEARCH,          # 200
+    "cspg":           ROBUSTNESS_EFSEARCH,
+    "hnsw32":         ROBUSTNESS_EFSEARCH,
+    "hnsw48":         ROBUSTNESS_EFSEARCH,
+    "opq_ivfpq":      64,                           # nprobe
+    # "ivfpq_fastscan": 64,                         # disabled for now
+}
+
+
+def _param_name(kind):
+    return SEARCH_FACTORY[kind][2]
+
+
+def _robustness_budget(kind):
+    return ROBUSTNESS_BUDGET[kind]
 
 
 # ===========================================================================
@@ -535,12 +666,45 @@ def evict_caches(size_mb=COLD_EVICT_MB):
 
 
 def flush_os_cache():
-    """Best-effort page-cache flush (needs root). Returns True on success."""
+    """Best-effort *system-wide* page-cache flush. Needs root on Linux
+    (drop_caches) and works unprivileged on macOS (purge). Returns True on
+    success. Under Slurm on an HPC node this returns False; the per-file
+    evict_file_pages() below is the unprivileged mechanism used instead."""
     if _platform.system() == "Linux":
         return os.system("sync && echo 3 > /proc/sys/vm/drop_caches 2>/dev/null") == 0
     if _platform.system() == "Darwin":
         return os.system("purge >/dev/null 2>&1") == 0
     return False
+
+
+# posix_fadvise is Linux-only in CPython; absent on macOS/BSD. When it is
+# missing there is no unprivileged way to evict a file's pages, so the
+# cold-cache measurement can only reach CPU-cache-cold.
+_HAVE_FADVISE = hasattr(os, "posix_fadvise") and hasattr(os, "POSIX_FADV_DONTNEED")
+
+
+def evict_file_pages(path):
+    """Evict one file's pages from the OS page cache without root, via
+    posix_fadvise(POSIX_FADV_DONTNEED). Returns True if the advice was issued.
+
+    Only affects the cold-cache measurement when the index is *mmap-backed*:
+    run_cold_warm reloads the index with IO_FLAG_MMAP so that its vectors are
+    file-backed and re-fault from disk after eviction. For a heap-resident
+    index the process holds its own anonymous copy that no page-cache
+    operation (fadvise or drop_caches) can touch, and the measurement
+    degrades to CPU-cache-cold only."""
+    if not _HAVE_FADVISE or not path or not os.path.exists(path):
+        return False
+    try:
+        fd = os.open(path, os.O_RDONLY)
+        try:
+            # len=0 means "to end of file"; evict the whole index.
+            os.posix_fadvise(fd, 0, 0, os.POSIX_FADV_DONTNEED)
+        finally:
+            os.close(fd)
+        return True
+    except OSError:
+        return False
 
 
 # ===========================================================================
@@ -571,18 +735,35 @@ def pick_param_for_recall(curve, target):
 
 def time_at_recall(curve, target):
     """Linear interpolation of ms_per_query at a recall target. None if unreachable."""
+    ms, _ = time_and_std_at_recall(curve, target)
+    return ms
+
+
+def time_and_std_at_recall(curve, target):
+    """Linear interpolation of (ms_per_query, ms_per_query_std) at a recall
+    target. The mean is interpolated linearly; the std is propagated as the
+    std of a weighted sum of two independent measurements (Var = (1-t)^2 *
+    var_lo + t^2 * var_hi), which is the correct combination for two
+    separately-measured operating points rather than a naive linear blend
+    of the standard deviations. Returns (None, None) if unreachable.
+    """
     rows = sorted(curve, key=lambda r: r["recall"])
     above = [r for r in rows if r["recall"] >= target]
     below = [r for r in rows if r["recall"] < target]
     if not above:
-        return None
+        return None, None
     if not below:
-        return float(above[0]["ms_per_query"])
+        r = above[0]
+        return float(r["ms_per_query"]), float(r.get("ms_per_query_std") or 0.0)
     lo, hi = below[-1], above[0]
     if hi["recall"] == lo["recall"]:
-        return float(hi["ms_per_query"])
+        return float(hi["ms_per_query"]), float(hi.get("ms_per_query_std") or 0.0)
     t = (target - lo["recall"]) / (hi["recall"] - lo["recall"])
-    return float(lo["ms_per_query"] + t * (hi["ms_per_query"] - lo["ms_per_query"]))
+    ms = lo["ms_per_query"] + t * (hi["ms_per_query"] - lo["ms_per_query"])
+    var_lo = (lo.get("ms_per_query_std") or 0.0) ** 2
+    var_hi = (hi.get("ms_per_query_std") or 0.0) ** 2
+    std = ((1 - t) ** 2 * var_lo + t ** 2 * var_hi) ** 0.5
+    return float(ms), float(std)
 
 
 # ===========================================================================
@@ -613,7 +794,10 @@ def recall_time_curve(idx, label, xq, gt, k, factory, param_values,
 
         recall = compute_recall_at_k(I_last, gt, k)
         mean_t = float(run_times.mean())
-        std_t  = float(run_times.std())
+        # Sample std (ddof=1): population std (ddof=0) understates the true
+        # run-to-run variance, especially at n_runs=3, where it is biased low
+        # by ~18%. Falls back to 0 for a single run (std is undefined).
+        std_t  = float(run_times.std(ddof=1)) if len(run_times) > 1 else 0.0
         ms_per_q = (mean_t / nq) * 1000.0
         ms_std   = (std_t  / nq) * 1000.0
         qps = nq / mean_t if mean_t > 0 else 0.0
@@ -628,6 +812,7 @@ def recall_time_curve(idx, label, xq, gt, k, factory, param_values,
             "qps":              round(qps,      2),
             "qps_std":          round(qps_std,  2),
             "n_runs": int(n_runs),
+            "run_times_s": [round(float(t), 6) for t in run_times],
         })
         print(f"  {label} ({param}): recall@{k}={recall:.4f}, "
               f"ms/q={ms_per_q:.4f}±{ms_std:.4f}, qps={qps:.0f}±{qps_std:.0f}")
@@ -688,18 +873,16 @@ def compute_dataset_features(xb, xq, sample_n=10_000, k_lid=20):
 
 def run_robustness(idx, kind, xq, gt, k=20):
     factory, _, _ = SEARCH_FACTORY[kind]
-    if kind == "suco":
-        search_fn = factory(ROBUSTNESS_CANDIDATE_RATIO)
-    else:
-        search_fn = factory(ROBUSTNESS_EFSEARCH)
+    budget = _robustness_budget(kind)
+    search_fn = factory(budget)
     t0 = time.time()
     _, I = search_fn(idx, xq, k)
     elapsed = time.time() - t0
     pqr = per_query_recall(I, gt, k)
     return {
         "k": k,
-        "param": ROBUSTNESS_CANDIDATE_RATIO if kind == "suco" else ROBUSTNESS_EFSEARCH,
-        "param_name": "candidate_ratio" if kind == "suco" else "efSearch",
+        "param": budget,
+        "param_name": _param_name(kind),
         "mean_recall":   round(float(pqr.mean()), 4),
         "median_recall": round(float(np.median(pqr)), 4),
         "min_recall":    round(float(pqr.min()), 4),
@@ -786,8 +969,36 @@ def run_latency_tail(idx, kind, xq, gt, k=20, recall_curve=None):
     return out
 
 
-def run_cold_warm(idx, kind, xq, gt, k=20, recall_curve=None):
-    """Cold-cache (evict between queries) vs steady-state warm latency at recall≥0.95."""
+def _load_index_mmap(idx_path):
+    """Reload an on-disk index in mmap mode so its vectors are file-backed
+    (and therefore evictable via evict_file_pages). Returns the mmap index or
+    None if fadvise is unavailable, the path is missing, or the class does not
+    support IO_FLAG_MMAP. Skipped without fadvise: an mmap copy we cannot evict
+    only wastes RAM and would still measure CPU-cache-cold."""
+    if not _HAVE_FADVISE or not idx_path or not os.path.exists(idx_path):
+        return None
+    try:
+        return faiss.read_index(idx_path, faiss.IO_FLAG_MMAP)
+    except Exception as e:
+        print(f"  cold_warm: mmap reload failed ({e}); "
+              f"falling back to CPU-cache-cold on the heap-resident index")
+        return None
+
+
+def run_cold_warm(idx, kind, xq, gt, k=20, recall_curve=None, idx_path=None):
+    """Cold-cache vs steady-state warm latency at recall≥0.95.
+
+    Two eviction regimes, recorded in ``cold_mode``:
+      * ``page_cache``  — the index is reloaded mmap-backed and its pages are
+        dropped from the OS page cache before each cold query with an
+        unprivileged posix_fadvise(DONTNEED); the next search re-faults from
+        disk. This is the genuine cold-from-storage measurement and needs no
+        root, so it is the one to use on an HPC node under Slurm.
+      * ``cpu_cache``   — mmap reload was unavailable (no on-disk index, or the
+        class does not support IO_FLAG_MMAP); only the CPU caches are thrashed
+        via evict_caches(), so the index vectors stay resident in RAM. The
+        cold/warm ratio then reflects CPU-cache locality only, not disk.
+    """
     factory, params, _ = SEARCH_FACTORY[kind]
     if recall_curve is None:
         recall_curve = recall_time_curve(idx, kind, xq, gt, k, factory, params, n_runs=1)
@@ -796,25 +1007,46 @@ def run_cold_warm(idx, kind, xq, gt, k=20, recall_curve=None):
         chosen = recall_curve[-1]
     search_fn = factory(chosen["param"])
 
-    page_flushed = flush_os_cache()
+    # Prefer a genuine page-cache-cold measurement via an mmap-backed reload;
+    # fall back to the heap-resident index (CPU-cache-cold only) if that is
+    # unavailable. The suco search factory mutates idx.candidate_ratio, so the
+    # reloaded object must be the one searched for the parameter to take effect.
+    mmap_idx = _load_index_mmap(idx_path)
+    cold_idx = mmap_idx if mmap_idx is not None else idx
+
+    # System-wide flush is a best-effort bonus (works on the macOS dev box,
+    # no-ops without root on Linux); the per-file fadvise is the real mechanism.
+    system_flushed = flush_os_cache()
+
     cold_times = []
+    page_evicted_any = False
     for i in range(min(COLDWARM_NUM_COLD, xq.shape[0])):
         flush_os_cache()
+        page_evicted_any |= evict_file_pages(idx_path)
         evict_caches()
         q = xq[i:i+1]
         t0 = time.perf_counter()
-        search_fn(idx, q, k)
+        search_fn(cold_idx, q, k)
         cold_times.append((time.perf_counter() - t0) * 1000.0)
 
+    # Decide the label from what actually happened: only page-cache-cold if the
+    # index was mmap-backed *and* at least one fadvise eviction fired. An mmap
+    # reload whose pages were never evicted stayed resident, i.e. CPU-cache-cold.
+    cold_mode = "page_cache" if (mmap_idx is not None and page_evicted_any) else "cpu_cache"
+
     for _ in range(20):
-        search_fn(idx, xq[:50], k)
+        search_fn(cold_idx, xq[:50], k)
     warm_times = []
     n_warm = min(COLDWARM_NUM_WARM, xq.shape[0])
     for i in range(n_warm):
         q = xq[i:i+1]
         t0 = time.perf_counter()
-        search_fn(idx, q, k)
+        search_fn(cold_idx, q, k)
         warm_times.append((time.perf_counter() - t0) * 1000.0)
+
+    if mmap_idx is not None:
+        del mmap_idx
+        gc.collect()
 
     cold = np.asarray(cold_times)
     warm = np.asarray(warm_times)
@@ -822,7 +1054,11 @@ def run_cold_warm(idx, kind, xq, gt, k=20, recall_curve=None):
         "param": chosen["param"],
         "achieved_recall": chosen["recall"],
         "target_recall":   COLDWARM_RECALL_TARGET,
-        "page_cache_flushed": bool(page_flushed),
+        # cold_mode says what "cold" actually means for this row; page_evicted
+        # confirms the fadvise fired, system_cache_flushed is the (rare) bonus.
+        "cold_mode":            cold_mode,
+        "page_evicted":         bool(page_evicted_any),
+        "system_cache_flushed": bool(system_flushed),
         "evict_buffer_mb": COLD_EVICT_MB,
         "cold_first_ms":  round(float(cold[0]), 6),
         "cold_mean_ms":   round(float(cold.mean()), 6),
@@ -905,14 +1141,12 @@ def run_unseen_robustness(xb, xq, data_dir, dataset, index_types, k=UNSEEN_K):
             else:
                 idx, _ = builder(xb_keep, d)
             factory, _, _ = SEARCH_FACTORY[kind]
-            if kind == "suco":
-                search_fn = factory(ROBUSTNESS_CANDIDATE_RATIO)
-            else:
-                search_fn = factory(ROBUSTNESS_EFSEARCH)
+            budget = _robustness_budget(kind)
+            search_fn = factory(budget)
             _, I = search_fn(idx, xq_held, k)
             pqr = per_query_recall(I, gt_held, k)
             out["per_index"][label] = {
-                "param": ROBUSTNESS_CANDIDATE_RATIO if kind == "suco" else ROBUSTNESS_EFSEARCH,
+                "param": budget,
                 "mean_recall":   round(float(pqr.mean()),       4),
                 "median_recall": round(float(np.median(pqr)),    4),
                 "min_recall":    round(float(pqr.min()),         4),
@@ -952,19 +1186,34 @@ def derive_time_at_recall(all_results):
         per_k = {}
         for target in TIME_AT_RECALL_TARGETS:
             entry = {}
-            base_ms = time_at_recall(baseline, target) if baseline else None
+            base_ms, base_std = (
+                time_and_std_at_recall(baseline, target) if baseline else (None, None)
+            )
             for label, rows in curves.items():
-                ms = time_at_recall(rows, target)
+                ms, ms_std = time_and_std_at_recall(rows, target)
                 if ms is None:
-                    entry[label] = {"ms_per_query": None, "speedup_vs_" + SPEEDUP_BASELINE_LABEL: None,
-                                    "qps": None}
+                    entry[label] = {
+                        "ms_per_query": None, "ms_per_query_std": None,
+                        "qps": None,
+                        f"speedup_vs_{SPEEDUP_BASELINE_LABEL}": None,
+                        f"speedup_vs_{SPEEDUP_BASELINE_LABEL}_std": None,
+                    }
                     continue
                 speedup = (base_ms / ms) if (base_ms is not None and ms > 0) else None
+                # Relative-error propagation for a ratio of two independent
+                # measurements: σ_speedup/speedup ≈ sqrt((σ_base/base)^2 + (σ_ms/ms)^2).
+                speedup_std = None
+                if speedup is not None and base_ms and base_std is not None and ms_std is not None:
+                    rel = ((base_std / base_ms) ** 2 + (ms_std / ms) ** 2) ** 0.5
+                    speedup_std = speedup * rel
                 entry[label] = {
-                    "ms_per_query": round(ms, 6),
-                    "qps":          round(1000.0 / ms, 2) if ms > 0 else None,
+                    "ms_per_query":     round(ms, 6),
+                    "ms_per_query_std": round(ms_std, 6) if ms_std is not None else None,
+                    "qps":              round(1000.0 / ms, 2) if ms > 0 else None,
                     f"speedup_vs_{SPEEDUP_BASELINE_LABEL}":
                         round(speedup, 3) if speedup is not None else None,
+                    f"speedup_vs_{SPEEDUP_BASELINE_LABEL}_std":
+                        round(speedup_std, 3) if speedup_std is not None else None,
                 }
             per_k[f"r{int(round(target * 100))}"] = entry
         out[f"recall_k{k}"] = per_k
@@ -1130,6 +1379,7 @@ def run_benchmarks(dataset, benchmarks, index_types, data_dir, index_dir, output
             try:
                 coldwarm_results[label] = run_cold_warm(
                     idx, kind, xq, gt, k=20, recall_curve=k20_curve,
+                    idx_path=idx_path,
                 )
                 print(f"  {label}: {coldwarm_results[label]}")
             except Exception as e:
@@ -1215,6 +1465,10 @@ def main():
                     choices=ALL_BENCHMARKS + ["all"])
     ap.add_argument("--index-type", nargs="+", default=DEFAULT_INDEX_TYPES,
                     choices=ALL_INDEX_TYPES + ["all"])
+    ap.add_argument("--families", nargs="+", default=None,
+                    choices=sorted(INDEX_FAMILIES),
+                    help="Index-family groups to run (graph/collision/quant/all). "
+                         "Overrides --index-type when given; e.g. --families quant.")
     ap.add_argument("--n-runs", type=int, default=N_RUNS,
                     help="Repetitions for QPS/recall curves (std reporting). Default 3.")
     args = ap.parse_args()
@@ -1226,7 +1480,13 @@ def main():
     N_RUNS = max(1, int(args.n_runs))
 
     benchmarks  = ALL_BENCHMARKS    if "all" in args.benchmark  else args.benchmark
-    index_types = ALL_INDEX_TYPES   if "all" in args.index_type else args.index_type
+    if args.families:
+        chosen = [k for f in args.families for k in INDEX_FAMILIES[f]]
+    else:
+        chosen = ALL_INDEX_TYPES if "all" in args.index_type else args.index_type
+    # de-duplicate while preserving the canonical ALL_INDEX_TYPES order
+    chosen = set(chosen)
+    index_types = [k for k in ALL_INDEX_TYPES if k in chosen]
     datasets = []
     for d in args.dataset:
         if d == "all":
