@@ -1,0 +1,40 @@
+Log:        /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router/log_router_enron.txt
+Data dir:   /leonardo_work/EUHPC_D32_102/dhm/data
+Index dir:  /leonardo_work/EUHPC_D32_102/dhm/indices
+Output dir: /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router
+Datasets:   ['enron']
+Benchmarks: ['construction', 'features', 'recall_k1', 'recall_k10', 'recall_k20', 'recall_k50', 'recall_k100', 'robustness', 'unseen_robustness', 'hard_robustness', 'latency_tail', 'cold_warm', 'mre', 'pareto', 'time_at_recall']
+Indexes:    ['suco', 'shg', 'cspg', 'hnsw32', 'hnsw48', 'opq_ivfpq']
+N runs:     3
+
+######################################################################
+# Dataset: ENRON
+######################################################################
+
+Loading enron...
+  enron: d=1369 nb=94,987 nq=200 metric=L2
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/enron/enron_base.fvecs (fvecs, 94,987 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/enron/enron_query.fvecs (fvecs)
+    train : <sampled from base>
+    gt    : /leonardo_work/EUHPC_D32_102/dhm/data/enron/enron_groundtruth.ivecs
+  enron_groundtruth.ivecs has only 20 neighbours per query but k=100 was requested; computing a deeper groundtruth
+  computing groundtruth (nb=94,987 nq=200 k=100 metric=L2) ...
+  groundtruth cached to /leonardo_work/EUHPC_D32_102/dhm/indices/gt_enron_k100_2762d77dc557.npy
+  (computed groundtruth agrees with the shipped 20-NN file on 100.0% of top-1)
+  Loaded in 2.1s: xb=(94987, 1369), xq=(200, 1369), gt=(200, 100)
+
+======================================================================
+BENCHMARK: features - enron
+======================================================================
+  {'n': 94987, 'd': 1369, 'nq': 200, 'lid_mle': 26.911365509033203, 'pdist_mean': 384.01312255859375, 'pdist_std': 895.726806640625, 'kmeans_inertia_ratio_16': 0.7839132165592744}
+
+ERROR processing enron: SuCo: no valid nsubspaces ≤ 8 for d=1369 (needs d%n==0 and (d/n)%2==0)
+Traceback (most recent call last):
+  File "/leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/bench_router_paper.py", line 1534, in main
+    run_benchmarks(ds, benchmarks, index_types,
+  File "/leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/bench_router_paper.py", line 1280, in run_benchmarks
+    suco_n, _ = resolve_suco_nsubspaces(dataset, d)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/bench_router_paper.py", line 295, in resolve_suco_nsubspaces
+    raise RuntimeError(
+RuntimeError: SuCo: no valid nsubspaces ≤ 8 for d=1369 (needs d%n==0 and (d/n)%2==0)

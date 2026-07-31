@@ -1,0 +1,100 @@
+Loading gcc/11.3.0
+  Loading requirement: gmp/6.2.1 mpfr/4.1.0 mpc/1.2.1
+=== per-algo run start 2026-07-24 21:17:27  |  algos: shg  |  threads=32 ===
+--- linking SHG indexes (shg + hnsw48) ---
+  !! MISSING router index: /leonardo_work/EUHPC_D32_102/dhm/indices/enron_shg.idx  ->  would be REBUILT for enron_shg.idx
+  !! MISSING router index: /leonardo_work/EUHPC_D32_102/dhm/indices/enron_hnsw48.idx  ->  would be REBUILT for enron_hnsw.idx
+  !! MISSING router index: /leonardo_work/EUHPC_D32_102/dhm/indices/msturing10m_shg.idx  ->  would be REBUILT for msturing10m_shg.idx
+  !! MISSING router index: /leonardo_work/EUHPC_D32_102/dhm/indices/msturing10m_hnsw48.idx  ->  would be REBUILT for msturing10m_hnsw.idx
+
+############################################################
+# 2026-07-24 21:17:27  SHG reproduction
+############################################################
+data-dir: /leonardo_work/EUHPC_D32_102/dhm/data
+contents: deep10m, enron, gist1m, msong, msturing10m, openai1m, sift100M, spacev10m, uqv
+faiss   : /leonardo/home/userexternal/afilippa/miniconda3/envs/anns/lib/python3.12/site-packages/faiss/__init__.py
+          IndexSuCo / IndexSHG / IndexCSPG all present
+          OPQ-IVFPQ factory OK ('OPQ8_64,IVF64,PQ8x8')
+------------------------------------------------------------------------
+[ ok ] openai: d=1536 nb=1,000,000 nq=10,000 metric=IP
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/openai1m/base.fbin (fbin, 1,000,000 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/openai1m/queries.fbin (fbin)
+    train : <sampled from base>
+    gt    : <computed and cached>
+       WARN: groundtruth will be computed on first run (slow, then cached)
+       WARN: no learn file; training vectors sampled from the base
+[ ok ] enron: d=1369 nb=94,987 nq=200 metric=L2
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/enron/enron_base.fvecs (fvecs, 94,987 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/enron/enron_query.fvecs (fvecs)
+    train : <sampled from base>
+    gt    : /leonardo_work/EUHPC_D32_102/dhm/data/enron/enron_groundtruth.ivecs
+       WARN: no learn file; training vectors sampled from the base
+[ ok ] gist1m: d=960 nb=1,000,000 nq=1,000 metric=L2
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/gist1m/gist_base.fvecs (fvecs, 1,000,000 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/gist1m/gist_query.fvecs (fvecs)
+    train : /leonardo_work/EUHPC_D32_102/dhm/data/gist1m/gist_learn.fvecs
+    gt    : /leonardo_work/EUHPC_D32_102/dhm/data/gist1m/gist_groundtruth.ivecs
+[ ok ] msong: d=420 nb=992,272 nq=200 metric=L2
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/msong/msong_base.fvecs (fvecs, 992,272 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/msong/msong_query.fvecs (fvecs)
+    train : <sampled from base>
+    gt    : /leonardo_work/EUHPC_D32_102/dhm/data/msong/msong_groundtruth.ivecs
+       WARN: no learn file; training vectors sampled from the base
+[ ok ] uqv: d=256 nb=1,000,000 nq=10,000 metric=L2
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/uqv/uqv_base.fvecs (fvecs, 1,000,000 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/uqv/uqv_query.fvecs (fvecs)
+    train : <sampled from base>
+    gt    : /leonardo_work/EUHPC_D32_102/dhm/data/uqv/uqv_groundtruth.ivecs
+       WARN: no learn file; training vectors sampled from the base
+[ ok ] msturing10m: d=100 nb=10,000,000 nq=100,000 metric=L2
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/msturing10m/base.10M.fbin (fbin, 10,000,000 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/msturing10m/query.public.100K.fbin (fbin)
+    train : <sampled from base>
+    gt    : /leonardo_work/EUHPC_D32_102/dhm/data/msturing10m/groundtruth.public.100K.ibin
+       WARN: no learn file; training vectors sampled from the base
+------------------------------------------------------------------------
+6/6 datasets resolved
+--- SHG: openai ---
+usage: bench_shg_paper.py [-h] [--data-dir DATA_DIR] [--index-dir INDEX_DIR]
+                          [--output-dir OUTPUT_DIR]
+                          [--dataset {openai,enron,gist1m,msong,uqv,msturing10m,all}]
+                          [--benchmark {construction,recall_k20,recall_k50,robustness,ablation,all} [{construction,recall_k20,recall_k50,robustness,ablation,all} ...]]
+bench_shg_paper.py: error: unrecognized arguments: --index-type shg hnsw
+!!! shg openai FAILED
+--- SHG: enron ---
+usage: bench_shg_paper.py [-h] [--data-dir DATA_DIR] [--index-dir INDEX_DIR]
+                          [--output-dir OUTPUT_DIR]
+                          [--dataset {openai,enron,gist1m,msong,uqv,msturing10m,all}]
+                          [--benchmark {construction,recall_k20,recall_k50,robustness,ablation,all} [{construction,recall_k20,recall_k50,robustness,ablation,all} ...]]
+bench_shg_paper.py: error: unrecognized arguments: --index-type shg hnsw
+!!! shg enron FAILED
+--- SHG: gist1m ---
+usage: bench_shg_paper.py [-h] [--data-dir DATA_DIR] [--index-dir INDEX_DIR]
+                          [--output-dir OUTPUT_DIR]
+                          [--dataset {openai,enron,gist1m,msong,uqv,msturing10m,all}]
+                          [--benchmark {construction,recall_k20,recall_k50,robustness,ablation,all} [{construction,recall_k20,recall_k50,robustness,ablation,all} ...]]
+bench_shg_paper.py: error: unrecognized arguments: --index-type shg hnsw
+!!! shg gist1m FAILED
+--- SHG: msong ---
+usage: bench_shg_paper.py [-h] [--data-dir DATA_DIR] [--index-dir INDEX_DIR]
+                          [--output-dir OUTPUT_DIR]
+                          [--dataset {openai,enron,gist1m,msong,uqv,msturing10m,all}]
+                          [--benchmark {construction,recall_k20,recall_k50,robustness,ablation,all} [{construction,recall_k20,recall_k50,robustness,ablation,all} ...]]
+bench_shg_paper.py: error: unrecognized arguments: --index-type shg hnsw
+!!! shg msong FAILED
+--- SHG: uqv ---
+usage: bench_shg_paper.py [-h] [--data-dir DATA_DIR] [--index-dir INDEX_DIR]
+                          [--output-dir OUTPUT_DIR]
+                          [--dataset {openai,enron,gist1m,msong,uqv,msturing10m,all}]
+                          [--benchmark {construction,recall_k20,recall_k50,robustness,ablation,all} [{construction,recall_k20,recall_k50,robustness,ablation,all} ...]]
+bench_shg_paper.py: error: unrecognized arguments: --index-type shg hnsw
+!!! shg uqv FAILED
+--- SHG: msturing10m ---
+usage: bench_shg_paper.py [-h] [--data-dir DATA_DIR] [--index-dir INDEX_DIR]
+                          [--output-dir OUTPUT_DIR]
+                          [--dataset {openai,enron,gist1m,msong,uqv,msturing10m,all}]
+                          [--benchmark {construction,recall_k20,recall_k50,robustness,ablation,all} [{construction,recall_k20,recall_k50,robustness,ablation,all} ...]]
+bench_shg_paper.py: error: unrecognized arguments: --index-type shg hnsw
+!!! shg msturing10m FAILED
+
+=== per-algo run done 2026-07-24 21:17:29 ===

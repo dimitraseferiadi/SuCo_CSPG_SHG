@@ -1,0 +1,50 @@
+
+======================================================================
+  Loading GIST1M dataset  (d=960, nb=1 000 000)
+======================================================================
+  data_dir  : /leonardo_work/EUHPC_D32_102/dhm/data
+  d         : 960
+  nb (base) : 1,000,000
+  maxtrain  : 100,000
+  OMP threads: 32
+  Loading base … shape=(1000000, 960)
+  Loading queries … shape=(1000, 960)
+  Loading train … shape=(100000, 960)
+  Loading ground truth … shape=(1000, 100)
+
+======================================================================
+  IndexSuCo benchmark  (GIST1M, d=960)
+======================================================================
+  nsubspaces      = 40  (half_dim=12)
+  ncentroids_half = 50
+  collision_ratio = 0.05
+  candidate_ratio = 0.005
+  niter           = 10
+  k               = 10
+  Loading index from /leonardo_work/EUHPC_D32_102/dhm/indices_suco/gist1m.idx …
+  Loaded in 10.16s
+  Searching 1,000 queries (k=10) …
+
+  Results:
+    ntotal          = 1,000,000
+    nsubspaces      = 40  (half_dim=12)
+    OMP threads     = 32
+    train time      = 0.00s
+    add time        = 0.00s
+    build time      = 0.00s
+    index size      = 3968.2 MiB
+    search time     = 660.3ms total
+    ms / query      = 0.660
+    QPS             = 1515
+    Recall@1        = 0.9690
+    Recall@10       = 0.9720
+    10-Recall@10    = 0.9337
+    Dist ratio      = 1.0010
+
+======================================================================
+  HNSW efSearch sweep  (M=32, efConstruction=200)
+======================================================================
+efSearch     ms/q      QPS     R@1    R@10
+------------------------------------------
+  Building HNSW (M=32, efConstruction=200) on 1,000,000 vectors …
+        50,000 / 1,000,000  (5.0%)       100,000 / 1,000,000  (10.0%)       150,000 / 1,000,000  (15.0%)       200,000 / 1,000,000  (20.0%)       250,000 / 1,000,000  (25.0%)       300,000 / 1,000,000  (30.0%)       350,000 / 1,000,000  (35.0%)       400,000 / 1,000,000  (40.0%)       450,000 / 1,000,000  (45.0%)       500,000 / 1,000,000  (50.0%)       550,000 / 1,000,000  (55.0%)       600,000 / 1,000,000  (60.0%)       650,000 / 1,000,000  (65.0%)       700,000 / 1,000,000  (70.0%)

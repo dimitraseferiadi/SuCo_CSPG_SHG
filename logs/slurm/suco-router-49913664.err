@@ -1,0 +1,6 @@
+
+EnvironmentNameNotFound: Could not find conda environment: spacev10m
+You can list all discoverable environments with `conda info --envs`.
+
+
+/var/spool/slurmd/job49913664/slurm_script: line 54: NRUNS: unbound variable

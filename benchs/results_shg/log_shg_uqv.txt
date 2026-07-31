@@ -1,0 +1,188 @@
+Data dir:   /leonardo_work/EUHPC_D32_102/dhm/data
+Index dir:  /leonardo_work/EUHPC_D32_102/dhm/indices_shg
+Output dir: /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_shg
+Datasets:   ['uqv']
+Benchmarks: ['construction', 'recall_k20', 'recall_k50', 'robustness', 'ablation']
+Indexes:    ['shg', 'hnsw']
+
+######################################################################
+# Dataset: UQV
+######################################################################
+
+Loading dataset uqv...
+  uqv: d=256 nb=1,000,000 nq=10,000 metric=L2
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/uqv/uqv_base.fvecs (fvecs, 1,000,000 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/uqv/uqv_query.fvecs (fvecs)
+    train : <sampled from base>
+    gt    : /leonardo_work/EUHPC_D32_102/dhm/data/uqv/uqv_groundtruth.ivecs
+  Loaded in 2.9s: xb=(1000000, 256), xq=(10000, 256), gt=(10000, 100)
+  Computing ground truth (n=1000000, nq=1000, k=50)...
+  All indices cached, freeing base vectors (1.0 GB)
+
+--- Loading SHG from /leonardo_work/EUHPC_D32_102/dhm/indices_shg/uqv_shg.idx ---
+  SHG: loaded, memory=2327.04MB
+  SHG (ef/nprobe=10): recall=0.8443, time=0.0085 ms/q
+  SHG (ef/nprobe=15): recall=0.8443, time=0.0085 ms/q
+  SHG (ef/nprobe=20): recall=0.8443, time=0.0084 ms/q
+  SHG (ef/nprobe=30): recall=0.8543, time=0.0110 ms/q
+  SHG (ef/nprobe=40): recall=0.8593, time=0.0135 ms/q
+  SHG (ef/nprobe=60): recall=0.8638, time=0.0182 ms/q
+  SHG (ef/nprobe=80): recall=0.8658, time=0.0226 ms/q
+  SHG (ef/nprobe=100): recall=0.8671, time=0.0269 ms/q
+  SHG (ef/nprobe=150): recall=0.8737, time=0.0386 ms/q
+  SHG (ef/nprobe=200): recall=0.8778, time=0.0500 ms/q
+  SHG (ef/nprobe=300): recall=0.8788, time=0.0724 ms/q
+  SHG (ef/nprobe=400): recall=0.8792, time=0.0911 ms/q
+  SHG (ef/nprobe=600): recall=0.8801, time=0.1283 ms/q
+  SHG (ef/nprobe=800): recall=0.8806, time=0.1618 ms/q
+  SHG (ef/nprobe=1000): recall=0.8810, time=0.1940 ms/q
+  SHG (ef/nprobe=1500): recall=0.8821, time=0.2743 ms/q
+  SHG (ef/nprobe=2000): recall=0.8830, time=0.3505 ms/q
+  SHG (ef/nprobe=10): recall=0.9287, time=0.0161 ms/q
+  SHG (ef/nprobe=15): recall=0.9287, time=0.0161 ms/q
+  SHG (ef/nprobe=20): recall=0.9287, time=0.0161 ms/q
+  SHG (ef/nprobe=30): recall=0.9287, time=0.0161 ms/q
+  SHG (ef/nprobe=40): recall=0.9287, time=0.0161 ms/q
+  SHG (ef/nprobe=60): recall=0.9311, time=0.0184 ms/q
+  SHG (ef/nprobe=80): recall=0.9343, time=0.0229 ms/q
+  SHG (ef/nprobe=100): recall=0.9359, time=0.0273 ms/q
+  SHG (ef/nprobe=150): recall=0.9442, time=0.0405 ms/q
+  SHG (ef/nprobe=200): recall=0.9478, time=0.0536 ms/q
+  SHG (ef/nprobe=300): recall=0.9486, time=0.0786 ms/q
+  SHG (ef/nprobe=400): recall=0.9493, time=0.1000 ms/q
+  SHG (ef/nprobe=600): recall=0.9504, time=0.1419 ms/q
+  SHG (ef/nprobe=800): recall=0.9510, time=0.1797 ms/q
+  SHG (ef/nprobe=1000): recall=0.9514, time=0.2161 ms/q
+  SHG (ef/nprobe=1500): recall=0.9526, time=0.3064 ms/q
+  SHG (ef/nprobe=2000): recall=0.9534, time=0.3929 ms/q
+  SHG (ef/nprobe=10): recall=0.8443, time=0.0085 ms/q
+  SHG (ef/nprobe=15): recall=0.8443, time=0.0085 ms/q
+  SHG (ef/nprobe=20): recall=0.8443, time=0.0085 ms/q
+  SHG (ef/nprobe=30): recall=0.8543, time=0.0111 ms/q
+  SHG (ef/nprobe=40): recall=0.8593, time=0.0135 ms/q
+  SHG (ef/nprobe=60): recall=0.8638, time=0.0182 ms/q
+  SHG (ef/nprobe=80): recall=0.8658, time=0.0226 ms/q
+  SHG (ef/nprobe=100): recall=0.8671, time=0.0269 ms/q
+  SHG (ef/nprobe=150): recall=0.8737, time=0.0385 ms/q
+  SHG (ef/nprobe=200): recall=0.8778, time=0.0500 ms/q
+  SHG (ef/nprobe=300): recall=0.8788, time=0.0724 ms/q
+  SHG (ef/nprobe=400): recall=0.8792, time=0.0913 ms/q
+  SHG (ef/nprobe=600): recall=0.8801, time=0.1283 ms/q
+  SHG (ef/nprobe=800): recall=0.8806, time=0.1619 ms/q
+  SHG (ef/nprobe=1000): recall=0.8810, time=0.1940 ms/q
+  SHG (ef/nprobe=1500): recall=0.8821, time=0.2751 ms/q
+  SHG (ef/nprobe=2000): recall=0.8830, time=0.3504 ms/q
+  SHG-no-shortcut (ef/nprobe=10): recall=0.8443, time=0.0085 ms/q
+  SHG-no-shortcut (ef/nprobe=15): recall=0.8443, time=0.0085 ms/q
+  SHG-no-shortcut (ef/nprobe=20): recall=0.8443, time=0.0085 ms/q
+  SHG-no-shortcut (ef/nprobe=30): recall=0.8543, time=0.0111 ms/q
+  SHG-no-shortcut (ef/nprobe=40): recall=0.8593, time=0.0135 ms/q
+  SHG-no-shortcut (ef/nprobe=60): recall=0.8638, time=0.0182 ms/q
+  SHG-no-shortcut (ef/nprobe=80): recall=0.8658, time=0.0226 ms/q
+  SHG-no-shortcut (ef/nprobe=100): recall=0.8671, time=0.0269 ms/q
+  SHG-no-shortcut (ef/nprobe=150): recall=0.8737, time=0.0385 ms/q
+  SHG-no-shortcut (ef/nprobe=200): recall=0.8778, time=0.0500 ms/q
+  SHG-no-shortcut (ef/nprobe=300): recall=0.8788, time=0.0724 ms/q
+  SHG-no-shortcut (ef/nprobe=400): recall=0.8792, time=0.0914 ms/q
+  SHG-no-shortcut (ef/nprobe=600): recall=0.8801, time=0.1284 ms/q
+  SHG-no-shortcut (ef/nprobe=800): recall=0.8806, time=0.1619 ms/q
+  SHG-no-shortcut (ef/nprobe=1000): recall=0.8810, time=0.1941 ms/q
+  SHG-no-shortcut (ef/nprobe=1500): recall=0.8821, time=0.2744 ms/q
+  SHG-no-shortcut (ef/nprobe=2000): recall=0.8830, time=0.3505 ms/q
+  SHG-no-lb (ef/nprobe=10): recall=0.8443, time=0.0075 ms/q
+  SHG-no-lb (ef/nprobe=15): recall=0.8443, time=0.0074 ms/q
+  SHG-no-lb (ef/nprobe=20): recall=0.8443, time=0.0074 ms/q
+  SHG-no-lb (ef/nprobe=30): recall=0.8543, time=0.0097 ms/q
+  SHG-no-lb (ef/nprobe=40): recall=0.8593, time=0.0119 ms/q
+  SHG-no-lb (ef/nprobe=60): recall=0.8638, time=0.0159 ms/q
+  SHG-no-lb (ef/nprobe=80): recall=0.8658, time=0.0197 ms/q
+  SHG-no-lb (ef/nprobe=100): recall=0.8671, time=0.0236 ms/q
+  SHG-no-lb (ef/nprobe=150): recall=0.8737, time=0.0350 ms/q
+  SHG-no-lb (ef/nprobe=200): recall=0.8778, time=0.0463 ms/q
+  SHG-no-lb (ef/nprobe=300): recall=0.8788, time=0.0662 ms/q
+  SHG-no-lb (ef/nprobe=400): recall=0.8791, time=0.0846 ms/q
+  SHG-no-lb (ef/nprobe=600): recall=0.8801, time=0.1208 ms/q
+  SHG-no-lb (ef/nprobe=800): recall=0.8805, time=0.1538 ms/q
+  SHG-no-lb (ef/nprobe=1000): recall=0.8811, time=0.1860 ms/q
+  SHG-no-lb (ef/nprobe=1500): recall=0.8820, time=0.2671 ms/q
+  SHG-no-lb (ef/nprobe=2000): recall=0.8830, time=0.3437 ms/q
+
+--- Loading HNSW from /leonardo_work/EUHPC_D32_102/dhm/indices_shg/uqv_hnsw.idx ---
+  HNSW: loaded, memory=1358.11MB
+  HNSW (ef/nprobe=10): recall=0.8070, time=0.0058 ms/q
+  HNSW (ef/nprobe=15): recall=0.8333, time=0.0071 ms/q
+  HNSW (ef/nprobe=20): recall=0.8455, time=0.0085 ms/q
+  HNSW (ef/nprobe=30): recall=0.8555, time=0.0110 ms/q
+  HNSW (ef/nprobe=40): recall=0.8610, time=0.0134 ms/q
+  HNSW (ef/nprobe=60): recall=0.8643, time=0.0183 ms/q
+  HNSW (ef/nprobe=80): recall=0.8667, time=0.0226 ms/q
+  HNSW (ef/nprobe=100): recall=0.8680, time=0.0269 ms/q
+  HNSW (ef/nprobe=150): recall=0.8750, time=0.0390 ms/q
+  HNSW (ef/nprobe=200): recall=0.8793, time=0.0503 ms/q
+  HNSW (ef/nprobe=300): recall=0.8805, time=0.0725 ms/q
+  HNSW (ef/nprobe=400): recall=0.8812, time=0.0918 ms/q
+  HNSW (ef/nprobe=600): recall=0.8820, time=0.1302 ms/q
+  HNSW (ef/nprobe=800): recall=0.8828, time=0.1671 ms/q
+  HNSW (ef/nprobe=1000): recall=0.8834, time=0.2042 ms/q
+  HNSW (ef/nprobe=1500): recall=0.8847, time=0.3054 ms/q
+  HNSW (ef/nprobe=2000): recall=0.8858, time=0.4110 ms/q
+  HNSW (ef/nprobe=10): recall=0.8183, time=0.0061 ms/q
+  HNSW (ef/nprobe=15): recall=0.8585, time=0.0075 ms/q
+  HNSW (ef/nprobe=20): recall=0.8831, time=0.0090 ms/q
+  HNSW (ef/nprobe=30): recall=0.9092, time=0.0114 ms/q
+  HNSW (ef/nprobe=40): recall=0.9224, time=0.0138 ms/q
+  HNSW (ef/nprobe=60): recall=0.9314, time=0.0185 ms/q
+  HNSW (ef/nprobe=80): recall=0.9346, time=0.0228 ms/q
+  HNSW (ef/nprobe=100): recall=0.9365, time=0.0271 ms/q
+  HNSW (ef/nprobe=150): recall=0.9430, time=0.0397 ms/q
+  HNSW (ef/nprobe=200): recall=0.9468, time=0.0505 ms/q
+  HNSW (ef/nprobe=300): recall=0.9479, time=0.0726 ms/q
+  HNSW (ef/nprobe=400): recall=0.9488, time=0.0919 ms/q
+  HNSW (ef/nprobe=600): recall=0.9494, time=0.1307 ms/q
+  HNSW (ef/nprobe=800): recall=0.9501, time=0.1677 ms/q
+  HNSW (ef/nprobe=1000): recall=0.9508, time=0.2045 ms/q
+  HNSW (ef/nprobe=1500): recall=0.9521, time=0.3060 ms/q
+  HNSW (ef/nprobe=2000): recall=0.9532, time=0.4119 ms/q
+  HNSW (ef/nprobe=10): recall=0.8070, time=0.0058 ms/q
+  HNSW (ef/nprobe=15): recall=0.8333, time=0.0072 ms/q
+  HNSW (ef/nprobe=20): recall=0.8455, time=0.0086 ms/q
+  HNSW (ef/nprobe=30): recall=0.8555, time=0.0112 ms/q
+  HNSW (ef/nprobe=40): recall=0.8610, time=0.0135 ms/q
+  HNSW (ef/nprobe=60): recall=0.8643, time=0.0184 ms/q
+  HNSW (ef/nprobe=80): recall=0.8667, time=0.0227 ms/q
+  HNSW (ef/nprobe=100): recall=0.8680, time=0.0270 ms/q
+  HNSW (ef/nprobe=150): recall=0.8750, time=0.0391 ms/q
+  HNSW (ef/nprobe=200): recall=0.8793, time=0.0505 ms/q
+  HNSW (ef/nprobe=300): recall=0.8805, time=0.0726 ms/q
+  HNSW (ef/nprobe=400): recall=0.8812, time=0.0918 ms/q
+  HNSW (ef/nprobe=600): recall=0.8820, time=0.1304 ms/q
+  HNSW (ef/nprobe=800): recall=0.8828, time=0.1672 ms/q
+  HNSW (ef/nprobe=1000): recall=0.8834, time=0.2041 ms/q
+  HNSW (ef/nprobe=1500): recall=0.8847, time=0.3049 ms/q
+  HNSW (ef/nprobe=2000): recall=0.8858, time=0.4129 ms/q
+
+======================================================================
+BENCHMARK: Construction - uqv
+======================================================================
+  SHG: time=70.67s, memory=2327.04MB
+  HNSW: time=81.53s, memory=1358.11MB
+
+======================================================================
+BENCHMARK: Recall vs Time (k=20) - uqv
+======================================================================
+
+======================================================================
+BENCHMARK: Recall vs Time (k=50) - uqv
+======================================================================
+
+======================================================================
+BENCHMARK: Robustness (unseen queries, k=20) - uqv
+======================================================================
+  SHG: mean=0.9605, median=1.0000, min=0.0500, max=1.0000
+  HNSW: mean=0.9555, median=1.0000, min=0.0000, max=1.0000
+
+======================================================================
+BENCHMARK: Ablation (k=20) - uqv
+======================================================================
+
+Results saved to /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_shg/results_uqv.json

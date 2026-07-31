@@ -339,9 +339,10 @@ def _make_ivf_search_factory():
 
 ALL_DATASETS = ["openai", "enron", "gist1m", "msong", "uqv", "msturing10m"]
 ALL_BENCHMARKS = ["construction", "recall_k20", "recall_k50", "robustness", "ablation"]
+ALL_INDEX_TYPES = ["shg", "hnsw", "panorama", "ivfflat", "ivfpq"]
+DEFAULT_INDEX_TYPES = ["shg", "hnsw"]
 
-
-def run_benchmarks(dataset_name, benchmarks, data_dir, index_dir, output_dir):
+def run_benchmarks(dataset_name, benchmarks, data_dir, index_dir, output_dir, index_types=None):
     import gc
 
     print(f"\n{'#'*70}")
@@ -379,6 +380,11 @@ def run_benchmarks(dataset_name, benchmarks, data_dir, index_dir, output_dir):
         ("IVFFlat",   build_index_ivfflat),
         ("IVFPQ",     build_index_ivfpq),
     ]
+
+    if index_types:
+        want = {t.lower() for t in index_types}
+        builders = [(name, b) for (name, b) in builders if name.lower() in want]
+
 
     # Prepare robustness queries once (shared across all indices).
     # Must be done while xb is still in memory (needed for noise generation
@@ -673,6 +679,11 @@ def main():
                         choices=ALL_DATASETS + ["all"])
     parser.add_argument("--benchmark", nargs="+", default=["all"],
                         choices=ALL_BENCHMARKS + ["all"])
+    parser.add_argument("--index-type", nargs="+", default=DEFAULT_INDEX_TYPES,
+                        choices=ALL_INDEX_TYPES + ["all"],
+                        help="Index families to build/benchmark "
+                             "(default: shg hnsw). Use 'all' for "
+                             "shg hnsw panorama ivfflat ivfpq.")
     args = parser.parse_args()
 
     if args.output_dir is None:
@@ -680,6 +691,8 @@ def main():
             os.path.dirname(os.path.abspath(__file__)), "results")
 
     benchmarks = ALL_BENCHMARKS if "all" in args.benchmark else args.benchmark
+    index_types = (ALL_INDEX_TYPES if "all" in args.index_type
+            else args.index_type)
     datasets = ALL_DATASETS if args.dataset == "all" else [args.dataset]
 
     os.makedirs(args.index_dir, exist_ok=True)
@@ -690,10 +703,11 @@ def main():
     print(f"Output dir: {args.output_dir}")
     print(f"Datasets:   {datasets}")
     print(f"Benchmarks: {benchmarks}")
+    print(f"Indexes:    {index_types}")
 
     for ds in datasets:
         try:
-            run_benchmarks(ds, benchmarks, args.data_dir, args.index_dir, args.output_dir)
+            run_benchmarks(ds, benchmarks, args.data_dir, args.index_dir, args.output_dir, index_types=index_types)
         except Exception as e:
             print(f"\nERROR processing {ds}: {e}")
             traceback.print_exc()

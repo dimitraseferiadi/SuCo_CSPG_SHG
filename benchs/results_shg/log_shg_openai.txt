@@ -1,0 +1,190 @@
+Data dir:   /leonardo_work/EUHPC_D32_102/dhm/data
+Index dir:  /leonardo_work/EUHPC_D32_102/dhm/indices_shg
+Output dir: /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_shg
+Datasets:   ['openai']
+Benchmarks: ['construction', 'recall_k20', 'recall_k50', 'robustness', 'ablation']
+Indexes:    ['shg', 'hnsw']
+
+######################################################################
+# Dataset: OPENAI
+######################################################################
+
+Loading dataset openai...
+  openai: d=1536 nb=1,000,000 nq=10,000 metric=IP
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/openai1m/base.fbin (fbin, 1,000,000 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/openai1m/queries.fbin (fbin)
+    train : <sampled from base>
+    gt    : <computed and cached>
+  computing groundtruth (nb=1,000,000 nq=10,000 k=100 metric=IP) ...
+  groundtruth cached to /leonardo_work/EUHPC_D32_102/dhm/data/openai1m/gt_openai_k100_476dfdc645bb.npy
+  Loaded in 121.8s: xb=(1000000, 1536), xq=(10000, 1536), gt=(10000, 100)
+  Computing ground truth (n=1000000, nq=1000, k=50)...
+  All indices cached, freeing base vectors (6.1 GB)
+
+--- Loading SHG from /leonardo_work/EUHPC_D32_102/dhm/indices_shg/openai_shg.idx ---
+  SHG: loaded, memory=12088.85MB
+  SHG (ef/nprobe=10): recall=0.9747, time=0.0858 ms/q
+  SHG (ef/nprobe=15): recall=0.9747, time=0.0857 ms/q
+  SHG (ef/nprobe=20): recall=0.9747, time=0.0857 ms/q
+  SHG (ef/nprobe=30): recall=0.9805, time=0.1143 ms/q
+  SHG (ef/nprobe=40): recall=0.9830, time=0.1417 ms/q
+  SHG (ef/nprobe=60): recall=0.9854, time=0.1925 ms/q
+  SHG (ef/nprobe=80): recall=0.9867, time=0.2401 ms/q
+  SHG (ef/nprobe=100): recall=0.9880, time=0.2864 ms/q
+  SHG (ef/nprobe=150): recall=0.9905, time=0.3944 ms/q
+  SHG (ef/nprobe=200): recall=0.9921, time=0.4954 ms/q
+  SHG (ef/nprobe=300): recall=0.9940, time=0.6809 ms/q
+  SHG (ef/nprobe=400): recall=0.9952, time=0.8588 ms/q
+  SHG (ef/nprobe=600): recall=0.9964, time=1.1934 ms/q
+  SHG (ef/nprobe=800): recall=0.9971, time=1.5063 ms/q
+  SHG (ef/nprobe=1000): recall=0.9976, time=1.8066 ms/q
+  SHG (ef/nprobe=1500): recall=0.9985, time=2.5209 ms/q
+  SHG (ef/nprobe=2000): recall=0.9988, time=3.1979 ms/q
+  SHG (ef/nprobe=10): recall=0.9746, time=0.1678 ms/q
+  SHG (ef/nprobe=15): recall=0.9746, time=0.1677 ms/q
+  SHG (ef/nprobe=20): recall=0.9746, time=0.1677 ms/q
+  SHG (ef/nprobe=30): recall=0.9746, time=0.1677 ms/q
+  SHG (ef/nprobe=40): recall=0.9746, time=0.1677 ms/q
+  SHG (ef/nprobe=60): recall=0.9775, time=0.1925 ms/q
+  SHG (ef/nprobe=80): recall=0.9813, time=0.2402 ms/q
+  SHG (ef/nprobe=100): recall=0.9839, time=0.2866 ms/q
+  SHG (ef/nprobe=150): recall=0.9882, time=0.3945 ms/q
+  SHG (ef/nprobe=200): recall=0.9906, time=0.4954 ms/q
+  SHG (ef/nprobe=300): recall=0.9933, time=0.6821 ms/q
+  SHG (ef/nprobe=400): recall=0.9947, time=0.8591 ms/q
+  SHG (ef/nprobe=600): recall=0.9961, time=1.1933 ms/q
+  SHG (ef/nprobe=800): recall=0.9969, time=1.5064 ms/q
+  SHG (ef/nprobe=1000): recall=0.9975, time=1.8063 ms/q
+  SHG (ef/nprobe=1500): recall=0.9983, time=2.5206 ms/q
+  SHG (ef/nprobe=2000): recall=0.9987, time=3.1964 ms/q
+  SHG (ef/nprobe=10): recall=0.9747, time=0.0859 ms/q
+  SHG (ef/nprobe=15): recall=0.9747, time=0.0860 ms/q
+  SHG (ef/nprobe=20): recall=0.9747, time=0.0859 ms/q
+  SHG (ef/nprobe=30): recall=0.9805, time=0.1144 ms/q
+  SHG (ef/nprobe=40): recall=0.9830, time=0.1417 ms/q
+  SHG (ef/nprobe=60): recall=0.9854, time=0.1925 ms/q
+  SHG (ef/nprobe=80): recall=0.9867, time=0.2401 ms/q
+  SHG (ef/nprobe=100): recall=0.9880, time=0.2865 ms/q
+  SHG (ef/nprobe=150): recall=0.9905, time=0.3944 ms/q
+  SHG (ef/nprobe=200): recall=0.9921, time=0.4954 ms/q
+  SHG (ef/nprobe=300): recall=0.9940, time=0.6819 ms/q
+  SHG (ef/nprobe=400): recall=0.9952, time=0.8588 ms/q
+  SHG (ef/nprobe=600): recall=0.9964, time=1.1933 ms/q
+  SHG (ef/nprobe=800): recall=0.9971, time=1.5063 ms/q
+  SHG (ef/nprobe=1000): recall=0.9976, time=1.8041 ms/q
+  SHG (ef/nprobe=1500): recall=0.9985, time=2.5193 ms/q
+  SHG (ef/nprobe=2000): recall=0.9988, time=3.1965 ms/q
+  SHG-no-shortcut (ef/nprobe=10): recall=0.9747, time=0.0860 ms/q
+  SHG-no-shortcut (ef/nprobe=15): recall=0.9747, time=0.0859 ms/q
+  SHG-no-shortcut (ef/nprobe=20): recall=0.9747, time=0.0860 ms/q
+  SHG-no-shortcut (ef/nprobe=30): recall=0.9805, time=0.1142 ms/q
+  SHG-no-shortcut (ef/nprobe=40): recall=0.9830, time=0.1417 ms/q
+  SHG-no-shortcut (ef/nprobe=60): recall=0.9854, time=0.1925 ms/q
+  SHG-no-shortcut (ef/nprobe=80): recall=0.9867, time=0.2402 ms/q
+  SHG-no-shortcut (ef/nprobe=100): recall=0.9880, time=0.2864 ms/q
+  SHG-no-shortcut (ef/nprobe=150): recall=0.9905, time=0.3944 ms/q
+  SHG-no-shortcut (ef/nprobe=200): recall=0.9921, time=0.4954 ms/q
+  SHG-no-shortcut (ef/nprobe=300): recall=0.9940, time=0.6809 ms/q
+  SHG-no-shortcut (ef/nprobe=400): recall=0.9952, time=0.8573 ms/q
+  SHG-no-shortcut (ef/nprobe=600): recall=0.9964, time=1.1927 ms/q
+  SHG-no-shortcut (ef/nprobe=800): recall=0.9971, time=1.5057 ms/q
+  SHG-no-shortcut (ef/nprobe=1000): recall=0.9976, time=1.8054 ms/q
+  SHG-no-shortcut (ef/nprobe=1500): recall=0.9985, time=2.5192 ms/q
+  SHG-no-shortcut (ef/nprobe=2000): recall=0.9988, time=3.1962 ms/q
+  SHG-no-lb (ef/nprobe=10): recall=0.9747, time=0.0827 ms/q
+  SHG-no-lb (ef/nprobe=15): recall=0.9747, time=0.0827 ms/q
+  SHG-no-lb (ef/nprobe=20): recall=0.9747, time=0.0827 ms/q
+  SHG-no-lb (ef/nprobe=30): recall=0.9805, time=0.1101 ms/q
+  SHG-no-lb (ef/nprobe=40): recall=0.9830, time=0.1366 ms/q
+  SHG-no-lb (ef/nprobe=60): recall=0.9854, time=0.1854 ms/q
+  SHG-no-lb (ef/nprobe=80): recall=0.9867, time=0.2313 ms/q
+  SHG-no-lb (ef/nprobe=100): recall=0.9880, time=0.2762 ms/q
+  SHG-no-lb (ef/nprobe=150): recall=0.9905, time=0.3804 ms/q
+  SHG-no-lb (ef/nprobe=200): recall=0.9921, time=0.4781 ms/q
+  SHG-no-lb (ef/nprobe=300): recall=0.9940, time=0.6584 ms/q
+  SHG-no-lb (ef/nprobe=400): recall=0.9952, time=0.8293 ms/q
+  SHG-no-lb (ef/nprobe=600): recall=0.9964, time=1.1527 ms/q
+  SHG-no-lb (ef/nprobe=800): recall=0.9971, time=1.4548 ms/q
+  SHG-no-lb (ef/nprobe=1000): recall=0.9976, time=1.7441 ms/q
+  SHG-no-lb (ef/nprobe=1500): recall=0.9985, time=2.4319 ms/q
+  SHG-no-lb (ef/nprobe=2000): recall=0.9988, time=3.0810 ms/q
+
+--- Loading HNSW from /leonardo_work/EUHPC_D32_102/dhm/indices_shg/openai_hnsw.idx ---
+  HNSW: loaded, memory=6240.92MB
+  HNSW (ef/nprobe=10): recall=0.9534, time=0.0537 ms/q
+  HNSW (ef/nprobe=15): recall=0.9685, time=0.0692 ms/q
+  HNSW (ef/nprobe=20): recall=0.9744, time=0.0839 ms/q
+  HNSW (ef/nprobe=30): recall=0.9797, time=0.1116 ms/q
+  HNSW (ef/nprobe=40): recall=0.9827, time=0.1380 ms/q
+  HNSW (ef/nprobe=60): recall=0.9853, time=0.1881 ms/q
+  HNSW (ef/nprobe=80): recall=0.9867, time=0.2347 ms/q
+  HNSW (ef/nprobe=100): recall=0.9879, time=0.2804 ms/q
+  HNSW (ef/nprobe=150): recall=0.9904, time=0.3893 ms/q
+  HNSW (ef/nprobe=200): recall=0.9920, time=0.4932 ms/q
+  HNSW (ef/nprobe=300): recall=0.9939, time=0.6929 ms/q
+  HNSW (ef/nprobe=400): recall=0.9951, time=0.8869 ms/q
+  HNSW (ef/nprobe=600): recall=0.9964, time=1.2641 ms/q
+  HNSW (ef/nprobe=800): recall=0.9972, time=1.6482 ms/q
+  HNSW (ef/nprobe=1000): recall=0.9977, time=2.0501 ms/q
+  HNSW (ef/nprobe=1500): recall=0.9985, time=3.2641 ms/q
+  HNSW (ef/nprobe=2000): recall=0.9989, time=4.8904 ms/q
+  HNSW (ef/nprobe=10): recall=0.8893, time=0.0538 ms/q
+  HNSW (ef/nprobe=15): recall=0.9237, time=0.0692 ms/q
+  HNSW (ef/nprobe=20): recall=0.9422, time=0.0844 ms/q
+  HNSW (ef/nprobe=30): recall=0.9606, time=0.1117 ms/q
+  HNSW (ef/nprobe=40): recall=0.9696, time=0.1381 ms/q
+  HNSW (ef/nprobe=60): recall=0.9774, time=0.1882 ms/q
+  HNSW (ef/nprobe=80): recall=0.9812, time=0.2351 ms/q
+  HNSW (ef/nprobe=100): recall=0.9838, time=0.2805 ms/q
+  HNSW (ef/nprobe=150): recall=0.9881, time=0.3899 ms/q
+  HNSW (ef/nprobe=200): recall=0.9905, time=0.4932 ms/q
+  HNSW (ef/nprobe=300): recall=0.9931, time=0.6934 ms/q
+  HNSW (ef/nprobe=400): recall=0.9945, time=0.8875 ms/q
+  HNSW (ef/nprobe=600): recall=0.9961, time=1.2652 ms/q
+  HNSW (ef/nprobe=800): recall=0.9969, time=1.6455 ms/q
+  HNSW (ef/nprobe=1000): recall=0.9975, time=2.0524 ms/q
+  HNSW (ef/nprobe=1500): recall=0.9983, time=3.2561 ms/q
+  HNSW (ef/nprobe=2000): recall=0.9987, time=4.8964 ms/q
+  HNSW (ef/nprobe=10): recall=0.9534, time=0.0538 ms/q
+  HNSW (ef/nprobe=15): recall=0.9685, time=0.0692 ms/q
+  HNSW (ef/nprobe=20): recall=0.9744, time=0.0840 ms/q
+  HNSW (ef/nprobe=30): recall=0.9797, time=0.1116 ms/q
+  HNSW (ef/nprobe=40): recall=0.9827, time=0.1380 ms/q
+  HNSW (ef/nprobe=60): recall=0.9853, time=0.1880 ms/q
+  HNSW (ef/nprobe=80): recall=0.9867, time=0.2346 ms/q
+  HNSW (ef/nprobe=100): recall=0.9879, time=0.2801 ms/q
+  HNSW (ef/nprobe=150): recall=0.9904, time=0.3889 ms/q
+  HNSW (ef/nprobe=200): recall=0.9920, time=0.4921 ms/q
+  HNSW (ef/nprobe=300): recall=0.9939, time=0.6936 ms/q
+  HNSW (ef/nprobe=400): recall=0.9951, time=0.8865 ms/q
+  HNSW (ef/nprobe=600): recall=0.9964, time=1.2640 ms/q
+  HNSW (ef/nprobe=800): recall=0.9972, time=1.6437 ms/q
+  HNSW (ef/nprobe=1000): recall=0.9977, time=2.0525 ms/q
+  HNSW (ef/nprobe=1500): recall=0.9985, time=3.2630 ms/q
+  HNSW (ef/nprobe=2000): recall=0.9989, time=4.8999 ms/q
+
+======================================================================
+BENCHMARK: Construction - openai
+======================================================================
+  SHG: time=348.54s, memory=12088.85MB
+  HNSW: time=448.91s, memory=6240.92MB
+
+======================================================================
+BENCHMARK: Recall vs Time (k=20) - openai
+======================================================================
+
+======================================================================
+BENCHMARK: Recall vs Time (k=50) - openai
+======================================================================
+
+======================================================================
+BENCHMARK: Robustness (unseen queries, k=20) - openai
+======================================================================
+  SHG: mean=0.9916, median=1.0000, min=0.6500, max=1.0000
+  HNSW: mean=0.9915, median=1.0000, min=0.6500, max=1.0000
+
+======================================================================
+BENCHMARK: Ablation (k=20) - openai
+======================================================================
+
+Results saved to /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_shg/results_openai.json

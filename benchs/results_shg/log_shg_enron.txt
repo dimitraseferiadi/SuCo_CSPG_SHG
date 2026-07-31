@@ -1,0 +1,195 @@
+Data dir:   /leonardo_work/EUHPC_D32_102/dhm/data
+Index dir:  /leonardo_work/EUHPC_D32_102/dhm/indices_shg
+Output dir: /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_shg
+Datasets:   ['enron']
+Benchmarks: ['construction', 'recall_k20', 'recall_k50', 'robustness', 'ablation']
+Indexes:    ['shg', 'hnsw']
+
+######################################################################
+# Dataset: ENRON
+######################################################################
+
+Loading dataset enron...
+  enron: d=1369 nb=94,987 nq=200 metric=L2
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/enron/enron_base.fvecs (fvecs, 94,987 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/enron/enron_query.fvecs (fvecs)
+    train : <sampled from base>
+    gt    : /leonardo_work/EUHPC_D32_102/dhm/data/enron/enron_groundtruth.ivecs
+  enron_groundtruth.ivecs has only 20 neighbours per query but k=100 was requested; computing a deeper groundtruth
+  computing groundtruth (nb=94,987 nq=200 k=100 metric=L2) ...
+  groundtruth cached to /leonardo_work/EUHPC_D32_102/dhm/data/enron/gt_enron_k100_2762d77dc557.npy
+  (computed groundtruth agrees with the shipped 20-NN file on 100.0% of top-1)
+  Loaded in 2.0s: xb=(94987, 1369), xq=(200, 1369), gt=(200, 100)
+  Computing ground truth (n=94987, nq=200, k=50)...
+
+--- Building SHG ---
+  SHG: add=13.54s, shortcut=0.07s, total=13.61s
+  SHG: time=13.61s, memory=1029.08MB
+  Saved to /leonardo_work/EUHPC_D32_102/dhm/indices_shg/enron_shg.idx
+  SHG (ef/nprobe=10): recall=0.9170, time=0.0969 ms/q
+  SHG (ef/nprobe=15): recall=0.9170, time=0.0648 ms/q
+  SHG (ef/nprobe=20): recall=0.9170, time=0.0695 ms/q
+  SHG (ef/nprobe=30): recall=0.9530, time=0.0867 ms/q
+  SHG (ef/nprobe=40): recall=0.9657, time=0.1041 ms/q
+  SHG (ef/nprobe=60): recall=0.9807, time=0.1388 ms/q
+  SHG (ef/nprobe=80): recall=0.9857, time=0.1698 ms/q
+  SHG (ef/nprobe=100): recall=0.9890, time=0.1990 ms/q
+  SHG (ef/nprobe=150): recall=0.9938, time=0.2627 ms/q
+  SHG (ef/nprobe=200): recall=0.9968, time=0.3197 ms/q
+  SHG (ef/nprobe=300): recall=0.9970, time=0.4190 ms/q
+  SHG (ef/nprobe=400): recall=0.9972, time=0.5030 ms/q
+  SHG (ef/nprobe=600): recall=0.9980, time=0.6374 ms/q
+  SHG (ef/nprobe=800): recall=0.9980, time=0.7477 ms/q
+  SHG (ef/nprobe=1000): recall=0.9980, time=0.8456 ms/q
+  SHG (ef/nprobe=1500): recall=0.9980, time=1.0651 ms/q
+  SHG (ef/nprobe=2000): recall=0.9980, time=1.2371 ms/q
+  SHG (ef/nprobe=10): recall=0.9599, time=0.1217 ms/q
+  SHG (ef/nprobe=15): recall=0.9599, time=0.1220 ms/q
+  SHG (ef/nprobe=20): recall=0.9599, time=0.1219 ms/q
+  SHG (ef/nprobe=30): recall=0.9599, time=0.1218 ms/q
+  SHG (ef/nprobe=40): recall=0.9599, time=0.1217 ms/q
+  SHG (ef/nprobe=60): recall=0.9714, time=0.1390 ms/q
+  SHG (ef/nprobe=80): recall=0.9808, time=0.1701 ms/q
+  SHG (ef/nprobe=100): recall=0.9863, time=0.1993 ms/q
+  SHG (ef/nprobe=150): recall=0.9937, time=0.2632 ms/q
+  SHG (ef/nprobe=200): recall=0.9968, time=0.3212 ms/q
+  SHG (ef/nprobe=300): recall=0.9983, time=0.4211 ms/q
+  SHG (ef/nprobe=400): recall=0.9986, time=0.5056 ms/q
+  SHG (ef/nprobe=600): recall=0.9991, time=0.6403 ms/q
+  SHG (ef/nprobe=800): recall=0.9993, time=0.7515 ms/q
+  SHG (ef/nprobe=1000): recall=0.9993, time=0.8516 ms/q
+  SHG (ef/nprobe=1500): recall=0.9994, time=1.0761 ms/q
+  SHG (ef/nprobe=2000): recall=0.9994, time=1.2436 ms/q
+  SHG (ef/nprobe=10): recall=0.9170, time=0.0646 ms/q
+  SHG (ef/nprobe=15): recall=0.9170, time=0.0646 ms/q
+  SHG (ef/nprobe=20): recall=0.9170, time=0.0646 ms/q
+  SHG (ef/nprobe=30): recall=0.9530, time=0.0853 ms/q
+  SHG (ef/nprobe=40): recall=0.9657, time=0.1033 ms/q
+  SHG (ef/nprobe=60): recall=0.9807, time=0.1390 ms/q
+  SHG (ef/nprobe=80): recall=0.9857, time=0.1699 ms/q
+  SHG (ef/nprobe=100): recall=0.9890, time=0.1987 ms/q
+  SHG (ef/nprobe=150): recall=0.9938, time=0.2624 ms/q
+  SHG (ef/nprobe=200): recall=0.9968, time=0.3198 ms/q
+  SHG (ef/nprobe=300): recall=0.9970, time=0.4188 ms/q
+  SHG (ef/nprobe=400): recall=0.9972, time=0.5025 ms/q
+  SHG (ef/nprobe=600): recall=0.9980, time=0.6397 ms/q
+  SHG (ef/nprobe=800): recall=0.9980, time=0.7484 ms/q
+  SHG (ef/nprobe=1000): recall=0.9980, time=0.8558 ms/q
+  SHG (ef/nprobe=1500): recall=0.9980, time=1.0676 ms/q
+  SHG (ef/nprobe=2000): recall=0.9980, time=1.2353 ms/q
+  SHG-no-shortcut (ef/nprobe=10): recall=0.9165, time=0.0644 ms/q
+  SHG-no-shortcut (ef/nprobe=15): recall=0.9165, time=0.0644 ms/q
+  SHG-no-shortcut (ef/nprobe=20): recall=0.9165, time=0.0643 ms/q
+  SHG-no-shortcut (ef/nprobe=30): recall=0.9537, time=0.0852 ms/q
+  SHG-no-shortcut (ef/nprobe=40): recall=0.9655, time=0.1030 ms/q
+  SHG-no-shortcut (ef/nprobe=60): recall=0.9797, time=0.1387 ms/q
+  SHG-no-shortcut (ef/nprobe=80): recall=0.9855, time=0.1691 ms/q
+  SHG-no-shortcut (ef/nprobe=100): recall=0.9888, time=0.1980 ms/q
+  SHG-no-shortcut (ef/nprobe=150): recall=0.9935, time=0.2620 ms/q
+  SHG-no-shortcut (ef/nprobe=200): recall=0.9965, time=0.3212 ms/q
+  SHG-no-shortcut (ef/nprobe=300): recall=0.9968, time=0.4189 ms/q
+  SHG-no-shortcut (ef/nprobe=400): recall=0.9970, time=0.5037 ms/q
+  SHG-no-shortcut (ef/nprobe=600): recall=0.9978, time=0.6382 ms/q
+  SHG-no-shortcut (ef/nprobe=800): recall=0.9978, time=0.7496 ms/q
+  SHG-no-shortcut (ef/nprobe=1000): recall=0.9978, time=0.8484 ms/q
+  SHG-no-shortcut (ef/nprobe=1500): recall=0.9978, time=1.0689 ms/q
+  SHG-no-shortcut (ef/nprobe=2000): recall=0.9978, time=1.2386 ms/q
+  SHG-no-lb (ef/nprobe=10): recall=0.9170, time=0.0617 ms/q
+  SHG-no-lb (ef/nprobe=15): recall=0.9170, time=0.0615 ms/q
+  SHG-no-lb (ef/nprobe=20): recall=0.9170, time=0.0614 ms/q
+  SHG-no-lb (ef/nprobe=30): recall=0.9530, time=0.0812 ms/q
+  SHG-no-lb (ef/nprobe=40): recall=0.9657, time=0.0984 ms/q
+  SHG-no-lb (ef/nprobe=60): recall=0.9807, time=0.1319 ms/q
+  SHG-no-lb (ef/nprobe=80): recall=0.9857, time=0.1615 ms/q
+  SHG-no-lb (ef/nprobe=100): recall=0.9890, time=0.1882 ms/q
+  SHG-no-lb (ef/nprobe=150): recall=0.9938, time=0.2498 ms/q
+  SHG-no-lb (ef/nprobe=200): recall=0.9968, time=0.3048 ms/q
+  SHG-no-lb (ef/nprobe=300): recall=0.9970, time=0.3988 ms/q
+  SHG-no-lb (ef/nprobe=400): recall=0.9972, time=0.4813 ms/q
+  SHG-no-lb (ef/nprobe=600): recall=0.9980, time=0.6113 ms/q
+  SHG-no-lb (ef/nprobe=800): recall=0.9980, time=0.7155 ms/q
+  SHG-no-lb (ef/nprobe=1000): recall=0.9980, time=0.8128 ms/q
+  SHG-no-lb (ef/nprobe=1500): recall=0.9980, time=1.0238 ms/q
+  SHG-no-lb (ef/nprobe=2000): recall=0.9980, time=1.1902 ms/q
+
+--- Building HNSW ---
+  HNSW: build=12.95s
+  HNSW: time=12.95s, memory=532.30MB
+  Saved to /leonardo_work/EUHPC_D32_102/dhm/indices_shg/enron_hnsw.idx
+  HNSW (ef/nprobe=10): recall=0.8472, time=0.0504 ms/q
+  HNSW (ef/nprobe=15): recall=0.8908, time=0.0542 ms/q
+  HNSW (ef/nprobe=20): recall=0.9198, time=0.0611 ms/q
+  HNSW (ef/nprobe=30): recall=0.9525, time=0.0836 ms/q
+  HNSW (ef/nprobe=40): recall=0.9675, time=0.0987 ms/q
+  HNSW (ef/nprobe=60): recall=0.9805, time=0.1366 ms/q
+  HNSW (ef/nprobe=80): recall=0.9870, time=0.1629 ms/q
+  HNSW (ef/nprobe=100): recall=0.9897, time=0.1891 ms/q
+  HNSW (ef/nprobe=150): recall=0.9942, time=0.2504 ms/q
+  HNSW (ef/nprobe=200): recall=0.9970, time=0.3078 ms/q
+  HNSW (ef/nprobe=300): recall=0.9972, time=0.4058 ms/q
+  HNSW (ef/nprobe=400): recall=0.9975, time=0.4863 ms/q
+  HNSW (ef/nprobe=600): recall=0.9980, time=0.6365 ms/q
+  HNSW (ef/nprobe=800): recall=0.9980, time=0.7390 ms/q
+  HNSW (ef/nprobe=1000): recall=0.9980, time=0.8616 ms/q
+  HNSW (ef/nprobe=1500): recall=0.9980, time=1.1861 ms/q
+  HNSW (ef/nprobe=2000): recall=0.9982, time=1.5193 ms/q
+  HNSW (ef/nprobe=10): recall=0.7706, time=0.0406 ms/q
+  HNSW (ef/nprobe=15): recall=0.8329, time=0.0508 ms/q
+  HNSW (ef/nprobe=20): recall=0.8716, time=0.0611 ms/q
+  HNSW (ef/nprobe=30): recall=0.9225, time=0.0808 ms/q
+  HNSW (ef/nprobe=40): recall=0.9451, time=0.0983 ms/q
+  HNSW (ef/nprobe=60): recall=0.9708, time=0.1322 ms/q
+  HNSW (ef/nprobe=80): recall=0.9817, time=0.1615 ms/q
+  HNSW (ef/nprobe=100): recall=0.9866, time=0.1893 ms/q
+  HNSW (ef/nprobe=150): recall=0.9938, time=0.2518 ms/q
+  HNSW (ef/nprobe=200): recall=0.9968, time=0.3073 ms/q
+  HNSW (ef/nprobe=300): recall=0.9983, time=0.4062 ms/q
+  HNSW (ef/nprobe=400): recall=0.9987, time=0.4873 ms/q
+  HNSW (ef/nprobe=600): recall=0.9992, time=0.6407 ms/q
+  HNSW (ef/nprobe=800): recall=0.9994, time=0.7445 ms/q
+  HNSW (ef/nprobe=1000): recall=0.9994, time=0.8726 ms/q
+  HNSW (ef/nprobe=1500): recall=0.9994, time=1.2009 ms/q
+  HNSW (ef/nprobe=2000): recall=0.9995, time=1.5474 ms/q
+  HNSW (ef/nprobe=10): recall=0.8472, time=0.0404 ms/q
+  HNSW (ef/nprobe=15): recall=0.8908, time=0.0506 ms/q
+  HNSW (ef/nprobe=20): recall=0.9198, time=0.0610 ms/q
+  HNSW (ef/nprobe=30): recall=0.9525, time=0.0804 ms/q
+  HNSW (ef/nprobe=40): recall=0.9675, time=0.0979 ms/q
+  HNSW (ef/nprobe=60): recall=0.9805, time=0.1317 ms/q
+  HNSW (ef/nprobe=80): recall=0.9870, time=0.1615 ms/q
+  HNSW (ef/nprobe=100): recall=0.9897, time=0.1895 ms/q
+  HNSW (ef/nprobe=150): recall=0.9942, time=0.2512 ms/q
+  HNSW (ef/nprobe=200): recall=0.9970, time=0.3081 ms/q
+  HNSW (ef/nprobe=300): recall=0.9972, time=0.4070 ms/q
+  HNSW (ef/nprobe=400): recall=0.9975, time=0.4891 ms/q
+  HNSW (ef/nprobe=600): recall=0.9980, time=0.6379 ms/q
+  HNSW (ef/nprobe=800): recall=0.9980, time=0.7417 ms/q
+  HNSW (ef/nprobe=1000): recall=0.9980, time=0.8709 ms/q
+  HNSW (ef/nprobe=1500): recall=0.9980, time=1.2068 ms/q
+  HNSW (ef/nprobe=2000): recall=0.9982, time=1.5612 ms/q
+
+======================================================================
+BENCHMARK: Construction - enron
+======================================================================
+  SHG: time=13.61s, memory=1029.08MB
+  HNSW: time=12.95s, memory=532.30MB
+
+======================================================================
+BENCHMARK: Recall vs Time (k=20) - enron
+======================================================================
+
+======================================================================
+BENCHMARK: Recall vs Time (k=50) - enron
+======================================================================
+
+======================================================================
+BENCHMARK: Robustness (unseen queries, k=20) - enron
+======================================================================
+  SHG: mean=0.9953, median=1.0000, min=0.9000, max=1.0000
+  HNSW: mean=0.9957, median=1.0000, min=0.9000, max=1.0000
+
+======================================================================
+BENCHMARK: Ablation (k=20) - enron
+======================================================================
+
+Results saved to /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_shg/results_enron.json

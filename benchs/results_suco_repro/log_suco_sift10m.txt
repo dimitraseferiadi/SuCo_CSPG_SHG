@@ -1,0 +1,38 @@
+
+======================================================================
+  Loading SIFT10M dataset  (d=128, nb=10,000,000)
+======================================================================
+  sift10m: d=128 nb=10,000,000 nq=10,000 metric=L2
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/sift100M/bigann_base_100M.bvecs (bvecs, 100,000,000 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/sift100M/bigann_query.bvecs (bvecs)
+    train : /leonardo_work/EUHPC_D32_102/dhm/data/sift100M/bigann_learn.bvecs
+    gt    : /leonardo_work/EUHPC_D32_102/dhm/data/sift100M/gnd/idx_10M.ivecs
+  Loading base … shape=(10000000, 128)  dtype=float32
+  Loading queries … shape=(10000, 128)
+  maxtrain  : 500,000
+  OMP threads: 32
+  Loading ground truth … shape=(10000, 100)
+
+  Training sample ready: (500000, 128)
+
+======================================================================
+  IndexSuCo benchmark  (SIFT10M, d=128)
+======================================================================
+  nsubspaces      = 8  (half_dim=8)
+  ncentroids_half = 50
+  collision_ratio = 0.05
+  candidate_ratio = 0.005
+  niter           = 10
+  k               = 10
+  Loading index from /leonardo_work/EUHPC_D32_102/dhm/indices_suco/sift10m.idx …
+Traceback (most recent call last):
+  File "/leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/bench_suco_sift10m.py", line 1608, in <module>
+    main()
+  File "/leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/bench_suco_sift10m.py", line 1431, in main
+    run_benchmark(
+  File "/leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/bench_suco_sift10m.py", line 238, in run_benchmark
+    index.read_index(index_path)
+  File "/leonardo/home/userexternal/afilippa/miniconda3/envs/anns/lib/python3.12/site-packages/faiss/swigfaiss_avx512.py", line 13281, in read_index
+    return _swigfaiss_avx512.IndexSuCo_read_index(self, *args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Error in void faiss::IndexSuCo::read_index(faiss::IOReader*) at /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/faiss/IndexSuCo.cpp:1054: Error: '!(magic == 0x5375436F)' failed: IndexSuCo::read_index: bad magic, not a SuCo index stream

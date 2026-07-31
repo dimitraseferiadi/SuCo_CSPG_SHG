@@ -1,0 +1,175 @@
+Loading gcc/11.3.0
+  Loading requirement: gmp/6.2.1 mpfr/4.1.0 mpc/1.2.1
+=== per-algo run start 2026-07-24 21:35:04  |  algos: suco  |  threads=32 ===
+--- preparing SuCo indexes (convert router format -> native SuCo stream) ---
+convert: /leonardo_work/EUHPC_D32_102/dhm/indices/spacev10m_suco_ns10.idx -> /leonardo_work/EUHPC_D32_102/dhm/indices_suco/spacev10m.idx  (stripped IxSC container)
+convert: /leonardo_work/EUHPC_D32_102/dhm/indices/deep1m_suco_ns8.idx -> /leonardo_work/EUHPC_D32_102/dhm/indices_suco/deep_nb1000000.idx  (stripped IxSC container)
+convert: /leonardo_work/EUHPC_D32_102/dhm/indices/sift10m_suco_ns8.idx -> /leonardo_work/EUHPC_D32_102/dhm/indices_suco/sift10m.idx  (stripped IxSC container)
+convert: /leonardo_work/EUHPC_D32_102/dhm/indices/sift1m_suco_ns8.idx -> /leonardo_work/EUHPC_D32_102/dhm/indices_suco/sift1m.idx  (stripped IxSC container)
+convert: /leonardo_work/EUHPC_D32_102/dhm/indices/deep10m_suco_ns8.idx -> /leonardo_work/EUHPC_D32_102/dhm/indices_suco/deep_nb10000000.idx  (stripped IxSC container)
+convert: /leonardo_work/EUHPC_D32_102/dhm/indices/gist1m_suco_ns40.idx -> /leonardo_work/EUHPC_D32_102/dhm/indices_suco/gist1m.idx  (stripped IxSC container)
+
+############################################################
+# 2026-07-24 21:35:50  SuCo reproduction  (sweep=0)
+############################################################
+data-dir: /leonardo_work/EUHPC_D32_102/dhm/data
+contents: deep10m, enron, gist1m, msong, msturing10m, openai1m, sift100M, spacev10m, uqv
+faiss   : /leonardo/home/userexternal/afilippa/miniconda3/envs/anns/lib/python3.12/site-packages/faiss/__init__.py
+          IndexSuCo / IndexSHG / IndexCSPG all present
+          OPQ-IVFPQ factory OK ('OPQ8_64,IVF64,PQ8x8')
+------------------------------------------------------------------------
+[ ok ] sift1m: d=128 nb=1,000,000 nq=10,000 metric=L2
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/sift100M/bigann_base_100M.bvecs (bvecs, 100,000,000 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/sift100M/bigann_query.bvecs (bvecs)
+    train : /leonardo_work/EUHPC_D32_102/dhm/data/sift100M/bigann_learn.bvecs
+    gt    : /leonardo_work/EUHPC_D32_102/dhm/data/sift100M/gnd/idx_1M.ivecs
+[ ok ] sift10m: d=128 nb=10,000,000 nq=10,000 metric=L2
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/sift100M/bigann_base_100M.bvecs (bvecs, 100,000,000 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/sift100M/bigann_query.bvecs (bvecs)
+    train : /leonardo_work/EUHPC_D32_102/dhm/data/sift100M/bigann_learn.bvecs
+    gt    : /leonardo_work/EUHPC_D32_102/dhm/data/sift100M/gnd/idx_10M.ivecs
+[ ok ] deep1m: d=96 nb=1,000,000 nq=10,000 metric=L2 (raw Deep1B chunks)
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/deep10m/base_00 (fvecs, 27,397,020 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/deep10m/deep1B_queries.fvecs (fvecs)
+    train : /leonardo_work/EUHPC_D32_102/dhm/data/deep10m/learn_00
+    gt    : /leonardo_work/EUHPC_D32_102/dhm/data/deep10m/deep1M_groundtruth.ivecs
+[ ok ] deep10m: d=96 nb=10,000,000 nq=10,000 metric=L2 (raw Deep1B chunks)
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/deep10m/base_00 (fvecs, 27,397,020 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/deep10m/deep1B_queries.fvecs (fvecs)
+    train : /leonardo_work/EUHPC_D32_102/dhm/data/deep10m/learn_00
+    gt    : /leonardo_work/EUHPC_D32_102/dhm/data/deep10m/deep10M_groundtruth.ivecs
+[ ok ] gist1m: d=960 nb=1,000,000 nq=1,000 metric=L2
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/gist1m/gist_base.fvecs (fvecs, 1,000,000 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/gist1m/gist_query.fvecs (fvecs)
+    train : /leonardo_work/EUHPC_D32_102/dhm/data/gist1m/gist_learn.fvecs
+    gt    : /leonardo_work/EUHPC_D32_102/dhm/data/gist1m/gist_groundtruth.ivecs
+[ ok ] spacev10m: d=100 nb=10,000,000 nq=29,316 metric=L2
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/spacev10m/spacev1b_base.i8bin.crop_nb_10000000 (i8bin, 10,000,000 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/spacev10m/query.i8bin (i8bin)
+    train : <sampled from base>
+    gt    : /leonardo_work/EUHPC_D32_102/dhm/data/spacev10m/msspacev-gt-10M
+       WARN: no learn file; training vectors sampled from the base
+------------------------------------------------------------------------
+6/6 datasets resolved
+
+======================================================================
+  Loading SIFT1M dataset  (d=128, nb=1 000 000, nq=10 000)
+======================================================================
+  data_dir  : /leonardo_work/EUHPC_D32_102/dhm/data
+  d         : 128
+  nb (base) : 1,000,000
+  nq        : 10,000
+  maxtrain  : 100,000
+  OMP threads: 32
+  Loading base … shape=(1000000, 128)
+  Loading queries … shape=(10000, 128)
+  Loading train … shape=(100000, 128)
+  Loading ground truth … shape=(10000, 100)
+
+======================================================================
+  IndexSuCo benchmark  (SIFT1M, d=128)
+======================================================================
+  nsubspaces      = 8  (half_dim=8)
+  ncentroids_half = 50
+  collision_ratio = 0.05
+  candidate_ratio = 0.005
+  niter           = 10
+  k               = 10
+  Loading index from /leonardo_work/EUHPC_D32_102/dhm/indices_suco/sift1m.idx …
+  Loaded in 0.28s
+  Searching 10,000 queries (k=10) …
+
+  Results:
+    ntotal          = 1,000,000
+    nsubspaces      = 8  (half_dim=8)
+    OMP threads     = 32
+    train time      = 0.00s
+    add time        = 0.00s
+    build time      = 0.00s
+    index size      = 549.5 MiB
+    search time     = 1767.6ms total
+    ms / query      = 0.177
+    QPS             = 5657
+    Recall@1        = 0.9822
+    Recall@10       = 0.9824
+    10-Recall@10    = 0.9498
+    Dist ratio      = 1.0014
+
+======================================================================
+  HNSW efSearch sweep  (M=32, efConstruction=200)
+======================================================================
+efSearch     ms/q      QPS     R@1    R@10
+------------------------------------------
+  Building HNSW (M=32, efConstruction=200) on 1,000,000 vectors …
+       100,000 / 1,000,000  (10.0%)       200,000 / 1,000,000  (20.0%)       300,000 / 1,000,000  (30.0%)       400,000 / 1,000,000  (40.0%)       500,000 / 1,000,000  (50.0%)       600,000 / 1,000,000  (60.0%)       700,000 / 1,000,000  (70.0%)       800,000 / 1,000,000  (80.0%)       900,000 / 1,000,000  (90.0%)     1,000,000 / 1,000,000  (100.0%)
+  Build done in 48.88s
+       8    0.005   209557  0.8305  0.8305
+      16    0.007   140404  0.9305  0.9305
+      32    0.012    83732  0.9776  0.9776
+      64    0.021    46624  0.9957  0.9957
+     128    0.040    24988  0.9994  0.9994
+     256    0.077    13063  0.9999  0.9999
+     512    0.142     7044  1.0000  1.0000
+
+======================================================================
+  IndexLSH nbits sweep, SIFT1M, d=128
+======================================================================
+ nbits   size(MiB)   build(s)     ms/q      QPS     R@1    R@10
+---------------------------------------------------------------
+   128        15.3       0.13    0.042    23650  0.0780  0.2879
+   256        30.6       0.30    0.116     8621  0.1687  0.5225
+   512        61.3       0.60    0.237     4222  0.2958  0.7492
+  1024       122.6       1.23    0.505     1982  0.4437  0.9081
+  2048       245.1       2.45    0.978     1023  0.5675  0.9699
+IndexSuCo::read_index: loaded (ntotal=1000000  d=128  nsubspaces=8)
+IndexSuCo::write_index: serialised (ntotal=1000000)
+
+======================================================================
+  Loading GIST1M dataset  (d=960, nb=1 000 000)
+======================================================================
+  data_dir  : /leonardo_work/EUHPC_D32_102/dhm/data
+  d         : 960
+  nb (base) : 1,000,000
+  maxtrain  : 100,000
+  OMP threads: 32
+  Loading base … shape=(1000000, 960)
+  Loading queries … shape=(1000, 960)
+  Loading train … shape=(100000, 960)
+  Loading ground truth … shape=(1000, 100)
+
+======================================================================
+  IndexSuCo benchmark  (GIST1M, d=960)
+======================================================================
+  nsubspaces      = 40  (half_dim=12)
+  ncentroids_half = 50
+  collision_ratio = 0.05
+  candidate_ratio = 0.005
+  niter           = 10
+  k               = 10
+  Loading index from /leonardo_work/EUHPC_D32_102/dhm/indices_suco/gist1m.idx …
+  Loaded in 10.16s
+  Searching 1,000 queries (k=10) …
+
+  Results:
+    ntotal          = 1,000,000
+    nsubspaces      = 40  (half_dim=12)
+    OMP threads     = 32
+    train time      = 0.00s
+    add time        = 0.00s
+    build time      = 0.00s
+    index size      = 3968.2 MiB
+    search time     = 660.3ms total
+    ms / query      = 0.660
+    QPS             = 1515
+    Recall@1        = 0.9690
+    Recall@10       = 0.9720
+    10-Recall@10    = 0.9337
+    Dist ratio      = 1.0010
+
+======================================================================
+  HNSW efSearch sweep  (M=32, efConstruction=200)
+======================================================================
+efSearch     ms/q      QPS     R@1    R@10
+------------------------------------------
+  Building HNSW (M=32, efConstruction=200) on 1,000,000 vectors …
+        50,000 / 1,000,000  (5.0%)       100,000 / 1,000,000  (10.0%)       150,000 / 1,000,000  (15.0%)       200,000 / 1,000,000  (20.0%)       250,000 / 1,000,000  (25.0%)       300,000 / 1,000,000  (30.0%)       350,000 / 1,000,000  (35.0%)       400,000 / 1,000,000  (40.0%)       450,000 / 1,000,000  (45.0%)       500,000 / 1,000,000  (50.0%)       550,000 / 1,000,000  (55.0%)       600,000 / 1,000,000  (60.0%)       650,000 / 1,000,000  (65.0%)       700,000 / 1,000,000  (70.0%)

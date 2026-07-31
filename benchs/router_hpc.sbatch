@@ -24,6 +24,8 @@ else
     DATASETS=("${DEFAULT_DATASETS[@]}")
 fi
 
+set --
+
 # --- Environment (same as your bigann100m job) ---------------------------
 module purge
 module load profile/base
@@ -31,7 +33,7 @@ module load gcc/11.3.0
 # (no CUDA; CPU-only FAISS)
 
 source ~/miniconda3/bin/activate
-conda activate suco
+conda activate anns
 
 # Thread budgets - match what we asked Slurm for
 export OMP_NUM_THREADS=${SLURM_CPUS_PER_TASK}
@@ -51,7 +53,7 @@ mkdir -p "$INDEX_DIR" "$OUT_DIR"
 python benchs/check_datasets.py --data-dir "$DATA_DIR" "${DATASETS[@]}" \
     || { echo "Dataset check failed - fix paths before running."; exit 1; }
 
-echo "=== router run start $(date '+%F %T')  |  NRUNS=$NRUNS  |  ${#DATASETS[@]} datasets ==="
+echo "=== router run start $(date '+%F %T')  |  ${#DATASETS[@]} datasets ==="
 
 for DS in "${DATASETS[@]}"; do
     echo ""
