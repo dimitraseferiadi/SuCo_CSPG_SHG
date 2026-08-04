@@ -213,14 +213,18 @@ def plot_pareto_grid(all_results, out_dir, formats):
     n = len(datasets)
     if n == 0:
         return
-    ncols = 4
+    # Wide 5-column layout: with 9-10 datasets this gives a 2-row grid whose
+    # aspect ratio suits a full-width (two-column-spanning) figure in the paper.
+    ncols = 5
     nrows = (n + ncols - 1) // ncols
     for k in K_LIST:
         # only emit grid if at least one dataset has this k
         if not any(f"recall_k{k}" in all_results[ds] for ds in datasets):
             continue
+        # shared outer axis labels let the panels be shorter than PANEL_H
         fig, axes = plt.subplots(
-            nrows, ncols, figsize=(PANEL_W * ncols, PANEL_H * nrows), squeeze=False
+            nrows, ncols, figsize=(PANEL_W * ncols, 0.78 * PANEL_H * nrows),
+            squeeze=False
         )
         for i, ds in enumerate(datasets):
             ax = axes[i // ncols][i % ncols]
@@ -228,6 +232,11 @@ def plot_pareto_grid(all_results, out_dir, formats):
                 ax, all_results[ds], k,
                 title=DATASET_LABEL[ds], legend=False,
             )
+            # keep only the outer axis labels so the grid stays compact
+            if i % ncols != 0:
+                ax.set_ylabel("")
+            if i + ncols < n:
+                ax.set_xlabel("")
         for j in range(n, nrows * ncols):
             axes[j // ncols][j % ncols].axis("off")
         # one shared legend
@@ -239,8 +248,7 @@ def plot_pareto_grid(all_results, out_dir, formats):
         fig.legend(handles=handles, loc="lower center",
                    ncol=len(INDICES), frameon=False, fontsize=LEGEND_FS,
                    bbox_to_anchor=(0.5, -0.02))
-        fig.suptitle(f"QPS vs Recall@{k} — all datasets", fontsize=SUPTITLE_FS)
-        fig.tight_layout(rect=[0, 0.03, 1, 0.97])
+        fig.tight_layout(rect=[0, 0.04, 1, 1.0])
         save_fig(fig, out_dir, f"pareto_grid_k{k}", formats)
 
 
