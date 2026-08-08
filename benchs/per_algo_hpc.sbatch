@@ -23,6 +23,7 @@
 #   sbatch benchs/per_algo_hpc.sbatch                 # all three
 #   sbatch benchs/per_algo_hpc.sbatch cspg shg        # subset
 #   SUCO_SWEEP=1 sbatch benchs/per_algo_hpc.sbatch suco   # + SuCo curve (rebuilds SuCo variants)
+#   SHG_DATASETS=msturing10m sbatch benchs/per_algo_hpc.sbatch shg   # one dataset
 
 set -uo pipefail
 mkdir -p logs/slurm
@@ -34,6 +35,13 @@ if [ "$#" -gt 0 ]; then
 else
     ALGOS=("${DEFAULT_ALGOS[@]}")
 fi
+
+# Which datasets each algorithm runs over. Space-separated; override from the
+# submit line to resume or retry a single dataset, e.g.
+#   SHG_DATASETS=msturing10m sbatch benchs/per_algo_hpc.sbatch shg
+# Names are the per-algorithm script's own (SHG says 'openai', CSPG 'uqv1m').
+SHG_DATASETS=${SHG_DATASETS:-"openai enron gist1m msong uqv msturing10m"}
+CSPG_DATASETS=${CSPG_DATASETS:-"sift1m deep1m gist1m uqv1m openai1m sift10m"}
 
 # CRITICAL: clear positional args before sourcing conda (see router_hpc.sbatch).
 set --
@@ -97,7 +105,8 @@ if want cspg; then
     # cspg-name -> router-name  (router used 'uqv', CSPG script uses 'uqv1m')
     declare -A CSPG_MAP=( [sift1m]=sift1m [deep1m]=deep1m [gist1m]=gist1m \
                           [uqv1m]=uqv [openai1m]=openai1m [sift10m]=sift10m )
-    for name in "${!CSPG_MAP[@]}"; do r=${CSPG_MAP[$name]}
+    for name in $CSPG_DATASETS; do r=${CSPG_MAP[$name]:-}
+        [ -z "$r" ] && { echo "  !! unknown CSPG dataset: $name"; continue; }
         link_or_warn "$INDEX_DIR/${r}_cspg.idx"   "$CSPG_IDX/${name}_cspg_default.idx"
         link_or_warn "$INDEX_DIR/${r}_hnsw32.idx" "$CSPG_IDX/${name}_hnsw.idx"
     done
@@ -108,7 +117,8 @@ if want shg; then
     # shg-name -> router-name  (router used 'openai1m', SHG script uses 'openai')
     declare -A SHG_MAP=( [openai]=openai1m [enron]=enron [gist1m]=gist1m \
                          [msong]=msong [uqv]=uqv [msturing10m]=msturing10m )
-    for name in "${!SHG_MAP[@]}"; do r=${SHG_MAP[$name]}
+    for name in $SHG_DATASETS; do r=${SHG_MAP[$name]:-}
+        [ -z "$r" ] && { echo "  !! unknown SHG dataset: $name"; continue; }
         link_or_warn "$INDEX_DIR/${r}_shg.idx"    "$SHG_IDX/${name}_shg.idx"
         link_or_warn "$INDEX_DIR/${r}_hnsw48.idx" "$SHG_IDX/${name}_hnsw.idx"
     done
@@ -187,7 +197,7 @@ if want cspg; then
     python benchs/check_datasets.py --data-dir "$DATA_DIR" --suite cspg \
         || echo "  (cspg dataset check warning — continuing)"
 
-    for DS in sift1m deep1m gist1m uqv1m openai1m sift10m; do
+    for DS in $CSPG_DATASETS; do
         echo "--- CSPG: $DS ---"
         python benchs/bench_cspg_paper.py \
             --data-dir "$DATA_DIR" --index-dir "$CSPG_IDX" --output-dir "$CSPG_OUT" \
@@ -207,7 +217,7 @@ if want shg; then
     python benchs/check_datasets.py --data-dir "$DATA_DIR" --suite shg \
         || echo "  (shg dataset check warning — continuing)"
 
-    for DS in openai enron gist1m msong uqv msturing10m; do
+    for DS in $SHG_DATASETS; do
         echo "--- SHG: $DS ---"
         python benchs/bench_shg_paper.py \
             --data-dir "$DATA_DIR" --index-dir "$SHG_IDX" --output-dir "$SHG_OUT" \

@@ -49,11 +49,19 @@ INDEX_DIR=$WORK/dhm/indices
 OUT_DIR=$SLURM_SUBMIT_DIR/benchs/results_router
 mkdir -p "$INDEX_DIR" "$OUT_DIR"
 
+# Index families to run: graph (hnsw32/hnsw48/shg/cspg), collision (suco),
+# quant (opq_ivfpq), or all. Override from the submit line, e.g.
+#   FAMILIES="graph quant" sbatch benchs/router_hpc.sbatch enron
+# SuCo needs d%Ns==0 and (d/Ns)%2==0, so it cannot index odd-d datasets
+# (Enron, d=1369) — and that raise aborts the whole dataset, taking the other
+# five indexes with it. Drop 'collision' there.
+FAMILIES=${FAMILIES:-all}
+
 # Fail fast (once) if any dataset's files are missing / mis-paired
 python benchs/check_datasets.py --data-dir "$DATA_DIR" "${DATASETS[@]}" \
     || { echo "Dataset check failed - fix paths before running."; exit 1; }
 
-echo "=== router run start $(date '+%F %T')  |  ${#DATASETS[@]} datasets ==="
+echo "=== router run start $(date '+%F %T')  |  ${#DATASETS[@]} datasets  |  families: ${FAMILIES} ==="
 
 for DS in "${DATASETS[@]}"; do
     echo ""
@@ -62,7 +70,7 @@ for DS in "${DATASETS[@]}"; do
     echo "############################################################"
 
     python benchs/bench_router_paper.py \
-        --dataset "$DS" --benchmark all --families all \
+        --dataset "$DS" --benchmark all --families $FAMILIES \
         --data-dir  "$DATA_DIR" \
         --index-dir "$INDEX_DIR" \
         --output-dir "$OUT_DIR" \

@@ -27,5 +27,6 @@ venv/
 report*.pdf
 .DS_Store
 shg_index.pdf
-/paper
-/thesis
+thesis.pdf
+thesis/
+paper/
