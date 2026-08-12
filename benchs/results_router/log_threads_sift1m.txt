@@ -1,0 +1,95 @@
+Data dir:       /leonardo_work/EUHPC_D32_102/dhm/data
+Index dir:      /leonardo_work/EUHPC_D32_102/dhm/indices
+Output dir:     /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router
+Datasets:       ['sift1m']
+Indexes:        ['suco', 'shg', 'cspg', 'hnsw32', 'hnsw48', 'opq_ivfpq']
+Thread counts:  [1, 2, 4, 8, 16, 32]   (cores available: 32)
+Recall targets: [0.9, 0.95]
+
+######################################################################
+# Thread scaling: SIFT1M
+######################################################################
+
+Loading sift1m...
+  sift1m: d=128 nb=1,000,000 nq=10,000 metric=L2
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/sift100M/bigann_base_100M.bvecs (bvecs, 100,000,000 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/sift100M/bigann_query.bvecs (bvecs)
+    train : /leonardo_work/EUHPC_D32_102/dhm/data/sift100M/bigann_learn.bvecs
+    gt    : /leonardo_work/EUHPC_D32_102/dhm/data/sift100M/gnd/idx_1M.ivecs
+  Loaded in 0.7s: xb=(1000000, 128), xq=(10000, 128), gt=(10000, 100)
+
+--- SuCo thread scaling (threads=[1, 2, 4, 8, 16, 32]) ---
+    loading /leonardo_work/EUHPC_D32_102/dhm/indices/sift1m_suco_ns8.idx
+  SuCo: LOAD FAILED — Error in faiss::IndexSuCo::IndexSuCo(faiss::idx_t, int, int, float, float, int) at /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/faiss/IndexSuCo.cpp:124: Error: '!(d % nsubspaces == 0)' failed: IndexSuCo: d must be divisible by nsubspaces
+
+--- SHG thread scaling (threads=[1, 2, 4, 8, 16, 32]) ---
+    loading /leonardo_work/EUHPC_D32_102/dhm/indices/sift1m_shg.idx
+    reusing stored recall_k10 curve (17 operating points)
+  shg threads=1 @recall≥0.9: qps=4543 ms/q=0.2201 speedup=1.0 eff=1.0
+  shg threads=2 @recall≥0.9: qps=4212 ms/q=0.2374 speedup=0.93 eff=0.46
+  shg threads=4 @recall≥0.9: qps=4167 ms/q=0.2400 speedup=0.92 eff=0.23
+  shg threads=8 @recall≥0.9: qps=4159 ms/q=0.2404 speedup=0.92 eff=0.11
+  shg threads=16 @recall≥0.9: qps=4104 ms/q=0.2436 speedup=0.9 eff=0.06
+  shg threads=32 @recall≥0.9: qps=4090 ms/q=0.2445 speedup=0.9 eff=0.03
+  shg threads=1 @recall≥0.95: qps=3153 ms/q=0.3172 speedup=1.0 eff=1.0
+  shg threads=2 @recall≥0.95: qps=3137 ms/q=0.3188 speedup=1.0 eff=0.5
+  shg threads=4 @recall≥0.95: qps=3101 ms/q=0.3225 speedup=0.98 eff=0.25
+  shg threads=8 @recall≥0.95: qps=3070 ms/q=0.3258 speedup=0.97 eff=0.12
+  shg threads=16 @recall≥0.95: qps=3061 ms/q=0.3267 speedup=0.97 eff=0.06
+  shg threads=32 @recall≥0.95: qps=2994 ms/q=0.3340 speedup=0.95 eff=0.03
+
+--- CSPG thread scaling (threads=[1, 2, 4, 8, 16, 32]) ---
+    loading /leonardo_work/EUHPC_D32_102/dhm/indices/sift1m_cspg.idx
+    reusing stored recall_k10 curve (17 operating points)
+  cspg threads=1 @recall≥0.9: qps=5528 ms/q=0.1809 speedup=1.0 eff=1.0
+  cspg threads=2 @recall≥0.9: qps=5491 ms/q=0.1821 speedup=0.99 eff=0.5
+  cspg threads=4 @recall≥0.9: qps=5453 ms/q=0.1834 speedup=0.99 eff=0.25
+  cspg threads=8 @recall≥0.9: qps=5304 ms/q=0.1885 speedup=0.96 eff=0.12
+  cspg threads=16 @recall≥0.9: qps=5255 ms/q=0.1903 speedup=0.95 eff=0.06
+  cspg threads=32 @recall≥0.9: qps=5193 ms/q=0.1926 speedup=0.94 eff=0.03
+  cspg threads=1 @recall≥0.95: qps=3154 ms/q=0.3171 speedup=1.0 eff=1.0
+  cspg threads=2 @recall≥0.95: qps=3145 ms/q=0.3180 speedup=1.0 eff=0.5
+  cspg threads=4 @recall≥0.95: qps=3099 ms/q=0.3227 speedup=0.98 eff=0.25
+  cspg threads=8 @recall≥0.95: qps=3005 ms/q=0.3327 speedup=0.95 eff=0.12
+  cspg threads=16 @recall≥0.95: qps=2963 ms/q=0.3375 speedup=0.94 eff=0.06
+  cspg threads=32 @recall≥0.95: qps=2939 ms/q=0.3402 speedup=0.93 eff=0.03
+
+--- HNSW32 thread scaling (threads=[1, 2, 4, 8, 16, 32]) ---
+    loading /leonardo_work/EUHPC_D32_102/dhm/indices/sift1m_hnsw32.idx
+    reusing stored recall_k10 curve (17 operating points)
+  hnsw32 threads=1 @recall≥0.9: qps=6346 ms/q=0.1576 speedup=1.0 eff=1.0
+  hnsw32 threads=2 @recall≥0.9: qps=6294 ms/q=0.1589 speedup=0.99 eff=0.5
+  hnsw32 threads=4 @recall≥0.9: qps=6250 ms/q=0.1600 speedup=0.98 eff=0.25
+  hnsw32 threads=8 @recall≥0.9: qps=6159 ms/q=0.1624 speedup=0.97 eff=0.12
+  hnsw32 threads=16 @recall≥0.9: qps=6012 ms/q=0.1663 speedup=0.95 eff=0.06
+  hnsw32 threads=32 @recall≥0.9: qps=5623 ms/q=0.1779 speedup=0.89 eff=0.03
+  hnsw32 threads=1 @recall≥0.95: qps=4998 ms/q=0.2001 speedup=1.0 eff=1.0
+  hnsw32 threads=2 @recall≥0.95: qps=4977 ms/q=0.2009 speedup=1.0 eff=0.5
+  hnsw32 threads=4 @recall≥0.95: qps=4910 ms/q=0.2037 speedup=0.98 eff=0.25
+  hnsw32 threads=8 @recall≥0.95: qps=4851 ms/q=0.2061 speedup=0.97 eff=0.12
+  hnsw32 threads=16 @recall≥0.95: qps=4675 ms/q=0.2139 speedup=0.94 eff=0.06
+  hnsw32 threads=32 @recall≥0.95: qps=4466 ms/q=0.2239 speedup=0.89 eff=0.03
+
+--- HNSW48 thread scaling (threads=[1, 2, 4, 8, 16, 32]) ---
+    loading /leonardo_work/EUHPC_D32_102/dhm/indices/sift1m_hnsw48.idx
+    reusing stored recall_k10 curve (17 operating points)
+  hnsw48 threads=1 @recall≥0.9: qps=5738 ms/q=0.1743 speedup=1.0 eff=1.0
+  hnsw48 threads=2 @recall≥0.9: qps=5719 ms/q=0.1749 speedup=1.0 eff=0.5
+  hnsw48 threads=4 @recall≥0.9: qps=5674 ms/q=0.1762 speedup=0.99 eff=0.25
+  hnsw48 threads=8 @recall≥0.9: qps=5665 ms/q=0.1765 speedup=0.99 eff=0.12
+  hnsw48 threads=16 @recall≥0.9: qps=5569 ms/q=0.1796 speedup=0.97 eff=0.06
+  hnsw48 threads=32 @recall≥0.9: qps=5518 ms/q=0.1812 speedup=0.96 eff=0.03
+  hnsw48 threads=1 @recall≥0.95: qps=4230 ms/q=0.2364 speedup=1.0 eff=1.0
+  hnsw48 threads=2 @recall≥0.95: qps=4194 ms/q=0.2384 speedup=0.99 eff=0.5
+  hnsw48 threads=4 @recall≥0.95: qps=4131 ms/q=0.2421 speedup=0.98 eff=0.24
+  hnsw48 threads=8 @recall≥0.95: qps=4069 ms/q=0.2458 speedup=0.96 eff=0.12
+  hnsw48 threads=16 @recall≥0.95: qps=4005 ms/q=0.2497 speedup=0.95 eff=0.06
+  hnsw48 threads=32 @recall≥0.95: qps=3851 ms/q=0.2597 speedup=0.91 eff=0.03
+
+--- OPQ-IVFPQ thread scaling (threads=[1, 2, 4, 8, 16, 32]) ---
+    loading /leonardo_work/EUHPC_D32_102/dhm/indices/sift1m_opq_ivfpq.idx
+    reusing stored recall_k10 curve (11 operating points)
+  opq_ivfpq: recall≥0.9 unreachable on the k=10 curve — skipping this target
+  opq_ivfpq: recall≥0.95 unreachable on the k=10 curve — skipping this target
+
+Results merged into /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router/results_sift1m.json

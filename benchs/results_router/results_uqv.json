@@ -13056,5 +13056,12 @@
         }
       }
     }
+  },
+  "thread_scaling": {
+    "SHG": {},
+    "CSPG": {},
+    "HNSW32": {},
+    "HNSW48": {},
+    "OPQ-IVFPQ": {}
   }
 }

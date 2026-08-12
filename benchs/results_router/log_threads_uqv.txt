@@ -1,0 +1,55 @@
+Data dir:       /leonardo_work/EUHPC_D32_102/dhm/data
+Index dir:      /leonardo_work/EUHPC_D32_102/dhm/indices
+Output dir:     /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router
+Datasets:       ['uqv']
+Indexes:        ['suco', 'shg', 'cspg', 'hnsw32', 'hnsw48', 'opq_ivfpq']
+Thread counts:  [1, 2, 4, 8, 16, 32]   (cores available: 32)
+Recall targets: [0.9, 0.95]
+
+######################################################################
+# Thread scaling: UQV
+######################################################################
+
+Loading uqv...
+  uqv: d=256 nb=1,000,000 nq=10,000 metric=L2
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/uqv/uqv_base.fvecs (fvecs, 1,000,000 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/uqv/uqv_query.fvecs (fvecs)
+    train : <sampled from base>
+    gt    : /leonardo_work/EUHPC_D32_102/dhm/data/uqv/uqv_groundtruth.ivecs
+  Loaded in 2.7s: xb=(1000000, 256), xq=(10000, 256), gt=(10000, 100)
+
+--- SuCo thread scaling (threads=[1, 2, 4, 8, 16, 32]) ---
+    loading /leonardo_work/EUHPC_D32_102/dhm/indices/uqv_suco_ns8.idx
+  SuCo: LOAD FAILED — Error in faiss::IndexSuCo::IndexSuCo(faiss::idx_t, int, int, float, float, int) at /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/faiss/IndexSuCo.cpp:124: Error: '!(d % nsubspaces == 0)' failed: IndexSuCo: d must be divisible by nsubspaces
+
+--- SHG thread scaling (threads=[1, 2, 4, 8, 16, 32]) ---
+    loading /leonardo_work/EUHPC_D32_102/dhm/indices/uqv_shg.idx
+    reusing stored recall_k10 curve (17 operating points)
+  shg: recall≥0.9 unreachable on the k=10 curve — skipping this target
+  shg: recall≥0.95 unreachable on the k=10 curve — skipping this target
+
+--- CSPG thread scaling (threads=[1, 2, 4, 8, 16, 32]) ---
+    loading /leonardo_work/EUHPC_D32_102/dhm/indices/uqv_cspg.idx
+    reusing stored recall_k10 curve (17 operating points)
+  cspg: recall≥0.9 unreachable on the k=10 curve — skipping this target
+  cspg: recall≥0.95 unreachable on the k=10 curve — skipping this target
+
+--- HNSW32 thread scaling (threads=[1, 2, 4, 8, 16, 32]) ---
+    loading /leonardo_work/EUHPC_D32_102/dhm/indices/uqv_hnsw32.idx
+    reusing stored recall_k10 curve (17 operating points)
+  hnsw32: recall≥0.9 unreachable on the k=10 curve — skipping this target
+  hnsw32: recall≥0.95 unreachable on the k=10 curve — skipping this target
+
+--- HNSW48 thread scaling (threads=[1, 2, 4, 8, 16, 32]) ---
+    loading /leonardo_work/EUHPC_D32_102/dhm/indices/uqv_hnsw48.idx
+    reusing stored recall_k10 curve (17 operating points)
+  hnsw48: recall≥0.9 unreachable on the k=10 curve — skipping this target
+  hnsw48: recall≥0.95 unreachable on the k=10 curve — skipping this target
+
+--- OPQ-IVFPQ thread scaling (threads=[1, 2, 4, 8, 16, 32]) ---
+    loading /leonardo_work/EUHPC_D32_102/dhm/indices/uqv_opq_ivfpq.idx
+    reusing stored recall_k10 curve (11 operating points)
+  opq_ivfpq: recall≥0.9 unreachable on the k=10 curve — skipping this target
+  opq_ivfpq: recall≥0.95 unreachable on the k=10 curve — skipping this target
+
+Results merged into /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router/results_uqv.json

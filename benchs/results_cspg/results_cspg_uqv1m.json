@@ -17,155 +17,155 @@
     "CSPG(m=2,\u03bb=0.5)": [
       {
         "param": 10,
-        "recall": 0.7546,
-        "ms_per_query": 0.042661
+        "recall": 0.75154,
+        "ms_per_query": 0.004361
       },
       {
         "param": 20,
-        "recall": 0.78294,
-        "ms_per_query": 0.071652
+        "recall": 0.78555,
+        "ms_per_query": 0.006936
       },
       {
         "param": 30,
-        "recall": 0.8018,
-        "ms_per_query": 0.097913
+        "recall": 0.79684,
+        "ms_per_query": 0.00946
       },
       {
         "param": 40,
-        "recall": 0.80505,
-        "ms_per_query": 0.119532
+        "recall": 0.80972,
+        "ms_per_query": 0.011895
       },
       {
         "param": 60,
-        "recall": 0.81054,
-        "ms_per_query": 0.169446
-      },
-      {
-        "param": 800,
-        "recall": 0.81681,
-        "ms_per_query": 2.444472
+        "recall": 0.81066,
+        "ms_per_query": 0.016605
       },
       {
         "param": 80,
-        "recall": 0.81689,
-        "ms_per_query": 0.215671
-      },
-      {
-        "param": 100,
-        "recall": 0.81705,
-        "ms_per_query": 0.260458
-      },
-      {
-        "param": 600,
-        "recall": 0.81768,
-        "ms_per_query": 1.708961
-      },
-      {
-        "param": 150,
-        "recall": 0.81792,
-        "ms_per_query": 0.392788
-      },
-      {
-        "param": 1500,
-        "recall": 0.81798,
-        "ms_per_query": 6.047155
-      },
-      {
-        "param": 400,
-        "recall": 0.81827,
-        "ms_per_query": 1.079955
-      },
-      {
-        "param": 300,
-        "recall": 0.81849,
-        "ms_per_query": 0.786753
+        "recall": 0.81079,
+        "ms_per_query": 0.021115
       },
       {
         "param": 200,
-        "recall": 0.81918,
-        "ms_per_query": 0.527482
+        "recall": 0.81485,
+        "ms_per_query": 0.051924
+      },
+      {
+        "param": 400,
+        "recall": 0.81578,
+        "ms_per_query": 0.096531
+      },
+      {
+        "param": 100,
+        "recall": 0.81618,
+        "ms_per_query": 0.027019
+      },
+      {
+        "param": 150,
+        "recall": 0.81704,
+        "ms_per_query": 0.039568
+      },
+      {
+        "param": 1500,
+        "recall": 0.81749,
+        "ms_per_query": 0.323068
       },
       {
         "param": 1000,
-        "recall": 0.82121,
-        "ms_per_query": 3.307313
+        "recall": 0.81805,
+        "ms_per_query": 0.217403
+      },
+      {
+        "param": 800,
+        "recall": 0.8182,
+        "ms_per_query": 0.177452
+      },
+      {
+        "param": 600,
+        "recall": 0.81911,
+        "ms_per_query": 0.139508
+      },
+      {
+        "param": 300,
+        "recall": 0.82149,
+        "ms_per_query": 0.074577
       }
     ],
     "HNSW": [
       {
         "param": 10,
-        "recall": 0.72839,
-        "ms_per_query": 0.033112
+        "recall": 0.72891,
+        "ms_per_query": 0.003154
       },
       {
         "param": 20,
-        "recall": 0.7728,
-        "ms_per_query": 0.046297
+        "recall": 0.77463,
+        "ms_per_query": 0.004639
       },
       {
         "param": 30,
-        "recall": 0.78746,
-        "ms_per_query": 0.058783
+        "recall": 0.78942,
+        "ms_per_query": 0.00612
       },
       {
         "param": 40,
-        "recall": 0.79476,
-        "ms_per_query": 0.074219
+        "recall": 0.79788,
+        "ms_per_query": 0.007554
       },
       {
         "param": 60,
-        "recall": 0.80288,
-        "ms_per_query": 0.102787
+        "recall": 0.80578,
+        "ms_per_query": 0.010368
       },
       {
         "param": 80,
-        "recall": 0.80667,
-        "ms_per_query": 0.126172
+        "recall": 0.81019,
+        "ms_per_query": 0.013014
       },
       {
         "param": 100,
-        "recall": 0.80792,
-        "ms_per_query": 0.155045
+        "recall": 0.81081,
+        "ms_per_query": 0.015633
       },
       {
         "param": 150,
-        "recall": 0.80949,
-        "ms_per_query": 0.229858
+        "recall": 0.81305,
+        "ms_per_query": 0.02288
       },
       {
         "param": 200,
-        "recall": 0.81073,
-        "ms_per_query": 0.299781
+        "recall": 0.81418,
+        "ms_per_query": 0.029624
       },
       {
         "param": 300,
-        "recall": 0.81131,
-        "ms_per_query": 0.444092
+        "recall": 0.81487,
+        "ms_per_query": 0.04374
       },
       {
         "param": 400,
-        "recall": 0.81153,
-        "ms_per_query": 0.595223
+        "recall": 0.81506,
+        "ms_per_query": 0.056543
       },
       {
         "param": 600,
-        "recall": 0.81164,
-        "ms_per_query": 0.89544
+        "recall": 0.81528,
+        "ms_per_query": 0.082082
       },
       {
         "param": 800,
-        "recall": 0.81168,
-        "ms_per_query": 1.236306
+        "recall": 0.81531,
+        "ms_per_query": 0.107696
       },
       {
         "param": 1000,
-        "recall": 0.81172,
-        "ms_per_query": 1.613502
+        "recall": 0.81531,
+        "ms_per_query": 0.134626
       },
       {
         "param": 1500,
-        "recall": 0.81176,
-        "ms_per_query": 2.674431
+        "recall": 0.81534,
+        "ms_per_query": 0.205854
       }
     ]
   },
@@ -173,155 +173,155 @@
     "CSPG(m=2,\u03bb=0.5)": [
       {
         "param": 10,
-        "recall": 0.828325,
-        "ms_per_query": 0.074237
+        "recall": 0.82843,
+        "ms_per_query": 0.006967
       },
       {
         "param": 20,
-        "recall": 0.828325,
-        "ms_per_query": 0.070032
+        "recall": 0.82843,
+        "ms_per_query": 0.006989
       },
       {
         "param": 30,
-        "recall": 0.84688,
-        "ms_per_query": 0.09807
+        "recall": 0.843565,
+        "ms_per_query": 0.009409
       },
       {
         "param": 40,
-        "recall": 0.856,
-        "ms_per_query": 0.120186
+        "recall": 0.852255,
+        "ms_per_query": 0.011775
       },
       {
         "param": 60,
-        "recall": 0.8598,
-        "ms_per_query": 0.168028
-      },
-      {
-        "param": 100,
-        "recall": 0.865905,
-        "ms_per_query": 0.258704
-      },
-      {
-        "param": 150,
-        "recall": 0.86613,
-        "ms_per_query": 0.393063
+        "recall": 0.856285,
+        "ms_per_query": 0.016681
       },
       {
         "param": 80,
-        "recall": 0.86614,
-        "ms_per_query": 0.216725
+        "recall": 0.86146,
+        "ms_per_query": 0.021206
       },
       {
-        "param": 800,
-        "recall": 0.86737,
-        "ms_per_query": 2.441977
+        "param": 100,
+        "recall": 0.86407,
+        "ms_per_query": 0.02701
       },
       {
-        "param": 600,
-        "recall": 0.867425,
-        "ms_per_query": 1.708779
-      },
-      {
-        "param": 400,
-        "recall": 0.8683,
-        "ms_per_query": 1.077032
-      },
-      {
-        "param": 1000,
-        "recall": 0.868895,
-        "ms_per_query": 3.362099
-      },
-      {
-        "param": 200,
-        "recall": 0.869075,
-        "ms_per_query": 0.528132
-      },
-      {
-        "param": 300,
-        "recall": 0.86924,
-        "ms_per_query": 0.784223
+        "param": 150,
+        "recall": 0.86484,
+        "ms_per_query": 0.040324
       },
       {
         "param": 1500,
-        "recall": 0.869265,
-        "ms_per_query": 6.120142
+        "recall": 0.86522,
+        "ms_per_query": 0.320687
+      },
+      {
+        "param": 200,
+        "recall": 0.866215,
+        "ms_per_query": 0.051783
+      },
+      {
+        "param": 1000,
+        "recall": 0.867575,
+        "ms_per_query": 0.21654
+      },
+      {
+        "param": 800,
+        "recall": 0.867655,
+        "ms_per_query": 0.178247
+      },
+      {
+        "param": 600,
+        "recall": 0.86789,
+        "ms_per_query": 0.139982
+      },
+      {
+        "param": 300,
+        "recall": 0.868425,
+        "ms_per_query": 0.074577
+      },
+      {
+        "param": 400,
+        "recall": 0.868625,
+        "ms_per_query": 0.095834
       }
     ],
     "HNSW": [
       {
         "param": 10,
-        "recall": 0.739875,
-        "ms_per_query": 0.031187
+        "recall": 0.74103,
+        "ms_per_query": 0.003302
       },
       {
         "param": 20,
-        "recall": 0.80705,
-        "ms_per_query": 0.044892
+        "recall": 0.808415,
+        "ms_per_query": 0.004678
       },
       {
         "param": 30,
-        "recall": 0.827615,
-        "ms_per_query": 0.061891
+        "recall": 0.82959,
+        "ms_per_query": 0.00617
       },
       {
         "param": 40,
-        "recall": 0.837005,
-        "ms_per_query": 0.070953
+        "recall": 0.83951,
+        "ms_per_query": 0.007606
       },
       {
         "param": 60,
-        "recall": 0.84688,
-        "ms_per_query": 0.102135
+        "recall": 0.849185,
+        "ms_per_query": 0.010451
       },
       {
         "param": 80,
-        "recall": 0.85053,
-        "ms_per_query": 0.124903
+        "recall": 0.854295,
+        "ms_per_query": 0.013088
       },
       {
         "param": 100,
-        "recall": 0.85212,
-        "ms_per_query": 0.153165
+        "recall": 0.855995,
+        "ms_per_query": 0.015701
       },
       {
         "param": 150,
-        "recall": 0.854535,
-        "ms_per_query": 0.228171
+        "recall": 0.858115,
+        "ms_per_query": 0.022964
       },
       {
         "param": 200,
-        "recall": 0.85572,
-        "ms_per_query": 0.296065
+        "recall": 0.859465,
+        "ms_per_query": 0.029883
       },
       {
         "param": 300,
-        "recall": 0.856635,
-        "ms_per_query": 0.437945
+        "recall": 0.860385,
+        "ms_per_query": 0.043882
       },
       {
         "param": 400,
-        "recall": 0.857065,
-        "ms_per_query": 0.589428
+        "recall": 0.86061,
+        "ms_per_query": 0.05668
       },
       {
         "param": 600,
-        "recall": 0.857195,
-        "ms_per_query": 0.88574
+        "recall": 0.860845,
+        "ms_per_query": 0.082187
       },
       {
         "param": 800,
-        "recall": 0.857255,
-        "ms_per_query": 1.224601
+        "recall": 0.8609,
+        "ms_per_query": 0.107697
       },
       {
         "param": 1000,
-        "recall": 0.8573,
-        "ms_per_query": 1.604091
+        "recall": 0.860905,
+        "ms_per_query": 0.134853
       },
       {
         "param": 1500,
-        "recall": 0.85732,
-        "ms_per_query": 2.673564
+        "recall": 0.86093,
+        "ms_per_query": 0.206752
       }
     ]
   },
@@ -329,155 +329,155 @@
     "CSPG(m=2,\u03bb=0.5)": [
       {
         "param": 10,
-        "recall": 0.921868,
-        "ms_per_query": 0.145329
+        "recall": 0.917038,
+        "ms_per_query": 0.014318
       },
       {
         "param": 20,
-        "recall": 0.921868,
-        "ms_per_query": 0.144642
+        "recall": 0.917038,
+        "ms_per_query": 0.014351
       },
       {
         "param": 30,
-        "recall": 0.921868,
-        "ms_per_query": 0.14432
+        "recall": 0.917038,
+        "ms_per_query": 0.014252
       },
       {
         "param": 40,
-        "recall": 0.921868,
-        "ms_per_query": 0.144094
+        "recall": 0.917038,
+        "ms_per_query": 0.01439
       },
       {
         "param": 60,
-        "recall": 0.926402,
-        "ms_per_query": 0.168221
+        "recall": 0.920772,
+        "ms_per_query": 0.016734
       },
       {
         "param": 80,
-        "recall": 0.93168,
-        "ms_per_query": 0.216989
+        "recall": 0.926804,
+        "ms_per_query": 0.021278
       },
       {
         "param": 100,
-        "recall": 0.933944,
-        "ms_per_query": 0.259228
+        "recall": 0.929382,
+        "ms_per_query": 0.02703
       },
       {
         "param": 150,
-        "recall": 0.936328,
-        "ms_per_query": 0.390992
+        "recall": 0.932196,
+        "ms_per_query": 0.039969
       },
       {
         "param": 200,
-        "recall": 0.937876,
-        "ms_per_query": 0.526392
-      },
-      {
-        "param": 800,
-        "recall": 0.938686,
-        "ms_per_query": 2.439226
-      },
-      {
-        "param": 1500,
-        "recall": 0.938702,
-        "ms_per_query": 6.047167
-      },
-      {
-        "param": 300,
-        "recall": 0.938716,
-        "ms_per_query": 0.784691
-      },
-      {
-        "param": 400,
-        "recall": 0.938826,
-        "ms_per_query": 1.078518
-      },
-      {
-        "param": 600,
-        "recall": 0.939052,
-        "ms_per_query": 1.711803
+        "recall": 0.933716,
+        "ms_per_query": 0.052013
       },
       {
         "param": 1000,
-        "recall": 0.939144,
-        "ms_per_query": 3.303733
+        "recall": 0.934106,
+        "ms_per_query": 0.217322
+      },
+      {
+        "param": 1500,
+        "recall": 0.934358,
+        "ms_per_query": 0.319046
+      },
+      {
+        "param": 300,
+        "recall": 0.934474,
+        "ms_per_query": 0.075055
+      },
+      {
+        "param": 600,
+        "recall": 0.934606,
+        "ms_per_query": 0.139743
+      },
+      {
+        "param": 800,
+        "recall": 0.934654,
+        "ms_per_query": 0.180092
+      },
+      {
+        "param": 400,
+        "recall": 0.934756,
+        "ms_per_query": 0.097108
       }
     ],
     "HNSW": [
       {
         "param": 10,
-        "recall": 0.684192,
-        "ms_per_query": 0.037885
+        "recall": 0.68794,
+        "ms_per_query": 0.003509
       },
       {
         "param": 20,
-        "recall": 0.800462,
-        "ms_per_query": 0.056025
+        "recall": 0.807666,
+        "ms_per_query": 0.004975
       },
       {
         "param": 30,
-        "recall": 0.855414,
-        "ms_per_query": 0.06282
+        "recall": 0.861698,
+        "ms_per_query": 0.00642
       },
       {
         "param": 40,
-        "recall": 0.884188,
-        "ms_per_query": 0.079843
+        "recall": 0.890416,
+        "ms_per_query": 0.007822
       },
       {
         "param": 60,
-        "recall": 0.904448,
-        "ms_per_query": 0.104573
+        "recall": 0.91065,
+        "ms_per_query": 0.010557
       },
       {
         "param": 80,
-        "recall": 0.91099,
-        "ms_per_query": 0.129155
+        "recall": 0.918276,
+        "ms_per_query": 0.013202
       },
       {
         "param": 100,
-        "recall": 0.914202,
-        "ms_per_query": 0.157342
+        "recall": 0.9219,
+        "ms_per_query": 0.015825
       },
       {
         "param": 150,
-        "recall": 0.917696,
-        "ms_per_query": 0.23391
+        "recall": 0.925298,
+        "ms_per_query": 0.023139
       },
       {
         "param": 200,
-        "recall": 0.919428,
-        "ms_per_query": 0.303394
+        "recall": 0.926886,
+        "ms_per_query": 0.029928
       },
       {
         "param": 300,
-        "recall": 0.9207,
-        "ms_per_query": 0.448326
+        "recall": 0.928074,
+        "ms_per_query": 0.04403
       },
       {
         "param": 400,
-        "recall": 0.921316,
-        "ms_per_query": 0.599284
+        "recall": 0.928444,
+        "ms_per_query": 0.056826
       },
       {
         "param": 600,
-        "recall": 0.92152,
-        "ms_per_query": 0.899616
+        "recall": 0.928766,
+        "ms_per_query": 0.08245
       },
       {
         "param": 800,
-        "recall": 0.921574,
-        "ms_per_query": 1.240416
+        "recall": 0.928838,
+        "ms_per_query": 0.108534
       },
       {
         "param": 1000,
-        "recall": 0.921612,
-        "ms_per_query": 1.625519
+        "recall": 0.92888,
+        "ms_per_query": 0.135285
       },
       {
         "param": 1500,
-        "recall": 0.92163,
-        "ms_per_query": 2.681015
+        "recall": 0.928918,
+        "ms_per_query": 0.206826
       }
     ]
   },
@@ -485,309 +485,309 @@
     "CSPG(m=1,\u03bb=0.5)": [
       {
         "param": 10,
-        "recall": 0.73403,
-        "ms_per_query": 0.030633
+        "recall": 0.73189,
+        "ms_per_query": 0.003229
       },
       {
         "param": 20,
-        "recall": 0.77729,
-        "ms_per_query": 0.048894
+        "recall": 0.77668,
+        "ms_per_query": 0.004975
       },
       {
         "param": 30,
-        "recall": 0.7885,
-        "ms_per_query": 0.063583
+        "recall": 0.78665,
+        "ms_per_query": 0.006683
       },
       {
         "param": 40,
-        "recall": 0.79823,
-        "ms_per_query": 0.077525
+        "recall": 0.7995,
+        "ms_per_query": 0.008336
       },
       {
         "param": 60,
-        "recall": 0.80552,
-        "ms_per_query": 0.107837
+        "recall": 0.80307,
+        "ms_per_query": 0.011501
       },
       {
         "param": 80,
-        "recall": 0.80833,
-        "ms_per_query": 0.137748
-      },
-      {
-        "param": 300,
-        "recall": 0.81146,
-        "ms_per_query": 0.482132
-      },
-      {
-        "param": 150,
-        "recall": 0.81189,
-        "ms_per_query": 0.255034
-      },
-      {
-        "param": 100,
-        "recall": 0.81253,
-        "ms_per_query": 0.167752
-      },
-      {
-        "param": 1000,
-        "recall": 0.8136,
-        "ms_per_query": 1.706574
-      },
-      {
-        "param": 600,
-        "recall": 0.8144,
-        "ms_per_query": 0.957889
+        "recall": 0.80422,
+        "ms_per_query": 0.014726
       },
       {
         "param": 400,
-        "recall": 0.81502,
-        "ms_per_query": 0.632325
+        "recall": 0.81004,
+        "ms_per_query": 0.067157
       },
       {
-        "param": 1500,
-        "recall": 0.81609,
-        "ms_per_query": 2.745134
+        "param": 150,
+        "recall": 0.81126,
+        "ms_per_query": 0.027568
       },
       {
         "param": 800,
-        "recall": 0.81638,
-        "ms_per_query": 1.317128
+        "recall": 0.81144,
+        "ms_per_query": 0.121034
+      },
+      {
+        "param": 1500,
+        "recall": 0.8122,
+        "ms_per_query": 0.214159
+      },
+      {
+        "param": 100,
+        "recall": 0.81241,
+        "ms_per_query": 0.018628
+      },
+      {
+        "param": 300,
+        "recall": 0.81352,
+        "ms_per_query": 0.051393
       },
       {
         "param": 200,
-        "recall": 0.81773,
-        "ms_per_query": 0.327478
+        "recall": 0.81397,
+        "ms_per_query": 0.036
+      },
+      {
+        "param": 1000,
+        "recall": 0.81666,
+        "ms_per_query": 0.149686
+      },
+      {
+        "param": 600,
+        "recall": 0.81675,
+        "ms_per_query": 0.094469
       }
     ],
     "CSPG(m=2,\u03bb=0.5)": [
       {
         "param": 10,
-        "recall": 0.7499,
-        "ms_per_query": 0.047125
+        "recall": 0.74694,
+        "ms_per_query": 0.004355
       },
       {
         "param": 20,
-        "recall": 0.78049,
-        "ms_per_query": 0.068958
+        "recall": 0.78526,
+        "ms_per_query": 0.006936
       },
       {
         "param": 30,
-        "recall": 0.80104,
-        "ms_per_query": 0.096704
+        "recall": 0.78904,
+        "ms_per_query": 0.009436
       },
       {
         "param": 40,
-        "recall": 0.80389,
-        "ms_per_query": 0.119208
-      },
-      {
-        "param": 60,
-        "recall": 0.80751,
-        "ms_per_query": 0.167408
-      },
-      {
-        "param": 100,
-        "recall": 0.81216,
-        "ms_per_query": 0.260117
-      },
-      {
-        "param": 1500,
-        "recall": 0.81248,
-        "ms_per_query": 6.029213
-      },
-      {
-        "param": 600,
-        "recall": 0.81313,
-        "ms_per_query": 1.708092
+        "recall": 0.80091,
+        "ms_per_query": 0.011753
       },
       {
         "param": 80,
-        "recall": 0.81378,
-        "ms_per_query": 0.216505
+        "recall": 0.80607,
+        "ms_per_query": 0.020879
       },
       {
-        "param": 800,
-        "recall": 0.81545,
-        "ms_per_query": 2.437369
+        "param": 100,
+        "recall": 0.8076,
+        "ms_per_query": 0.027233
       },
       {
-        "param": 300,
-        "recall": 0.81567,
-        "ms_per_query": 0.785774
+        "param": 60,
+        "recall": 0.80841,
+        "ms_per_query": 0.01648
       },
       {
         "param": 150,
-        "recall": 0.81721,
-        "ms_per_query": 0.394355
+        "recall": 0.8098,
+        "ms_per_query": 0.03953
       },
       {
         "param": 1000,
-        "recall": 0.81761,
-        "ms_per_query": 3.295288
+        "recall": 0.8102,
+        "ms_per_query": 0.217139
+      },
+      {
+        "param": 800,
+        "recall": 0.81049,
+        "ms_per_query": 0.178951
+      },
+      {
+        "param": 300,
+        "recall": 0.81117,
+        "ms_per_query": 0.074585
       },
       {
         "param": 200,
-        "recall": 0.81778,
-        "ms_per_query": 0.528929
+        "recall": 0.81135,
+        "ms_per_query": 0.05193
       },
       {
         "param": 400,
-        "recall": 0.8199,
-        "ms_per_query": 1.077858
+        "recall": 0.81156,
+        "ms_per_query": 0.095382
+      },
+      {
+        "param": 1500,
+        "recall": 0.8127,
+        "ms_per_query": 0.320627
+      },
+      {
+        "param": 600,
+        "recall": 0.81448,
+        "ms_per_query": 0.139882
       }
     ],
     "CSPG(m=4,\u03bb=0.5)": [
       {
         "param": 10,
-        "recall": 0.75415,
-        "ms_per_query": 0.071204
+        "recall": 0.74788,
+        "ms_per_query": 0.006167
       },
       {
         "param": 20,
-        "recall": 0.78855,
-        "ms_per_query": 0.120541
+        "recall": 0.77916,
+        "ms_per_query": 0.010143
       },
       {
         "param": 30,
-        "recall": 0.80074,
-        "ms_per_query": 0.163609
-      },
-      {
-        "param": 60,
-        "recall": 0.8069,
-        "ms_per_query": 0.287492
+        "recall": 0.79309,
+        "ms_per_query": 0.013939
       },
       {
         "param": 40,
-        "recall": 0.80819,
-        "ms_per_query": 0.202741
+        "recall": 0.80025,
+        "ms_per_query": 0.017438
       },
       {
-        "param": 100,
-        "recall": 0.81041,
-        "ms_per_query": 0.455849
-      },
-      {
-        "param": 1000,
-        "recall": 0.8131,
-        "ms_per_query": 8.29399
+        "param": 60,
+        "recall": 0.80291,
+        "ms_per_query": 0.024878
       },
       {
         "param": 80,
-        "recall": 0.81312,
-        "ms_per_query": 0.372234
-      },
-      {
-        "param": 1500,
-        "recall": 0.81349,
-        "ms_per_query": 16.115396
+        "recall": 0.80361,
+        "ms_per_query": 0.033968
       },
       {
         "param": 600,
-        "recall": 0.81447,
-        "ms_per_query": 3.829464
-      },
-      {
-        "param": 800,
-        "recall": 0.81454,
-        "ms_per_query": 5.855052
-      },
-      {
-        "param": 200,
-        "recall": 0.81573,
-        "ms_per_query": 0.967595
+        "recall": 0.80599,
+        "ms_per_query": 0.21532
       },
       {
         "param": 300,
-        "recall": 0.81616,
-        "ms_per_query": 1.521661
+        "recall": 0.80691,
+        "ms_per_query": 0.115066
+      },
+      {
+        "param": 800,
+        "recall": 0.80841,
+        "ms_per_query": 0.287571
+      },
+      {
+        "param": 1000,
+        "recall": 0.80904,
+        "ms_per_query": 0.358483
+      },
+      {
+        "param": 200,
+        "recall": 0.80955,
+        "ms_per_query": 0.078586
       },
       {
         "param": 150,
-        "recall": 0.81797,
-        "ms_per_query": 0.701724
+        "recall": 0.81051,
+        "ms_per_query": 0.060524
       },
       {
         "param": 400,
-        "recall": 0.81833,
-        "ms_per_query": 2.184099
+        "recall": 0.81174,
+        "ms_per_query": 0.151249
+      },
+      {
+        "param": 1500,
+        "recall": 0.8126,
+        "ms_per_query": 0.572317
+      },
+      {
+        "param": 100,
+        "recall": 0.81342,
+        "ms_per_query": 0.041147
       }
     ],
     "CSPG(m=8,\u03bb=0.5)": [
       {
         "param": 10,
-        "recall": 0.75937,
-        "ms_per_query": 0.132451
+        "recall": 0.75589,
+        "ms_per_query": 0.008075
       },
       {
         "param": 20,
-        "recall": 0.78643,
-        "ms_per_query": 0.214742
+        "recall": 0.78367,
+        "ms_per_query": 0.0137
       },
       {
         "param": 30,
-        "recall": 0.79665,
-        "ms_per_query": 0.300433
+        "recall": 0.79514,
+        "ms_per_query": 0.018921
       },
       {
         "param": 60,
-        "recall": 0.80039,
-        "ms_per_query": 0.54393
+        "recall": 0.80488,
+        "ms_per_query": 0.035985
       },
       {
         "param": 40,
-        "recall": 0.80082,
-        "ms_per_query": 0.374251
-      },
-      {
-        "param": 80,
-        "recall": 0.80784,
-        "ms_per_query": 0.721037
-      },
-      {
-        "param": 800,
-        "recall": 0.80959,
-        "ms_per_query": 17.138137
+        "recall": 0.80643,
+        "ms_per_query": 0.025441
       },
       {
         "param": 150,
-        "recall": 0.81084,
-        "ms_per_query": 1.476448
-      },
-      {
-        "param": 600,
-        "recall": 0.8113,
-        "ms_per_query": 10.781384
-      },
-      {
-        "param": 300,
-        "recall": 0.81299,
-        "ms_per_query": 3.644988
-      },
-      {
-        "param": 1500,
-        "recall": 0.81332,
-        "ms_per_query": 51.317082
+        "recall": 0.80816,
+        "ms_per_query": 0.085618
       },
       {
         "param": 100,
-        "recall": 0.81353,
-        "ms_per_query": 0.920258
-      },
-      {
-        "param": 400,
-        "recall": 0.81437,
-        "ms_per_query": 5.62186
-      },
-      {
-        "param": 1000,
-        "recall": 0.81439,
-        "ms_per_query": 24.948329
+        "recall": 0.80879,
+        "ms_per_query": 0.056595
       },
       {
         "param": 200,
-        "recall": 0.81559,
-        "ms_per_query": 2.094463
+        "recall": 0.80882,
+        "ms_per_query": 0.113503
+      },
+      {
+        "param": 80,
+        "recall": 0.80969,
+        "ms_per_query": 0.046516
+      },
+      {
+        "param": 600,
+        "recall": 0.81041,
+        "ms_per_query": 0.371993
+      },
+      {
+        "param": 1000,
+        "recall": 0.81117,
+        "ms_per_query": 0.715629
+      },
+      {
+        "param": 800,
+        "recall": 0.81168,
+        "ms_per_query": 0.544332
+      },
+      {
+        "param": 400,
+        "recall": 0.81184,
+        "ms_per_query": 0.235838
+      },
+      {
+        "param": 1500,
+        "recall": 0.81391,
+        "ms_per_query": 1.200348
+      },
+      {
+        "param": 300,
+        "recall": 0.81464,
+        "ms_per_query": 0.174643
       }
     ]
   },
@@ -795,386 +795,386 @@
     "CSPG(m=2,\u03bb=0.1)": [
       {
         "param": 10,
-        "recall": 0.66711,
-        "ms_per_query": 0.03726
+        "recall": 0.6688,
+        "ms_per_query": 0.003516
       },
       {
         "param": 20,
-        "recall": 0.74287,
-        "ms_per_query": 0.058523
+        "recall": 0.74819,
+        "ms_per_query": 0.00556
       },
       {
         "param": 30,
-        "recall": 0.7706,
-        "ms_per_query": 0.081224
+        "recall": 0.77114,
+        "ms_per_query": 0.007447
       },
       {
         "param": 40,
-        "recall": 0.78162,
-        "ms_per_query": 0.098341
+        "recall": 0.78993,
+        "ms_per_query": 0.009184
       },
       {
         "param": 60,
-        "recall": 0.79046,
-        "ms_per_query": 0.132329
+        "recall": 0.79826,
+        "ms_per_query": 0.012814
       },
       {
         "param": 80,
-        "recall": 0.7935,
-        "ms_per_query": 0.167143
+        "recall": 0.80394,
+        "ms_per_query": 0.016183
       },
       {
         "param": 100,
-        "recall": 0.80357,
-        "ms_per_query": 0.202243
+        "recall": 0.80812,
+        "ms_per_query": 0.020243
       },
       {
         "param": 150,
-        "recall": 0.80409,
-        "ms_per_query": 0.295497
-      },
-      {
-        "param": 600,
-        "recall": 0.80532,
-        "ms_per_query": 1.302222
-      },
-      {
-        "param": 800,
-        "recall": 0.80739,
-        "ms_per_query": 1.86766
+        "recall": 0.80856,
+        "ms_per_query": 0.030036
       },
       {
         "param": 200,
-        "recall": 0.80822,
-        "ms_per_query": 0.402154
-      },
-      {
-        "param": 1500,
-        "recall": 0.80845,
-        "ms_per_query": 4.370597
-      },
-      {
-        "param": 400,
-        "recall": 0.811,
-        "ms_per_query": 0.816391
+        "recall": 0.8099,
+        "ms_per_query": 0.038601
       },
       {
         "param": 300,
-        "recall": 0.81166,
-        "ms_per_query": 0.615602
+        "recall": 0.81043,
+        "ms_per_query": 0.055964
+      },
+      {
+        "param": 800,
+        "recall": 0.8105,
+        "ms_per_query": 0.13383
+      },
+      {
+        "param": 600,
+        "recall": 0.81143,
+        "ms_per_query": 0.101709
+      },
+      {
+        "param": 400,
+        "recall": 0.81199,
+        "ms_per_query": 0.071208
       },
       {
         "param": 1000,
-        "recall": 0.81267,
-        "ms_per_query": 2.427295
+        "recall": 0.81448,
+        "ms_per_query": 0.162944
+      },
+      {
+        "param": 1500,
+        "recall": 0.81494,
+        "ms_per_query": 0.230332
       }
     ],
     "CSPG(m=2,\u03bb=0.2)": [
       {
         "param": 10,
-        "recall": 0.70496,
-        "ms_per_query": 0.038409
+        "recall": 0.71021,
+        "ms_per_query": 0.003671
       },
       {
         "param": 20,
-        "recall": 0.76397,
-        "ms_per_query": 0.061831
+        "recall": 0.76429,
+        "ms_per_query": 0.005712
       },
       {
         "param": 30,
-        "recall": 0.77936,
-        "ms_per_query": 0.081243
+        "recall": 0.77863,
+        "ms_per_query": 0.007706
       },
       {
         "param": 40,
-        "recall": 0.79077,
-        "ms_per_query": 0.098882
+        "recall": 0.79089,
+        "ms_per_query": 0.009567
       },
       {
         "param": 60,
-        "recall": 0.79616,
-        "ms_per_query": 0.139231
+        "recall": 0.79585,
+        "ms_per_query": 0.013312
       },
       {
         "param": 100,
-        "recall": 0.79779,
-        "ms_per_query": 0.219171
-      },
-      {
-        "param": 80,
-        "recall": 0.79973,
-        "ms_per_query": 0.179626
-      },
-      {
-        "param": 800,
-        "recall": 0.80225,
-        "ms_per_query": 1.997358
-      },
-      {
-        "param": 200,
-        "recall": 0.80258,
-        "ms_per_query": 0.430189
-      },
-      {
-        "param": 1000,
-        "recall": 0.80421,
-        "ms_per_query": 2.699137
-      },
-      {
-        "param": 1500,
-        "recall": 0.80427,
-        "ms_per_query": 4.886028
-      },
-      {
-        "param": 400,
-        "recall": 0.80431,
-        "ms_per_query": 0.878566
-      },
-      {
-        "param": 300,
-        "recall": 0.80516,
-        "ms_per_query": 0.645221
+        "recall": 0.80206,
+        "ms_per_query": 0.021246
       },
       {
         "param": 150,
-        "recall": 0.80575,
-        "ms_per_query": 0.323657
+        "recall": 0.80377,
+        "ms_per_query": 0.031249
+      },
+      {
+        "param": 80,
+        "recall": 0.80442,
+        "ms_per_query": 0.01714
       },
       {
         "param": 600,
-        "recall": 0.80639,
-        "ms_per_query": 1.416725
+        "recall": 0.80584,
+        "ms_per_query": 0.106658
+      },
+      {
+        "param": 1500,
+        "recall": 0.80738,
+        "ms_per_query": 0.246709
+      },
+      {
+        "param": 200,
+        "recall": 0.80769,
+        "ms_per_query": 0.04027
+      },
+      {
+        "param": 300,
+        "recall": 0.80845,
+        "ms_per_query": 0.058634
+      },
+      {
+        "param": 1000,
+        "recall": 0.80845,
+        "ms_per_query": 0.171455
+      },
+      {
+        "param": 400,
+        "recall": 0.80865,
+        "ms_per_query": 0.075673
+      },
+      {
+        "param": 800,
+        "recall": 0.80902,
+        "ms_per_query": 0.139963
       }
     ],
     "CSPG(m=2,\u03bb=0.3)": [
       {
         "param": 10,
-        "recall": 0.72194,
-        "ms_per_query": 0.042347
+        "recall": 0.71428,
+        "ms_per_query": 0.003743
       },
       {
         "param": 20,
-        "recall": 0.76073,
-        "ms_per_query": 0.061051
+        "recall": 0.75728,
+        "ms_per_query": 0.005895
       },
       {
         "param": 30,
-        "recall": 0.77944,
-        "ms_per_query": 0.087703
+        "recall": 0.77366,
+        "ms_per_query": 0.007977
       },
       {
         "param": 40,
-        "recall": 0.78885,
-        "ms_per_query": 0.106354
+        "recall": 0.78079,
+        "ms_per_query": 0.009952
       },
       {
         "param": 60,
-        "recall": 0.79678,
-        "ms_per_query": 0.147149
+        "recall": 0.78864,
+        "ms_per_query": 0.013862
       },
       {
         "param": 80,
-        "recall": 0.79832,
-        "ms_per_query": 0.191746
-      },
-      {
-        "param": 100,
-        "recall": 0.79869,
-        "ms_per_query": 0.228441
+        "recall": 0.79244,
+        "ms_per_query": 0.017735
       },
       {
         "param": 150,
-        "recall": 0.80121,
-        "ms_per_query": 0.343331
+        "recall": 0.79378,
+        "ms_per_query": 0.032388
       },
       {
-        "param": 200,
-        "recall": 0.80435,
-        "ms_per_query": 0.461805
-      },
-      {
-        "param": 600,
-        "recall": 0.80515,
-        "ms_per_query": 1.513933
+        "param": 100,
+        "recall": 0.79458,
+        "ms_per_query": 0.022216
       },
       {
         "param": 800,
-        "recall": 0.80521,
-        "ms_per_query": 2.125894
+        "recall": 0.79642,
+        "ms_per_query": 0.145245
       },
       {
-        "param": 1000,
-        "recall": 0.8057,
-        "ms_per_query": 2.866208
-      },
-      {
-        "param": 400,
-        "recall": 0.80681,
-        "ms_per_query": 0.94067
-      },
-      {
-        "param": 1500,
-        "recall": 0.80687,
-        "ms_per_query": 5.256499
+        "param": 600,
+        "recall": 0.79672,
+        "ms_per_query": 0.113006
       },
       {
         "param": 300,
-        "recall": 0.80883,
-        "ms_per_query": 0.686782
+        "recall": 0.79692,
+        "ms_per_query": 0.061334
+      },
+      {
+        "param": 1000,
+        "recall": 0.79756,
+        "ms_per_query": 0.177818
+      },
+      {
+        "param": 200,
+        "recall": 0.79846,
+        "ms_per_query": 0.042167
+      },
+      {
+        "param": 1500,
+        "recall": 0.79905,
+        "ms_per_query": 0.259115
+      },
+      {
+        "param": 400,
+        "recall": 0.79926,
+        "ms_per_query": 0.078469
       }
     ],
     "CSPG(m=2,\u03bb=0.4)": [
       {
         "param": 10,
-        "recall": 0.73529,
-        "ms_per_query": 0.040105
+        "recall": 0.73463,
+        "ms_per_query": 0.003852
       },
       {
         "param": 20,
-        "recall": 0.77455,
-        "ms_per_query": 0.065677
+        "recall": 0.77246,
+        "ms_per_query": 0.006135
       },
       {
         "param": 30,
-        "recall": 0.78791,
-        "ms_per_query": 0.090363
+        "recall": 0.78885,
+        "ms_per_query": 0.00831
       },
       {
         "param": 40,
-        "recall": 0.7939,
-        "ms_per_query": 0.107844
+        "recall": 0.79814,
+        "ms_per_query": 0.010418
       },
       {
         "param": 60,
-        "recall": 0.79924,
-        "ms_per_query": 0.155019
+        "recall": 0.80404,
+        "ms_per_query": 0.014488
       },
       {
         "param": 80,
-        "recall": 0.80531,
-        "ms_per_query": 0.198109
-      },
-      {
-        "param": 400,
-        "recall": 0.80694,
-        "ms_per_query": 0.987654
-      },
-      {
-        "param": 300,
-        "recall": 0.80762,
-        "ms_per_query": 0.719179
-      },
-      {
-        "param": 800,
-        "recall": 0.80775,
-        "ms_per_query": 2.253596
-      },
-      {
-        "param": 150,
-        "recall": 0.80796,
-        "ms_per_query": 0.357321
+        "recall": 0.80603,
+        "ms_per_query": 0.018505
       },
       {
         "param": 100,
-        "recall": 0.80836,
-        "ms_per_query": 0.237659
+        "recall": 0.8086,
+        "ms_per_query": 0.023272
       },
       {
-        "param": 1000,
-        "recall": 0.80929,
-        "ms_per_query": 3.060477
+        "param": 800,
+        "recall": 0.80866,
+        "ms_per_query": 0.154411
       },
       {
         "param": 1500,
-        "recall": 0.81063,
-        "ms_per_query": 5.611704
+        "recall": 0.8091,
+        "ms_per_query": 0.277208
+      },
+      {
+        "param": 150,
+        "recall": 0.80947,
+        "ms_per_query": 0.034009
+      },
+      {
+        "param": 1000,
+        "recall": 0.81059,
+        "ms_per_query": 0.187314
+      },
+      {
+        "param": 300,
+        "recall": 0.81119,
+        "ms_per_query": 0.06384
       },
       {
         "param": 200,
-        "recall": 0.81105,
-        "ms_per_query": 0.482336
+        "recall": 0.8112,
+        "ms_per_query": 0.044597
       },
       {
         "param": 600,
-        "recall": 0.81227,
-        "ms_per_query": 1.591257
+        "recall": 0.81193,
+        "ms_per_query": 0.119649
+      },
+      {
+        "param": 400,
+        "recall": 0.81323,
+        "ms_per_query": 0.082318
       }
     ],
     "CSPG(m=2,\u03bb=0.5)": [
       {
         "param": 10,
-        "recall": 0.7499,
-        "ms_per_query": 0.044515
+        "recall": 0.74694,
+        "ms_per_query": 0.003928
       },
       {
         "param": 20,
-        "recall": 0.78049,
-        "ms_per_query": 0.069282
+        "recall": 0.78526,
+        "ms_per_query": 0.006261
       },
       {
         "param": 30,
-        "recall": 0.80104,
-        "ms_per_query": 0.092955
+        "recall": 0.78904,
+        "ms_per_query": 0.008467
       },
       {
         "param": 40,
-        "recall": 0.80389,
-        "ms_per_query": 0.116655
-      },
-      {
-        "param": 60,
-        "recall": 0.80751,
-        "ms_per_query": 0.166964
-      },
-      {
-        "param": 100,
-        "recall": 0.81216,
-        "ms_per_query": 0.255371
-      },
-      {
-        "param": 1500,
-        "recall": 0.81248,
-        "ms_per_query": 6.012302
-      },
-      {
-        "param": 600,
-        "recall": 0.81313,
-        "ms_per_query": 1.694281
+        "recall": 0.80091,
+        "ms_per_query": 0.010529
       },
       {
         "param": 80,
-        "recall": 0.81378,
-        "ms_per_query": 0.212418
+        "recall": 0.80607,
+        "ms_per_query": 0.018904
       },
       {
-        "param": 800,
-        "recall": 0.81545,
-        "ms_per_query": 2.425116
+        "param": 100,
+        "recall": 0.8076,
+        "ms_per_query": 0.024051
       },
       {
-        "param": 300,
-        "recall": 0.81567,
-        "ms_per_query": 0.777691
+        "param": 60,
+        "recall": 0.80841,
+        "ms_per_query": 0.014902
       },
       {
         "param": 150,
-        "recall": 0.81721,
-        "ms_per_query": 0.388579
+        "recall": 0.8098,
+        "ms_per_query": 0.034959
       },
       {
         "param": 1000,
-        "recall": 0.81761,
-        "ms_per_query": 3.278783
+        "recall": 0.8102,
+        "ms_per_query": 0.193802
+      },
+      {
+        "param": 800,
+        "recall": 0.81049,
+        "ms_per_query": 0.160915
+      },
+      {
+        "param": 300,
+        "recall": 0.81117,
+        "ms_per_query": 0.065412
       },
       {
         "param": 200,
-        "recall": 0.81778,
-        "ms_per_query": 0.520517
+        "recall": 0.81135,
+        "ms_per_query": 0.045797
       },
       {
         "param": 400,
-        "recall": 0.8199,
-        "ms_per_query": 1.067291
+        "recall": 0.81156,
+        "ms_per_query": 0.084345
+      },
+      {
+        "param": 1500,
+        "recall": 0.8127,
+        "ms_per_query": 0.289861
+      },
+      {
+        "param": 600,
+        "recall": 0.81448,
+        "ms_per_query": 0.124139
       }
     ]
   },
@@ -1182,407 +1182,407 @@
     "CSPG(ef1=1)": [
       {
         "param": 10,
-        "recall": 0.7546,
-        "ms_per_query": 0.045392
+        "recall": 0.75154,
+        "ms_per_query": 0.003934
       },
       {
         "param": 20,
-        "recall": 0.78294,
-        "ms_per_query": 0.070565
+        "recall": 0.78555,
+        "ms_per_query": 0.006283
       },
       {
         "param": 30,
-        "recall": 0.8018,
-        "ms_per_query": 0.094811
+        "recall": 0.79684,
+        "ms_per_query": 0.008532
       },
       {
         "param": 40,
-        "recall": 0.80505,
-        "ms_per_query": 0.119257
+        "recall": 0.80972,
+        "ms_per_query": 0.010679
       },
       {
         "param": 60,
-        "recall": 0.81054,
-        "ms_per_query": 0.169279
-      },
-      {
-        "param": 800,
-        "recall": 0.81681,
-        "ms_per_query": 2.429506
+        "recall": 0.81066,
+        "ms_per_query": 0.015013
       },
       {
         "param": 80,
-        "recall": 0.81689,
-        "ms_per_query": 0.212681
-      },
-      {
-        "param": 100,
-        "recall": 0.81705,
-        "ms_per_query": 0.258021
-      },
-      {
-        "param": 600,
-        "recall": 0.81768,
-        "ms_per_query": 1.701249
-      },
-      {
-        "param": 150,
-        "recall": 0.81792,
-        "ms_per_query": 0.38925
-      },
-      {
-        "param": 1500,
-        "recall": 0.81798,
-        "ms_per_query": 6.017582
-      },
-      {
-        "param": 400,
-        "recall": 0.81827,
-        "ms_per_query": 1.075259
-      },
-      {
-        "param": 300,
-        "recall": 0.81849,
-        "ms_per_query": 0.778908
+        "recall": 0.81079,
+        "ms_per_query": 0.018995
       },
       {
         "param": 200,
-        "recall": 0.81918,
-        "ms_per_query": 0.52474
+        "recall": 0.81485,
+        "ms_per_query": 0.045732
+      },
+      {
+        "param": 400,
+        "recall": 0.81578,
+        "ms_per_query": 0.085193
+      },
+      {
+        "param": 100,
+        "recall": 0.81618,
+        "ms_per_query": 0.023961
+      },
+      {
+        "param": 150,
+        "recall": 0.81704,
+        "ms_per_query": 0.035362
+      },
+      {
+        "param": 1500,
+        "recall": 0.81749,
+        "ms_per_query": 0.29179
       },
       {
         "param": 1000,
-        "recall": 0.82121,
-        "ms_per_query": 3.28659
+        "recall": 0.81805,
+        "ms_per_query": 0.196305
+      },
+      {
+        "param": 800,
+        "recall": 0.8182,
+        "ms_per_query": 0.160155
+      },
+      {
+        "param": 600,
+        "recall": 0.81911,
+        "ms_per_query": 0.124216
+      },
+      {
+        "param": 300,
+        "recall": 0.82149,
+        "ms_per_query": 0.066159
       }
     ],
     "CSPG(ef1=2)": [
       {
         "param": 10,
-        "recall": 0.75213,
-        "ms_per_query": 0.046063
+        "recall": 0.75015,
+        "ms_per_query": 0.004932
       },
       {
         "param": 20,
-        "recall": 0.78677,
-        "ms_per_query": 0.076491
+        "recall": 0.78537,
+        "ms_per_query": 0.00658
       },
       {
         "param": 30,
-        "recall": 0.80597,
-        "ms_per_query": 0.097822
+        "recall": 0.79588,
+        "ms_per_query": 0.009381
       },
       {
         "param": 40,
-        "recall": 0.81129,
-        "ms_per_query": 0.123297
-      },
-      {
-        "param": 60,
-        "recall": 0.8115,
-        "ms_per_query": 0.173166
-      },
-      {
-        "param": 800,
-        "recall": 0.81294,
-        "ms_per_query": 2.436056
-      },
-      {
-        "param": 100,
-        "recall": 0.81509,
-        "ms_per_query": 0.262142
+        "recall": 0.80368,
+        "ms_per_query": 0.011394
       },
       {
         "param": 80,
-        "recall": 0.81524,
-        "ms_per_query": 0.218373
+        "recall": 0.81026,
+        "ms_per_query": 0.020771
       },
       {
-        "param": 200,
-        "recall": 0.8172,
-        "ms_per_query": 0.529278
-      },
-      {
-        "param": 600,
-        "recall": 0.81727,
-        "ms_per_query": 1.70689
-      },
-      {
-        "param": 1500,
-        "recall": 0.81863,
-        "ms_per_query": 6.045201
+        "param": 60,
+        "recall": 0.81228,
+        "ms_per_query": 0.015451
       },
       {
         "param": 150,
-        "recall": 0.81969,
-        "ms_per_query": 0.394953
-      },
-      {
-        "param": 400,
-        "recall": 0.82006,
-        "ms_per_query": 1.077589
+        "recall": 0.81398,
+        "ms_per_query": 0.035747
       },
       {
         "param": 300,
-        "recall": 0.82109,
-        "ms_per_query": 0.784864
+        "recall": 0.81404,
+        "ms_per_query": 0.066041
+      },
+      {
+        "param": 100,
+        "recall": 0.8141,
+        "ms_per_query": 0.024467
+      },
+      {
+        "param": 200,
+        "recall": 0.81447,
+        "ms_per_query": 0.046061
       },
       {
         "param": 1000,
-        "recall": 0.82118,
-        "ms_per_query": 3.388582
+        "recall": 0.81717,
+        "ms_per_query": 0.194973
+      },
+      {
+        "param": 1500,
+        "recall": 0.81805,
+        "ms_per_query": 0.289004
+      },
+      {
+        "param": 800,
+        "recall": 0.81903,
+        "ms_per_query": 0.159519
+      },
+      {
+        "param": 600,
+        "recall": 0.81948,
+        "ms_per_query": 0.124014
+      },
+      {
+        "param": 400,
+        "recall": 0.82005,
+        "ms_per_query": 0.085678
       }
     ],
     "CSPG(ef1=4)": [
       {
         "param": 10,
-        "recall": 0.75113,
-        "ms_per_query": 0.052151
+        "recall": 0.74908,
+        "ms_per_query": 0.004275
       },
       {
         "param": 20,
-        "recall": 0.78542,
-        "ms_per_query": 0.089481
+        "recall": 0.78484,
+        "ms_per_query": 0.006624
       },
       {
         "param": 30,
-        "recall": 0.80221,
-        "ms_per_query": 0.122079
+        "recall": 0.79633,
+        "ms_per_query": 0.008922
       },
       {
         "param": 40,
-        "recall": 0.8117,
-        "ms_per_query": 0.132448
-      },
-      {
-        "param": 200,
-        "recall": 0.81211,
-        "ms_per_query": 0.524101
-      },
-      {
-        "param": 100,
-        "recall": 0.81288,
-        "ms_per_query": 0.262991
+        "recall": 0.803,
+        "ms_per_query": 0.011104
       },
       {
         "param": 80,
-        "recall": 0.8129,
-        "ms_per_query": 0.226544
+        "recall": 0.80901,
+        "ms_per_query": 0.019594
       },
       {
         "param": 60,
-        "recall": 0.81466,
-        "ms_per_query": 0.179634
-      },
-      {
-        "param": 600,
-        "recall": 0.81514,
-        "ms_per_query": 1.733316
-      },
-      {
-        "param": 400,
-        "recall": 0.81571,
-        "ms_per_query": 1.150223
-      },
-      {
-        "param": 1500,
-        "recall": 0.81633,
-        "ms_per_query": 6.015304
+        "recall": 0.81119,
+        "ms_per_query": 0.015501
       },
       {
         "param": 300,
-        "recall": 0.81778,
-        "ms_per_query": 0.78981
+        "recall": 0.81144,
+        "ms_per_query": 0.067319
       },
       {
-        "param": 1000,
-        "recall": 0.81981,
-        "ms_per_query": 3.263735
+        "param": 100,
+        "recall": 0.81219,
+        "ms_per_query": 0.024447
       },
       {
-        "param": 800,
-        "recall": 0.82009,
-        "ms_per_query": 2.429937
+        "param": 600,
+        "recall": 0.81283,
+        "ms_per_query": 0.124736
       },
       {
         "param": 150,
-        "recall": 0.82299,
-        "ms_per_query": 0.390914
+        "recall": 0.81394,
+        "ms_per_query": 0.035657
+      },
+      {
+        "param": 1500,
+        "recall": 0.81543,
+        "ms_per_query": 0.289333
+      },
+      {
+        "param": 200,
+        "recall": 0.81544,
+        "ms_per_query": 0.046373
+      },
+      {
+        "param": 400,
+        "recall": 0.81684,
+        "ms_per_query": 0.086114
+      },
+      {
+        "param": 1000,
+        "recall": 0.81749,
+        "ms_per_query": 0.194509
+      },
+      {
+        "param": 800,
+        "recall": 0.82159,
+        "ms_per_query": 0.160634
       }
     ],
     "CSPG(ef1=8)": [
       {
         "param": 10,
-        "recall": 0.75032,
-        "ms_per_query": 0.055301
+        "recall": 0.74932,
+        "ms_per_query": 0.004624
       },
       {
         "param": 20,
-        "recall": 0.78907,
-        "ms_per_query": 0.08039
+        "recall": 0.78546,
+        "ms_per_query": 0.006876
       },
       {
         "param": 30,
-        "recall": 0.80674,
-        "ms_per_query": 0.10557
-      },
-      {
-        "param": 200,
-        "recall": 0.81033,
-        "ms_per_query": 0.537569
+        "recall": 0.79772,
+        "ms_per_query": 0.009115
       },
       {
         "param": 40,
-        "recall": 0.81155,
-        "ms_per_query": 0.126382
+        "recall": 0.80421,
+        "ms_per_query": 0.011335
       },
       {
         "param": 100,
-        "recall": 0.81318,
-        "ms_per_query": 0.275595
-      },
-      {
-        "param": 80,
-        "recall": 0.81507,
-        "ms_per_query": 0.226279
-      },
-      {
-        "param": 1000,
-        "recall": 0.81544,
-        "ms_per_query": 3.305012
-      },
-      {
-        "param": 60,
-        "recall": 0.81566,
-        "ms_per_query": 0.176254
-      },
-      {
-        "param": 600,
-        "recall": 0.81682,
-        "ms_per_query": 1.716955
+        "recall": 0.80986,
+        "ms_per_query": 0.02473
       },
       {
         "param": 300,
-        "recall": 0.81872,
-        "ms_per_query": 0.794998
+        "recall": 0.81009,
+        "ms_per_query": 0.06641
+      },
+      {
+        "param": 60,
+        "recall": 0.81145,
+        "ms_per_query": 0.015863
+      },
+      {
+        "param": 80,
+        "recall": 0.81277,
+        "ms_per_query": 0.019782
       },
       {
         "param": 400,
-        "recall": 0.81916,
-        "ms_per_query": 1.085941
+        "recall": 0.81431,
+        "ms_per_query": 0.085545
       },
       {
-        "param": 1500,
-        "recall": 0.81955,
-        "ms_per_query": 6.035995
+        "param": 600,
+        "recall": 0.81566,
+        "ms_per_query": 0.125603
       },
       {
         "param": 800,
-        "recall": 0.81981,
-        "ms_per_query": 2.446381
+        "recall": 0.81671,
+        "ms_per_query": 0.160733
       },
       {
         "param": 150,
-        "recall": 0.82152,
-        "ms_per_query": 0.403563
+        "recall": 0.81764,
+        "ms_per_query": 0.035954
+      },
+      {
+        "param": 200,
+        "recall": 0.81842,
+        "ms_per_query": 0.046857
+      },
+      {
+        "param": 1500,
+        "recall": 0.81865,
+        "ms_per_query": 0.293032
+      },
+      {
+        "param": 1000,
+        "recall": 0.8201,
+        "ms_per_query": 0.197763
       }
     ],
     "CSPG(ef1=16)": [
       {
         "param": 10,
-        "recall": 0.75497,
-        "ms_per_query": 0.065871
+        "recall": 0.75377,
+        "ms_per_query": 0.005971
       },
       {
         "param": 20,
-        "recall": 0.78684,
-        "ms_per_query": 0.095752
+        "recall": 0.78349,
+        "ms_per_query": 0.00769
       },
       {
         "param": 30,
-        "recall": 0.80403,
-        "ms_per_query": 0.117408
+        "recall": 0.79406,
+        "ms_per_query": 0.009754
       },
       {
         "param": 40,
-        "recall": 0.80945,
-        "ms_per_query": 0.138522
-      },
-      {
-        "param": 200,
-        "recall": 0.81111,
-        "ms_per_query": 0.549833
-      },
-      {
-        "param": 80,
-        "recall": 0.81417,
-        "ms_per_query": 0.235888
+        "recall": 0.80296,
+        "ms_per_query": 0.012013
       },
       {
         "param": 60,
-        "recall": 0.81507,
-        "ms_per_query": 0.188826
+        "recall": 0.80771,
+        "ms_per_query": 0.017787
       },
       {
-        "param": 600,
-        "recall": 0.81614,
-        "ms_per_query": 1.725481
-      },
-      {
-        "param": 1000,
-        "recall": 0.81624,
-        "ms_per_query": 3.311923
-      },
-      {
-        "param": 100,
-        "recall": 0.81649,
-        "ms_per_query": 0.279753
-      },
-      {
-        "param": 800,
-        "recall": 0.81693,
-        "ms_per_query": 2.454452
-      },
-      {
-        "param": 300,
-        "recall": 0.81956,
-        "ms_per_query": 0.803099
-      },
-      {
-        "param": 1500,
-        "recall": 0.81956,
-        "ms_per_query": 6.045584
+        "param": 80,
+        "recall": 0.81197,
+        "ms_per_query": 0.020661
       },
       {
         "param": 400,
-        "recall": 0.81958,
-        "ms_per_query": 1.095253
+        "recall": 0.81266,
+        "ms_per_query": 0.086333
+      },
+      {
+        "param": 600,
+        "recall": 0.81464,
+        "ms_per_query": 0.127085
+      },
+      {
+        "param": 100,
+        "recall": 0.81493,
+        "ms_per_query": 0.025663
+      },
+      {
+        "param": 800,
+        "recall": 0.81512,
+        "ms_per_query": 0.16212
+      },
+      {
+        "param": 1500,
+        "recall": 0.81557,
+        "ms_per_query": 0.295127
+      },
+      {
+        "param": 200,
+        "recall": 0.81674,
+        "ms_per_query": 0.047737
+      },
+      {
+        "param": 300,
+        "recall": 0.81696,
+        "ms_per_query": 0.067685
       },
       {
         "param": 150,
-        "recall": 0.82041,
-        "ms_per_query": 0.412082
+        "recall": 0.81772,
+        "ms_per_query": 0.0368
+      },
+      {
+        "param": 1000,
+        "recall": 0.82147,
+        "ms_per_query": 0.198639
       }
     ]
   },
   "robustness": {
     "CSPG(m=2,\u03bb=0.5)": {
-      "mean_recall": 0.9462,
+      "mean_recall": 0.9441,
       "median_recall": 1.0,
       "min_recall": 0.0,
       "max_recall": 1.0,
       "q25_recall": 1.0,
       "q75_recall": 1.0,
-      "ms_per_query": 0.1432
+      "ms_per_query": 0.0808
     },
     "HNSW": {
-      "mean_recall": 0.9387,
+      "mean_recall": 0.9438,
       "median_recall": 1.0,
       "min_recall": 0.0,
       "max_recall": 1.0,
       "q25_recall": 1.0,
       "q75_recall": 1.0,
-      "ms_per_query": 0.0722
+      "ms_per_query": 0.0459
     }
   }
 }

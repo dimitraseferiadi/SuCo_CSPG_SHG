@@ -1,0 +1,98 @@
+Data dir:       /leonardo_work/EUHPC_D32_102/dhm/data
+Index dir:      /leonardo_work/EUHPC_D32_102/dhm/indices
+Output dir:     /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router
+Datasets:       ['msong']
+Indexes:        ['suco', 'shg', 'cspg', 'hnsw32', 'hnsw48', 'opq_ivfpq']
+Thread counts:  [1, 2, 4, 8, 16, 32]   (cores available: 32)
+Recall targets: [0.9, 0.95]
+
+######################################################################
+# Thread scaling: MSONG
+######################################################################
+
+Loading msong...
+  msong: d=420 nb=992,272 nq=200 metric=L2
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/msong/msong_base.fvecs (fvecs, 992,272 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/msong/msong_query.fvecs (fvecs)
+    train : <sampled from base>
+    gt    : /leonardo_work/EUHPC_D32_102/dhm/data/msong/msong_groundtruth.ivecs
+  msong_groundtruth.ivecs has only 20 neighbours per query but k=100 was requested; computing a deeper groundtruth
+  groundtruth from cache: /leonardo_work/EUHPC_D32_102/dhm/indices/gt_msong_k100_53667c6aae11.npy
+  (computed groundtruth agrees with the shipped 20-NN file on 100.0% of top-1)
+  Loaded in 3.9s: xb=(992272, 420), xq=(200, 420), gt=(200, 100)
+
+--- SuCo thread scaling (threads=[1, 2, 4, 8, 16, 32]) ---
+    loading /leonardo_work/EUHPC_D32_102/dhm/indices/msong_suco_ns7.idx
+  SuCo: LOAD FAILED — Error in faiss::IndexSuCo::IndexSuCo(faiss::idx_t, int, int, float, float, int) at /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/faiss/IndexSuCo.cpp:124: Error: '!(d % nsubspaces == 0)' failed: IndexSuCo: d must be divisible by nsubspaces
+
+--- SHG thread scaling (threads=[1, 2, 4, 8, 16, 32]) ---
+    loading /leonardo_work/EUHPC_D32_102/dhm/indices/msong_shg.idx
+    reusing stored recall_k10 curve (17 operating points)
+  shg threads=1 @recall≥0.9: qps=3548 ms/q=0.2818 speedup=1.0 eff=1.0
+  shg threads=2 @recall≥0.9: qps=3114 ms/q=0.3211 speedup=0.88 eff=0.44
+  shg threads=4 @recall≥0.9: qps=2975 ms/q=0.3361 speedup=0.84 eff=0.21
+  shg threads=8 @recall≥0.9: qps=3144 ms/q=0.3180 speedup=0.89 eff=0.11
+  shg threads=16 @recall≥0.9: qps=2858 ms/q=0.3498 speedup=0.81 eff=0.05
+  shg threads=32 @recall≥0.9: qps=1444 ms/q=0.6926 speedup=0.41 eff=0.01
+  shg threads=1 @recall≥0.95: qps=2883 ms/q=0.3468 speedup=1.0 eff=1.0
+  shg threads=2 @recall≥0.95: qps=2848 ms/q=0.3511 speedup=0.99 eff=0.49
+  shg threads=4 @recall≥0.95: qps=2459 ms/q=0.4066 speedup=0.85 eff=0.21
+  shg threads=8 @recall≥0.95: qps=2139 ms/q=0.4675 speedup=0.74 eff=0.09
+  shg threads=16 @recall≥0.95: qps=1547 ms/q=0.6463 speedup=0.54 eff=0.03
+  shg threads=32 @recall≥0.95: qps=1387 ms/q=0.7210 speedup=0.48 eff=0.02
+
+--- CSPG thread scaling (threads=[1, 2, 4, 8, 16, 32]) ---
+    loading /leonardo_work/EUHPC_D32_102/dhm/indices/msong_cspg.idx
+    reusing stored recall_k10 curve (17 operating points)
+  cspg threads=1 @recall≥0.9: qps=4246 ms/q=0.2355 speedup=1.0 eff=1.0
+  cspg threads=2 @recall≥0.9: qps=3348 ms/q=0.2987 speedup=0.79 eff=0.39
+  cspg threads=4 @recall≥0.9: qps=3420 ms/q=0.2924 speedup=0.81 eff=0.2
+  cspg threads=8 @recall≥0.9: qps=1616 ms/q=0.6190 speedup=0.38 eff=0.05
+  cspg threads=16 @recall≥0.9: qps=806 ms/q=1.2401 speedup=0.19 eff=0.01
+  cspg threads=32 @recall≥0.9: qps=381 ms/q=2.6247 speedup=0.09 eff=0.0
+  cspg threads=1 @recall≥0.95: qps=3169 ms/q=0.3156 speedup=1.0 eff=1.0
+  cspg threads=2 @recall≥0.95: qps=2455 ms/q=0.4073 speedup=0.77 eff=0.39
+  cspg threads=4 @recall≥0.95: qps=2505 ms/q=0.3992 speedup=0.79 eff=0.2
+  cspg threads=8 @recall≥0.95: qps=1201 ms/q=0.8325 speedup=0.38 eff=0.05
+  cspg threads=16 @recall≥0.95: qps=605 ms/q=1.6530 speedup=0.19 eff=0.01
+  cspg threads=32 @recall≥0.95: qps=308 ms/q=3.2433 speedup=0.1 eff=0.0
+
+--- HNSW32 thread scaling (threads=[1, 2, 4, 8, 16, 32]) ---
+    loading /leonardo_work/EUHPC_D32_102/dhm/indices/msong_hnsw32.idx
+    reusing stored recall_k10 curve (17 operating points)
+  hnsw32 threads=1 @recall≥0.9: qps=6503 ms/q=0.1538 speedup=1.0 eff=1.0
+  hnsw32 threads=2 @recall≥0.9: qps=5837 ms/q=0.1713 speedup=0.9 eff=0.45
+  hnsw32 threads=4 @recall≥0.9: qps=4329 ms/q=0.2310 speedup=0.67 eff=0.17
+  hnsw32 threads=8 @recall≥0.9: qps=5633 ms/q=0.1775 speedup=0.87 eff=0.11
+  hnsw32 threads=16 @recall≥0.9: qps=2849 ms/q=0.3510 speedup=0.44 eff=0.03
+  hnsw32 threads=32 @recall≥0.9: qps=1501 ms/q=0.6663 speedup=0.23 eff=0.01
+  hnsw32 threads=1 @recall≥0.95: qps=4011 ms/q=0.2493 speedup=1.0 eff=1.0
+  hnsw32 threads=2 @recall≥0.95: qps=3992 ms/q=0.2505 speedup=1.0 eff=0.5
+  hnsw32 threads=4 @recall≥0.95: qps=3731 ms/q=0.2680 speedup=0.93 eff=0.23
+  hnsw32 threads=8 @recall≥0.95: qps=2865 ms/q=0.3491 speedup=0.71 eff=0.09
+  hnsw32 threads=16 @recall≥0.95: qps=2411 ms/q=0.4148 speedup=0.6 eff=0.04
+  hnsw32 threads=32 @recall≥0.95: qps=1443 ms/q=0.6929 speedup=0.36 eff=0.01
+
+--- HNSW48 thread scaling (threads=[1, 2, 4, 8, 16, 32]) ---
+    loading /leonardo_work/EUHPC_D32_102/dhm/indices/msong_hnsw48.idx
+    reusing stored recall_k10 curve (17 operating points)
+  hnsw48 threads=1 @recall≥0.9: qps=4628 ms/q=0.2161 speedup=1.0 eff=1.0
+  hnsw48 threads=2 @recall≥0.9: qps=4549 ms/q=0.2198 speedup=0.98 eff=0.49
+  hnsw48 threads=4 @recall≥0.9: qps=4259 ms/q=0.2348 speedup=0.92 eff=0.23
+  hnsw48 threads=8 @recall≥0.9: qps=3025 ms/q=0.3306 speedup=0.65 eff=0.08
+  hnsw48 threads=16 @recall≥0.9: qps=2801 ms/q=0.3571 speedup=0.61 eff=0.04
+  hnsw48 threads=32 @recall≥0.9: qps=1446 ms/q=0.6916 speedup=0.31 eff=0.01
+  hnsw48 threads=1 @recall≥0.95: qps=3846 ms/q=0.2600 speedup=1.0 eff=1.0
+  hnsw48 threads=2 @recall≥0.95: qps=3843 ms/q=0.2602 speedup=1.0 eff=0.5
+  hnsw48 threads=4 @recall≥0.95: qps=3526 ms/q=0.2836 speedup=0.92 eff=0.23
+  hnsw48 threads=8 @recall≥0.95: qps=3004 ms/q=0.3328 speedup=0.78 eff=0.1
+  hnsw48 threads=16 @recall≥0.95: qps=2486 ms/q=0.4022 speedup=0.65 eff=0.04
+  hnsw48 threads=32 @recall≥0.95: qps=1377 ms/q=0.7261 speedup=0.36 eff=0.01
+
+--- OPQ-IVFPQ thread scaling (threads=[1, 2, 4, 8, 16, 32]) ---
+    loading /leonardo_work/EUHPC_D32_102/dhm/indices/msong_opq_ivfpq.idx
+    reusing stored recall_k10 curve (11 operating points)
+  opq_ivfpq: recall≥0.9 unreachable on the k=10 curve — skipping this target
+  opq_ivfpq: recall≥0.95 unreachable on the k=10 curve — skipping this target
+
+Results merged into /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router/results_msong.json

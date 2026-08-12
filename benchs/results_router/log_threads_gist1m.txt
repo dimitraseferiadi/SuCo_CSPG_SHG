@@ -1,0 +1,95 @@
+Data dir:       /leonardo_work/EUHPC_D32_102/dhm/data
+Index dir:      /leonardo_work/EUHPC_D32_102/dhm/indices
+Output dir:     /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router
+Datasets:       ['gist1m']
+Indexes:        ['suco', 'shg', 'cspg', 'hnsw32', 'hnsw48', 'opq_ivfpq']
+Thread counts:  [1, 2, 4, 8, 16, 32]   (cores available: 32)
+Recall targets: [0.9, 0.95]
+
+######################################################################
+# Thread scaling: GIST1M
+######################################################################
+
+Loading gist1m...
+  gist1m: d=960 nb=1,000,000 nq=1,000 metric=L2
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/gist1m/gist_base.fvecs (fvecs, 1,000,000 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/gist1m/gist_query.fvecs (fvecs)
+    train : /leonardo_work/EUHPC_D32_102/dhm/data/gist1m/gist_learn.fvecs
+    gt    : /leonardo_work/EUHPC_D32_102/dhm/data/gist1m/gist_groundtruth.ivecs
+  Loaded in 10.3s: xb=(1000000, 960), xq=(1000, 960), gt=(1000, 100)
+
+--- SuCo thread scaling (threads=[1, 2, 4, 8, 16, 32]) ---
+    loading /leonardo_work/EUHPC_D32_102/dhm/indices/gist1m_suco_ns40.idx
+  SuCo: LOAD FAILED — Error in faiss::IndexSuCo::IndexSuCo(faiss::idx_t, int, int, float, float, int) at /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/faiss/IndexSuCo.cpp:124: Error: '!(d % nsubspaces == 0)' failed: IndexSuCo: d must be divisible by nsubspaces
+
+--- SHG thread scaling (threads=[1, 2, 4, 8, 16, 32]) ---
+    loading /leonardo_work/EUHPC_D32_102/dhm/indices/gist1m_shg.idx
+    reusing stored recall_k10 curve (17 operating points)
+  shg threads=1 @recall≥0.9: qps=450 ms/q=2.2219 speedup=1.0 eff=1.0
+  shg threads=2 @recall≥0.9: qps=428 ms/q=2.3338 speedup=0.95 eff=0.48
+  shg threads=4 @recall≥0.9: qps=423 ms/q=2.3660 speedup=0.94 eff=0.23
+  shg threads=8 @recall≥0.9: qps=416 ms/q=2.4039 speedup=0.92 eff=0.12
+  shg threads=16 @recall≥0.9: qps=406 ms/q=2.4602 speedup=0.9 eff=0.06
+  shg threads=32 @recall≥0.9: qps=398 ms/q=2.5102 speedup=0.89 eff=0.03
+  shg threads=1 @recall≥0.95: qps=254 ms/q=3.9361 speedup=1.0 eff=1.0
+  shg threads=2 @recall≥0.95: qps=250 ms/q=3.9971 speedup=0.98 eff=0.49
+  shg threads=4 @recall≥0.95: qps=246 ms/q=4.0690 speedup=0.97 eff=0.24
+  shg threads=8 @recall≥0.95: qps=240 ms/q=4.1752 speedup=0.94 eff=0.12
+  shg threads=16 @recall≥0.95: qps=234 ms/q=4.2714 speedup=0.92 eff=0.06
+  shg threads=32 @recall≥0.95: qps=228 ms/q=4.3851 speedup=0.9 eff=0.03
+
+--- CSPG thread scaling (threads=[1, 2, 4, 8, 16, 32]) ---
+    loading /leonardo_work/EUHPC_D32_102/dhm/indices/gist1m_cspg.idx
+    reusing stored recall_k10 curve (17 operating points)
+  cspg threads=1 @recall≥0.9: qps=476 ms/q=2.1029 speedup=1.0 eff=1.0
+  cspg threads=2 @recall≥0.9: qps=465 ms/q=2.1510 speedup=0.98 eff=0.49
+  cspg threads=4 @recall≥0.9: qps=453 ms/q=2.2072 speedup=0.95 eff=0.24
+  cspg threads=8 @recall≥0.9: qps=433 ms/q=2.3117 speedup=0.91 eff=0.11
+  cspg threads=16 @recall≥0.9: qps=420 ms/q=2.3824 speedup=0.88 eff=0.06
+  cspg threads=32 @recall≥0.9: qps=375 ms/q=2.6646 speedup=0.79 eff=0.02
+  cspg threads=1 @recall≥0.95: qps=266 ms/q=3.7537 speedup=1.0 eff=1.0
+  cspg threads=2 @recall≥0.95: qps=258 ms/q=3.8747 speedup=0.97 eff=0.48
+  cspg threads=4 @recall≥0.95: qps=255 ms/q=3.9170 speedup=0.96 eff=0.24
+  cspg threads=8 @recall≥0.95: qps=243 ms/q=4.1090 speedup=0.91 eff=0.11
+  cspg threads=16 @recall≥0.95: qps=234 ms/q=4.2729 speedup=0.88 eff=0.05
+  cspg threads=32 @recall≥0.95: qps=220 ms/q=4.5382 speedup=0.83 eff=0.03
+
+--- HNSW32 thread scaling (threads=[1, 2, 4, 8, 16, 32]) ---
+    loading /leonardo_work/EUHPC_D32_102/dhm/indices/gist1m_hnsw32.idx
+    reusing stored recall_k10 curve (17 operating points)
+  hnsw32 threads=1 @recall≥0.9: qps=619 ms/q=1.6154 speedup=1.0 eff=1.0
+  hnsw32 threads=2 @recall≥0.9: qps=605 ms/q=1.6529 speedup=0.98 eff=0.49
+  hnsw32 threads=4 @recall≥0.9: qps=591 ms/q=1.6913 speedup=0.96 eff=0.24
+  hnsw32 threads=8 @recall≥0.9: qps=562 ms/q=1.7797 speedup=0.91 eff=0.11
+  hnsw32 threads=16 @recall≥0.9: qps=501 ms/q=1.9971 speedup=0.81 eff=0.05
+  hnsw32 threads=32 @recall≥0.9: qps=447 ms/q=2.2358 speedup=0.72 eff=0.02
+  hnsw32 threads=1 @recall≥0.95: qps=335 ms/q=2.9807 speedup=1.0 eff=1.0
+  hnsw32 threads=2 @recall≥0.95: qps=331 ms/q=3.0180 speedup=0.99 eff=0.49
+  hnsw32 threads=4 @recall≥0.95: qps=318 ms/q=3.1419 speedup=0.95 eff=0.24
+  hnsw32 threads=8 @recall≥0.95: qps=302 ms/q=3.3087 speedup=0.9 eff=0.11
+  hnsw32 threads=16 @recall≥0.95: qps=275 ms/q=3.6313 speedup=0.82 eff=0.05
+  hnsw32 threads=32 @recall≥0.95: qps=232 ms/q=4.3097 speedup=0.69 eff=0.02
+
+--- HNSW48 thread scaling (threads=[1, 2, 4, 8, 16, 32]) ---
+    loading /leonardo_work/EUHPC_D32_102/dhm/indices/gist1m_hnsw48.idx
+    reusing stored recall_k10 curve (17 operating points)
+  hnsw48 threads=1 @recall≥0.9: qps=512 ms/q=1.9513 speedup=1.0 eff=1.0
+  hnsw48 threads=2 @recall≥0.9: qps=506 ms/q=1.9761 speedup=0.99 eff=0.49
+  hnsw48 threads=4 @recall≥0.9: qps=499 ms/q=2.0033 speedup=0.97 eff=0.24
+  hnsw48 threads=8 @recall≥0.9: qps=485 ms/q=2.0608 speedup=0.95 eff=0.12
+  hnsw48 threads=16 @recall≥0.9: qps=470 ms/q=2.1297 speedup=0.92 eff=0.06
+  hnsw48 threads=32 @recall≥0.9: qps=443 ms/q=2.2589 speedup=0.86 eff=0.03
+  hnsw48 threads=1 @recall≥0.95: qps=299 ms/q=3.3479 speedup=1.0 eff=1.0
+  hnsw48 threads=2 @recall≥0.95: qps=293 ms/q=3.4178 speedup=0.98 eff=0.49
+  hnsw48 threads=4 @recall≥0.95: qps=283 ms/q=3.5274 speedup=0.95 eff=0.24
+  hnsw48 threads=8 @recall≥0.95: qps=273 ms/q=3.6658 speedup=0.91 eff=0.11
+  hnsw48 threads=16 @recall≥0.95: qps=261 ms/q=3.8370 speedup=0.87 eff=0.05
+  hnsw48 threads=32 @recall≥0.95: qps=233 ms/q=4.2836 speedup=0.78 eff=0.02
+
+--- OPQ-IVFPQ thread scaling (threads=[1, 2, 4, 8, 16, 32]) ---
+    loading /leonardo_work/EUHPC_D32_102/dhm/indices/gist1m_opq_ivfpq.idx
+    reusing stored recall_k10 curve (11 operating points)
+  opq_ivfpq: recall≥0.9 unreachable on the k=10 curve — skipping this target
+  opq_ivfpq: recall≥0.95 unreachable on the k=10 curve — skipping this target
+
+Results merged into /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router/results_gist1m.json

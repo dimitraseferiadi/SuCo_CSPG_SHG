@@ -1,3 +1,24 @@
+Loading gcc/11.3.0
+  Loading requirement: gmp/6.2.1 mpfr/4.1.0 mpc/1.2.1
+data-dir: /leonardo_work/EUHPC_D32_102/dhm/data
+contents: deep10m, enron, gist1m, msong, msturing10m, openai1m, sift100M, spacev10m, uqv
+faiss   : /leonardo/home/userexternal/afilippa/miniconda3/envs/anns/lib/python3.12/site-packages/faiss/__init__.py
+          IndexSuCo / IndexSHG / IndexCSPG all present
+          OPQ-IVFPQ factory OK ('OPQ8_64,IVF64,PQ8x8')
+------------------------------------------------------------------------
+[ ok ] enron: d=1369 nb=94,987 nq=200 metric=L2
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/enron/enron_base.fvecs (fvecs, 94,987 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/enron/enron_query.fvecs (fvecs)
+    train : <sampled from base>
+    gt    : /leonardo_work/EUHPC_D32_102/dhm/data/enron/enron_groundtruth.ivecs
+       WARN: no learn file; training vectors sampled from the base
+------------------------------------------------------------------------
+1/1 datasets resolved
+=== router run start 2026-08-11 11:40:11  |  1 datasets  |  families: graph quant ===
+
+############################################################
+# 2026-08-11 11:40:11  dataset: enron
+############################################################
 Log:        /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router/log_router_enron.txt
 Data dir:   /leonardo_work/EUHPC_D32_102/dhm/data
 Index dir:  /leonardo_work/EUHPC_D32_102/dhm/indices
@@ -621,3 +642,5 @@ BENCHMARK: time_at_recall - enron
 ======================================================================
 
 Results saved to /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router/results_enron.json
+
+=== router run done 2026-08-11 11:55:21 ===
