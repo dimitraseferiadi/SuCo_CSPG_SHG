@@ -17,13 +17,14 @@
 # Per-algorithm reproductions (SuCo / CSPG / SHG), each vs its own HNSW
 # (+ LSH for SuCo). Reuses the indexes already built by bench_router_paper.py
 # (the cross-algorithm run) via symlinks — nothing is rebuilt except SuCo's own
-# HNSW (efC200, by design) and the fresh LSH indexes SuCo adds.
+# HNSW (M=32/efC=200, by design) and the fresh LSH indexes SuCo adds.
 #
 # Usage:
 #   sbatch benchs/per_algo_hpc.sbatch                 # all three
 #   sbatch benchs/per_algo_hpc.sbatch cspg shg        # subset
 #   SUCO_SWEEP=1 sbatch benchs/per_algo_hpc.sbatch suco   # + SuCo curve (rebuilds SuCo variants)
 #   SHG_DATASETS=msturing10m sbatch benchs/per_algo_hpc.sbatch shg   # one dataset
+#   SUCO_HNSW_M=32 SUCO_HNSW_EFC=200 sbatch ... suco  # HNSW baseline (thesis default)
 
 set -uo pipefail
 mkdir -p logs/slurm
@@ -84,6 +85,16 @@ mkdir -p "$SUCO_OUT" "$CSPG_OUT" "$SHG_OUT"
 SUCO_SWEEP=${SUCO_SWEEP:-0}
 SUCO_EXTRA=""
 [ "$SUCO_SWEEP" = "1" ] && SUCO_EXTRA="--sweep"
+
+# HNSW baseline for the SuCo reproduction: M=32, efC=200 — the thesis setting
+# (Ch. 12.1.1: "SuCo is evaluated against HNSW with M = 32, efC = 200"), which
+# is deliberately NOT the router's HNSW32 (M=32, efC=128, CSPG's baseline).
+# Pinned explicitly so the run never silently inherits a changed argparse
+# default; the values also land in the HNSW filename (_hnsw_M32_efc200.idx),
+# so a rebuilt baseline is reused across resubmissions instead of clobbered.
+SUCO_HNSW_M=${SUCO_HNSW_M:-32}
+SUCO_HNSW_EFC=${SUCO_HNSW_EFC:-200}
+SUCO_HNSW_ARGS="--hnsw-M $SUCO_HNSW_M --hnsw-ef-construction $SUCO_HNSW_EFC"
 
 want() { for a in "${ALGOS[@]}"; do [ "$a" = "$1" ] && return 0; done; return 1; }
 
@@ -149,40 +160,46 @@ if want suco; then
 fi
 
 # =========================================================================
-# 2. SuCo  —  SuCo (reused) + HNSW (efC200, fresh) + LSH (fresh)
+# 2. SuCo  —  SuCo (reused) + HNSW (M32/efC200, fresh) + LSH (fresh)
 # =========================================================================
 if want suco; then
     echo ""
     echo "############################################################"
-    echo "# $(date '+%F %T')  SuCo reproduction  (sweep=${SUCO_SWEEP})"
+    echo "# $(date '+%F %T')  SuCo reproduction  (sweep=${SUCO_SWEEP}, HNSW M=${SUCO_HNSW_M} efC=${SUCO_HNSW_EFC})"
     echo "############################################################"
     python benchs/check_datasets.py --data-dir "$DATA_DIR" --suite suco \
         || echo "  (suco dataset check warning — continuing)"
 
     python benchs/bench_suco_sift1m.py --data-dir "$DATA_DIR" \
-        --index-path "$SUCO_IDX/sift1m.idx" --hnsw-sweep --lsh-sweep $SUCO_EXTRA \
+        --index-path "$SUCO_IDX/sift1m.idx" --hnsw-sweep --lsh-sweep \
+        $SUCO_HNSW_ARGS $SUCO_EXTRA \
         2>&1 | tee "$SUCO_OUT/log_suco_sift1m.txt" || echo "!!! suco sift1m FAILED"
 
     python benchs/bench_suco_gist1m.py --data-dir "$DATA_DIR" \
-        --index-path "$SUCO_IDX/gist1m.idx" --hnsw-sweep --lsh-sweep $SUCO_EXTRA \
+        --index-path "$SUCO_IDX/gist1m.idx" --hnsw-sweep --lsh-sweep \
+        $SUCO_HNSW_ARGS $SUCO_EXTRA \
         2>&1 | tee "$SUCO_OUT/log_suco_gist1m.txt" || echo "!!! suco gist1m FAILED"
 
     python benchs/bench_suco_deep1b.py --data-dir "$DATA_DIR" --nb 1000000 \
-        --index-path "$SUCO_IDX/deep_nb1000000.idx" --hnsw-sweep --lsh-sweep $SUCO_EXTRA \
+        --index-path "$SUCO_IDX/deep_nb1000000.idx" --hnsw-sweep --lsh-sweep \
+        $SUCO_HNSW_ARGS $SUCO_EXTRA \
         2>&1 | tee "$SUCO_OUT/log_suco_deep1m.txt" || echo "!!! suco deep1m FAILED"
 
     python benchs/bench_suco_deep1b.py --data-dir "$DATA_DIR" --nb 10000000 \
-        --index-path "$SUCO_IDX/deep_nb10000000.idx" --hnsw-sweep --lsh-sweep $SUCO_EXTRA \
+        --index-path "$SUCO_IDX/deep_nb10000000.idx" --hnsw-sweep --lsh-sweep \
+        $SUCO_HNSW_ARGS $SUCO_EXTRA \
         2>&1 | tee "$SUCO_OUT/log_suco_deep10m.txt" || echo "!!! suco deep10m FAILED"
 
     python benchs/bench_suco_sift10m.py --data-dir "$DATA_DIR" \
         --gt-path "$INDEX_DIR/sift10m_gt.npy" \
-        --index-path "$SUCO_IDX/sift10m.idx" --hnsw-sweep --lsh-sweep $SUCO_EXTRA \
+        --index-path "$SUCO_IDX/sift10m.idx" --hnsw-sweep --lsh-sweep \
+        $SUCO_HNSW_ARGS $SUCO_EXTRA \
         2>&1 | tee "$SUCO_OUT/log_suco_sift10m.txt" || echo "!!! suco sift10m FAILED"
 
     python benchs/bench_suco_spacev10m.py --data-dir "$DATA_DIR" \
         --gt-path "$INDEX_DIR/spacev10m_gt.npy" \
-        --index-path "$SUCO_IDX/spacev10m.idx" --hnsw-sweep --lsh-sweep $SUCO_EXTRA \
+        --index-path "$SUCO_IDX/spacev10m.idx" --hnsw-sweep --lsh-sweep \
+        $SUCO_HNSW_ARGS $SUCO_EXTRA \
         2>&1 | tee "$SUCO_OUT/log_suco_spacev10m.txt" || echo "!!! suco spacev10m FAILED"
 fi
 
