@@ -33,6 +33,8 @@ import sys
 import time
 import traceback
 
+import numpy as np
+
 try:
     import faiss
 except ImportError:
@@ -60,6 +62,101 @@ THREAD_COUNTS = (1, 2, 4, 8, 16, 32)
 THREAD_RECALL_TARGETS = (0.90, 0.95)
 THREAD_K = 10                       # measure recall@k=10 throughput
 N_WARMUP = 2                        # warmup searches at each thread count
+N_TIMED_RUNS = 3                    # repetitions per (index, thread count)
+
+# A run whose OMP team time-shares a single core produces a speedup curve that is
+# flat in t with a slow downward drift, which is indistinguishable at a glance
+# from a genuinely bandwidth-limited result and silently invalidates every point
+# above t=1. The two guards below make that failure loud instead.
+#
+# SELF_TEST_MIN_SPEEDUP is the 1 -> N speedup an embarrassingly parallel FAISS
+# workload must reach before the real sweep is allowed to start. A flat scan
+# parallelises across queries with no shared state, so on N genuinely distinct
+# cores it scales close to linearly; anything below this bound means the process
+# does not have the cores it believes it has.
+# The threshold is deliberately far below linear: the probe only has to separate
+# "N real cores" from "N threads on one core", and a flat scan is itself
+# bandwidth-limited, so it never scales linearly even on healthy hardware. A
+# single-core team cannot exceed 1.0, so 1.5 leaves a wide margin on both sides.
+# The workload must be large enough that the parallel region dominates thread
+# startup and result-heap merging, or a healthy node fails the probe.
+# 1.25, not something closer to linear. The probe's job is only to separate a
+# team on N real cores from N threads time-sharing one, and the pinned case
+# cannot exceed 1.0 (the failed sweep this guard exists to catch measured <=1.0
+# at every thread count, flat with a slow downward drift). Healthy hardware
+# clears 1.5 even where the scan is bandwidth-limited, so 1.25 sits clear of
+# both. A higher bar would fail healthy nodes whose flat-scan scaling is capped
+# by memory bandwidth rather than by cores -- which is itself a finding of this
+# study, not a fault.
+SELF_TEST_MIN_SPEEDUP = 1.25
+# The probe base set is deliberately small enough to sit in cache (20k x 128
+# floats ~ 10 MB). A cache-resident scan is compute-bound, so it scales with
+# cores; a DRAM-resident one saturates bandwidth and plateaus near 1.5x on any
+# core count, which would leave no margin between healthy and pinned. Queries
+# carry the work instead.
+SELF_TEST_N = 20_000
+SELF_TEST_D = 128
+SELF_TEST_NQ = 20_000
+
+
+def available_cpus():
+    """Number of CPUs this process may actually run on.
+
+    os.sched_getaffinity is the authority: it reflects the cgroup/cpuset mask
+    that Slurm applies. faiss.omp_get_max_threads() reports only the OMP thread
+    limit, which follows OMP_NUM_THREADS and therefore still reads 32 while the
+    process is confined to a single CPU -- exactly the case this guard exists to
+    catch. Falls back to the OMP figure on platforms without sched_getaffinity
+    (macOS), where the confinement being guarded against does not arise.
+    """
+    try:
+        return len(os.sched_getaffinity(0))
+    except AttributeError:
+        try:
+            return int(faiss.omp_get_max_threads())
+        except Exception:
+            return 0
+
+
+def scaling_self_test(max_threads, min_speedup=SELF_TEST_MIN_SPEEDUP):
+    """Verify the OMP team really spans distinct cores before measuring.
+
+    Times a flat L2 scan -- pure per-query parallelism, no shared state, no data
+    dependence -- at 1 and at max_threads. Returns a dict recording the observed
+    speedup and whether it cleared `min_speedup`, so the verdict is stored in the
+    results file alongside the numbers it validates.
+    """
+    if max_threads <= 1:
+        return {"ran": False, "reason": "max_threads <= 1"}
+
+    rs = np.random.RandomState(0)
+    xb = rs.rand(SELF_TEST_N, SELF_TEST_D).astype("float32")
+    xq = rs.rand(SELF_TEST_NQ, SELF_TEST_D).astype("float32")
+    idx = faiss.IndexFlatL2(SELF_TEST_D)
+    idx.add(xb)
+
+    prev = int(faiss.omp_get_max_threads())
+    timings = {}
+    try:
+        for t in (1, int(max_threads)):
+            faiss.omp_set_num_threads(t)
+            idx.search(xq[:200], 10)                 # warm up the team
+            t0 = time.perf_counter()
+            idx.search(xq, 10)
+            timings[t] = time.perf_counter() - t0
+    finally:
+        faiss.omp_set_num_threads(prev)
+
+    speedup = timings[1] / timings[int(max_threads)] if timings[int(max_threads)] > 0 else 0.0
+    return {
+        "ran": True,
+        "threads": int(max_threads),
+        "seconds_t1": round(timings[1], 4),
+        "seconds_tN": round(timings[int(max_threads)], 4),
+        "speedup": round(speedup, 3),
+        "min_required": min_speedup,
+        "passed": bool(speedup >= min_speedup),
+    }
 
 
 def index_path_for(dataset, kind, index_dir, d):
@@ -117,9 +214,16 @@ def run_thread_scaling(idx, kind, xq, gt, k=THREAD_K, recall_curve=None,
                 for _ in range(N_WARMUP):
                     search_fn(idx, xq[: min(50, nq)], k)
 
-                t0 = time.perf_counter()
-                _, _ = search_fn(idx, xq, k)
-                elapsed = time.perf_counter() - t0
+                # Repeat: a single call at one thread count is not separable
+                # from a scheduling hiccup, and the speedup is a ratio of two
+                # such measurements, so it carries both errors.
+                runs = []
+                for _ in range(N_TIMED_RUNS):
+                    t0 = time.perf_counter()
+                    _, _ = search_fn(idx, xq, k)
+                    runs.append(time.perf_counter() - t0)
+                elapsed = float(np.mean(runs))
+                elapsed_std = float(np.std(runs, ddof=1)) if len(runs) > 1 else 0.0
                 qps = nq / elapsed if elapsed > 0 else 0.0
                 ms_per_q = (elapsed / nq) * 1000.0
                 if t == thread_counts[0]:
@@ -130,6 +234,9 @@ def run_thread_scaling(idx, kind, xq, gt, k=THREAD_K, recall_curve=None,
                     "threads":      int(t),
                     "qps":          round(float(qps),      2),
                     "ms_per_query": round(float(ms_per_q), 6),
+                    "ms_per_query_std": round(elapsed_std / nq * 1000.0, 6),
+                    "n_runs":       int(N_TIMED_RUNS),
+                    "run_times_s":  [round(r, 6) for r in runs],
                     "speedup_vs_t1":       round(float(speedup), 3) if speedup is not None else None,
                     "parallel_efficiency": round(float(eff),     3) if eff is not None else None,
                 }
@@ -250,6 +357,9 @@ def main():
     ap.add_argument("--families", nargs="+", default=None,
                     choices=sorted(INDEX_FAMILIES),
                     help="Index-family groups (graph/collision/quant). Overrides --index-type.")
+    ap.add_argument("--ignore-self-test", action="store_true",
+                    help="measure even if the parallel-scaling self-test fails "
+                         "(records the failure in the results file)")
     ap.add_argument("--threads", nargs="+", type=int, default=list(THREAD_COUNTS),
                     help="Thread counts to sweep. The first is the speedup baseline. "
                          "Default 1 2 4 8 16 32 (the published tables used 1 2 4 8 16).")
@@ -285,18 +395,39 @@ def main():
     datasets = [ds for ds in datasets if not (ds in seen or seen.add(ds))]
 
     # An oversubscribed measurement (threads > cores in the cgroup) is noise,
-    # not scaling — drop those points rather than publishing them.
-    try:
-        avail = int(faiss.omp_get_max_threads())
-    except Exception:
-        avail = 0
+    # not scaling — drop those points rather than publishing them. The count
+    # comes from the affinity mask, not from omp_get_max_threads(): the latter
+    # reports OMP_NUM_THREADS and stays at 32 even when the process is confined
+    # to one CPU, which is how an entire invalid sweep once reached the figures.
+    avail = available_cpus()
+    omp_limit = int(faiss.omp_get_max_threads())
+    if avail and omp_limit > avail:
+        print(f"WARNING: OMP thread limit ({omp_limit}) exceeds the affinity "
+              f"mask ({avail} CPUs). The OMP team would time-share cores and "
+              f"every point above t={avail} would be meaningless.")
     threads = sorted(set(int(t) for t in args.threads if t > 0))
     if avail:
         kept = [t for t in threads if t <= avail]
         if len(kept) != len(threads):
-            print(f"WARNING: dropping thread counts > {avail} available cores: "
+            print(f"WARNING: dropping thread counts > {avail} available CPUs: "
                   f"{[t for t in threads if t > avail]}")
         threads = kept or [1]
+
+    # Confirm the cores are real before spending hours measuring against them.
+    self_test = scaling_self_test(max(threads))
+    if self_test.get("ran"):
+        verdict = "PASS" if self_test["passed"] else "FAIL"
+        print(f"Scaling self-test: flat-scan 1->{self_test['threads']} threads "
+              f"= {self_test['speedup']:.2f}x  [{verdict}]")
+        if not self_test["passed"] and not args.ignore_self_test:
+            sys.exit(
+                f"ABORT: a flat L2 scan scaled only {self_test['speedup']:.2f}x "
+                f"across {self_test['threads']} threads, below the required "
+                f"{self_test['min_required']}x. The OMP team is not on distinct "
+                f"cores — check the Slurm affinity mask (taskset -cp $$) and any "
+                f"OMP_PROC_BIND / OMP_PLACES pinning before re-running. "
+                f"Pass --ignore-self-test to measure anyway."
+            )
 
     os.makedirs(args.output_dir, exist_ok=True)
 
@@ -305,7 +436,8 @@ def main():
     print(f"Output dir:     {args.output_dir}")
     print(f"Datasets:       {datasets}")
     print(f"Indexes:        {index_types}")
-    print(f"Thread counts:  {threads}   (cores available: {avail})")
+    print(f"Thread counts:  {threads}   (CPUs in affinity mask: {avail}, "
+          f"OMP limit: {omp_limit})")
     print(f"Recall targets: {args.recall_targets}")
 
     for ds in datasets:

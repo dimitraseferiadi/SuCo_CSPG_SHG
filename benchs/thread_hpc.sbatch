@@ -7,6 +7,12 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=32
+# --gres=gpu:1 is a secondary suspect for the single-core confinement: on a
+# Booster node a partial-GPU request can carry a proportional CPU mask. It is
+# kept here only because router_hpc.sbatch makes the identical request and does
+# scale. If the affinity diagnostics below still report fewer than 32 CPUs after
+# the OMP pinning has been removed, drop this line next (the job is CPU-only --
+# CUDA_VISIBLE_DEVICES is cleared regardless).
 #SBATCH --gres=gpu:1
 #SBATCH --mem=120G
 
@@ -74,11 +80,31 @@ export OPENBLAS_NUM_THREADS=${SLURM_CPUS_PER_TASK}
 export FAISS_NUM_THREADS=${SLURM_CPUS_PER_TASK}
 export CUDA_VISIBLE_DEVICES=""
 
-# Pin the OMP team so thread counts map to distinct cores; without this the
-# 8/16/32-thread points drift as the runtime migrates threads and the
-# efficiency numbers pick up scheduler noise rather than scaling behaviour.
-export OMP_PROC_BIND=close
-export OMP_PLACES=cores
+# NO OMP_PROC_BIND / OMP_PLACES here. The previous version of this script set
+#     export OMP_PROC_BIND=close
+#     export OMP_PLACES=cores
+# intending to map thread counts onto distinct cores. If the task's affinity mask
+# holds fewer CPUs than requested, OMP_PLACES=cores resolves to that many places
+# and the whole team is packed onto them -- in the failed run, onto a single core.
+# The symptom is subtle: faiss.omp_get_max_threads() still reports 32 (it follows
+# OMP_NUM_THREADS), so the harness banner read "cores available: 32" while every
+# point above t=1 was measuring N threads time-sharing one CPU. The resulting
+# curve was flat with a slow downward drift, and its 32-thread QPS was 10-20x
+# below the router run's 32-thread figure for the same index at the same
+# efSearch. router_hpc.sbatch, which scales correctly, sets neither variable.
+#
+# bench_thread_scaling.py now reads the affinity mask through
+# os.sched_getaffinity and refuses to run if a flat-scan probe does not scale, so
+# a recurrence aborts in the first minute instead of after a 96-hour job.
+
+# --- Affinity diagnostics: first thing in the log, before anything expensive ---
+echo "--- CPU affinity ---"
+echo "SLURM_CPUS_PER_TASK = ${SLURM_CPUS_PER_TASK}"
+echo "SLURM_JOB_CPUS_PER_NODE = ${SLURM_JOB_CPUS_PER_NODE:-unset}"
+taskset -cp $$ 2>/dev/null || echo "taskset unavailable"
+python -c "import os; m=os.sched_getaffinity(0); print(f'sched_getaffinity: {len(m)} CPUs -> {sorted(m)}')"
+numactl --show 2>/dev/null | head -5 || true
+echo "--------------------"
 
 cd "$SLURM_SUBMIT_DIR"   # = your SuCo checkout
 

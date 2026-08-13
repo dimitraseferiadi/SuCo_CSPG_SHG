@@ -213,9 +213,7 @@ def plot_pareto_grid(all_results, out_dir, formats):
     n = len(datasets)
     if n == 0:
         return
-    # Wide 5-column layout: with 9-10 datasets this gives a 2-row grid whose
-    # aspect ratio suits a full-width (two-column-spanning) figure in the paper.
-    ncols = 5
+    ncols = 4
     nrows = (n + ncols - 1) // ncols
     for k in K_LIST:
         # only emit grid if at least one dataset has this k

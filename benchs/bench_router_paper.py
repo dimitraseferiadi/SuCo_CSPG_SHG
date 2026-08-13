@@ -119,6 +119,31 @@ IVFPQ_PQ_NBITS      = 8              # 8-bit codes for the ADC baseline
 FASTSCAN_NBITS      = 4              # FastScan requires 4-bit codes
 IVFPQ_TARGET_SUBDIM = 4              # aim for ~4 input dims per PQ sub-quantiser
 
+# ---------------------------------------------------------------------------
+# Partition family (full precision) and quantisation with re-ranking.
+#
+# Rationale.  The five original indexes cover graphs (HNSW32, HNSW48, SHG,
+# CSPG) and collision counting (SuCo) but leave the full-precision *partition*
+# cell empty, so SuCo — a clustered-partition method — is only ever measured
+# against structures from other families.  IVFFlat fills that cell: it shares
+# SuCo's coarse-quantiser-then-exact-distance query shape, so a SuCo/IVFFlat
+# comparison isolates the collision criterion from the partition scan itself.
+#
+# The second gap is that OPQ-IVFPQ without re-ranking cannot reach the recall
+# targets at which every other index is compared, which leaves the quantisation
+# family incomparable on the recall--throughput plane rather than merely worse.
+# A re-ranking stage restores comparability, but the choice of refine index
+# governs the footprint that is the family's sole reason for inclusion.  We use
+# Refine(SQ8) rather than the more common RFlat: an exact fp32 refine stores the
+# raw matrix a second time, producing an index larger than IndexFlat and
+# forfeiting the footprint axis entirely, whereas an 8-bit scalar-quantised
+# refine rescores accurately enough to reach the shared recall targets while the
+# index remains ~4x smaller than a full-precision one.  The family therefore
+# stays measurable on both axes the study compares it on.
+# ---------------------------------------------------------------------------
+IVFFLAT_NLIST_C     = 4              # same nlist rule as the PQ variants
+REFINE_K_FACTOR     = 4              # refine stage rescores k_factor*k candidates
+
 # nprobe is the IVF recall knob (mirrors the §10.4 grid, extended for high recall).
 NPROBE_VALUES = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024]
 
@@ -206,6 +231,8 @@ DATASET_BENCHMARKS = {"features", "unseen_robustness", "pareto", "time_at_recall
 ALL_INDEX_TYPES = [
     "suco", "shg", "cspg", "hnsw32", "hnsw48",
     "opq_ivfpq",                            # quantisation family (see below)
+    "ivfflat",                              # full-precision partition baseline
+    "opq_ivfpq_sq8",                        # quantisation + 4x-compressed re-rank
     # "ivfpq_fastscan",                     # FastScan disabled for now — re-enable here + in BUILDERS/SEARCH_FACTORY/ROBUSTNESS_BUDGET/INDEX_FAMILIES
 ]
 # The quantisation baselines are opt-in so existing runs reproduce unchanged;
@@ -216,7 +243,10 @@ DEFAULT_INDEX_TYPES = ["suco", "shg", "cspg", "hnsw32", "hnsw48"]
 INDEX_FAMILIES = {
     "graph":     ["hnsw32", "hnsw48", "shg", "cspg"],
     "collision": ["suco"],
-    "quant":     ["opq_ivfpq"],             # + "ivfpq_fastscan" when re-enabled
+    "partition": ["ivfflat"],
+    "quant":     ["opq_ivfpq", "opq_ivfpq_sq8"],  # + "ivfpq_fastscan" when re-enabled
+    # Everything added for reviewer M6, in one gate.
+    "m6":        ["ivfflat", "opq_ivfpq_sq8"],
     "all":       list(ALL_INDEX_TYPES),
 }
 
@@ -441,6 +471,39 @@ def build_index_ivfpq_fastscan(xb, d):
     return _train_and_add(idx, xb, f"IVFPQ-FastScan [{key}]")
 
 
+# --- Full-precision partition family --------------------------------------
+
+def build_index_ivfflat(xb, d):
+    """IVFFlat: coarse k-means quantiser + exact L2 over the probed lists.
+
+    The full-precision partition baseline.  Uses the same nlist rule as the PQ
+    variants so that the two IVF families differ only in the storage layer, and
+    the same training subsample cap so build cost is comparable.
+    """
+    n = xb.shape[0]
+    nlist = _pick_ivf_nlist(n)
+    key = f"IVF{nlist},Flat"
+    idx = faiss.index_factory(d, key, faiss.METRIC_L2)
+    return _train_and_add(idx, xb, f"IVFFlat [{key}]")
+
+
+def build_index_opq_ivfpq_sq8(xb, d):
+    """OPQ-IVFPQ with an 8-bit scalar-quantised re-ranking stage.
+
+    index_factory resolves the refine wrapper before the pre-transform, so the
+    refine index is an IndexScalarQuantizer over the *raw* d dimensions while
+    the filter index keeps the OPQ rotation.  k_factor is set on the wrapper by
+    the search factory, not here.
+    """
+    n = xb.shape[0]
+    nlist = _pick_ivf_nlist(n)
+    m, d2 = _pick_pq_params(d, IVFPQ_PQ_NBITS)
+    key = f"OPQ{m}_{d2},IVF{nlist},PQ{m}x{IVFPQ_PQ_NBITS},Refine(SQ8)"
+    idx = faiss.index_factory(d, key, faiss.METRIC_L2)
+    idx.k_factor = REFINE_K_FACTOR
+    return _train_and_add(idx, xb, f"OPQ-IVFPQ+SQ8 [{key}]")
+
+
 BUILDERS = {
     "suco":           ("SuCo",           build_index_suco),
     "shg":            ("SHG",            build_index_shg),
@@ -448,6 +511,8 @@ BUILDERS = {
     "hnsw32":         ("HNSW32",         build_index_hnsw32),
     "hnsw48":         ("HNSW48",         build_index_hnsw48),
     "opq_ivfpq":      ("OPQ-IVFPQ",      build_index_opq_ivfpq),
+    "ivfflat":        ("IVFFlat",        build_index_ivfflat),
+    "opq_ivfpq_sq8":  ("OPQ-IVFPQ+SQ8",  build_index_opq_ivfpq_sq8),
     # "ivfpq_fastscan": ("IVFPQ-FastScan", build_index_ivfpq_fastscan),  # disabled for now
 }
 
@@ -591,6 +656,22 @@ def _make_ivf_search_factory():
     return factory
 
 
+def _make_ivf_refine_search_factory(k_factor=REFINE_K_FACTOR):
+    """nprobe sweep for an IndexRefine wrapping an IVF index.
+
+    extract_index_ivf() descends through both the refine wrapper and the OPQ
+    pre-transform, so the same nprobe knob applies; k_factor is held fixed so
+    that nprobe remains the single accuracy parameter, as for every other index.
+    """
+    def factory(nprobe):
+        def fn(idx, xq, k):
+            faiss.extract_index_ivf(idx).nprobe = int(nprobe)
+            idx.k_factor = float(k_factor)
+            return idx.search(xq, k)
+        return fn
+    return factory
+
+
 SEARCH_FACTORY = {
     "suco":           (_make_suco_search_factory(), SUCO_CANDIDATE_RATIO_VALUES, "candidate_ratio"),
     "shg":            (_make_shg_search_factory(),  EF_SEARCH_VALUES,            "efSearch"),
@@ -598,6 +679,8 @@ SEARCH_FACTORY = {
     "hnsw32":         (_make_hnsw_search_factory(), EF_SEARCH_VALUES,            "efSearch"),
     "hnsw48":         (_make_hnsw_search_factory(), EF_SEARCH_VALUES,            "efSearch"),
     "opq_ivfpq":      (_make_ivf_search_factory(),  NPROBE_VALUES,              "nprobe"),
+    "ivfflat":        (_make_ivf_search_factory(),  NPROBE_VALUES,              "nprobe"),
+    "opq_ivfpq_sq8":  (_make_ivf_refine_search_factory(), NPROBE_VALUES,        "nprobe"),
     # "ivfpq_fastscan": (_make_ivf_search_factory(),  NPROBE_VALUES,              "nprobe"),  # disabled for now
 }
 
@@ -611,6 +694,8 @@ ROBUSTNESS_BUDGET = {
     "hnsw32":         ROBUSTNESS_EFSEARCH,
     "hnsw48":         ROBUSTNESS_EFSEARCH,
     "opq_ivfpq":      64,                           # nprobe
+    "ivfflat":        64,                           # nprobe
+    "opq_ivfpq_sq8":  64,                           # nprobe
     # "ivfpq_fastscan": 64,                         # disabled for now
 }
 

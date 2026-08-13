@@ -1,0 +1,13 @@
+Matched-recall ratio intervals (95% CI, N=3 repetitions)
+
+measurements                : 156
+per-point CV                : median 0.12%, p95 3.27%, max 18.25%
+ratio interval half-width   : median 0.42%, p95 9.91%, max 46.92%
+indistinguishable from 1.0  : 1 / 156
+
+SuCo           vs HNSW32    point 0.00-0.55   interval-union 0.00-0.55   parity-indistinguishable 0/35
+SHG            vs HNSW48    point 0.65-1.11   interval-union 0.65-1.12   parity-indistinguishable 1/41
+    dag enron        @0.9  0.864 [0.718, 1.039]
+CSPG           vs HNSW32    point 0.21-1.10   interval-union 0.21-1.10   parity-indistinguishable 0/39
+HNSW48         vs HNSW32    point 0.46-1.26   interval-union 0.45-1.27   parity-indistinguishable 0/39
+OPQ-IVFPQ      vs HNSW32    point 0.24-0.36   interval-union 0.22-0.37   parity-indistinguishable 0/2
