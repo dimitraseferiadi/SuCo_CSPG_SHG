@@ -587,3 +587,115 @@ BENCHMARK: features - msturing10m
   OPQ-IVFPQ (128): recall@1=0.6210, ms/q=0.1502±0.0001, qps=6658±3
   OPQ-IVFPQ (256): recall@1=0.6317, ms/q=0.2978±0.0001, qps=3358±1
   OPQ-IVFPQ (512): recall@1=0.6402, ms/q=0.5944±0.0002, qps=1682±1
+  OPQ-IVFPQ (1024): recall@1=0.6458, ms/q=1.1899±0.0014, qps=840±1
+
+--- OPQ-IVFPQ recall@10 curve (n_runs=3) ---
+  OPQ-IVFPQ (1): recall@10=0.3079, ms/q=0.0025±0.0000, qps=394091±2950
+  OPQ-IVFPQ (2): recall@10=0.3939, ms/q=0.0041±0.0000, qps=243109±320
+  OPQ-IVFPQ (4): recall@10=0.4647, ms/q=0.0067±0.0001, qps=149675±3117
+  OPQ-IVFPQ (8): recall@10=0.5210, ms/q=0.0116±0.0001, qps=85995±1013
+  OPQ-IVFPQ (16): recall@10=0.5651, ms/q=0.0212±0.0002, qps=47235±347
+  OPQ-IVFPQ (32): recall@10=0.6003, ms/q=0.0399±0.0002, qps=25051±126
+  OPQ-IVFPQ (64): recall@10=0.6276, ms/q=0.0767±0.0001, qps=13035±9
+  OPQ-IVFPQ (128): recall@10=0.6491, ms/q=0.1501±0.0001, qps=6664±6
+  OPQ-IVFPQ (256): recall@10=0.6654, ms/q=0.2970±0.0002, qps=3367±2
+  OPQ-IVFPQ (512): recall@10=0.6776, ms/q=0.5921±0.0001, qps=1689±0
+  OPQ-IVFPQ (1024): recall@10=0.6858, ms/q=1.1909±0.0005, qps=840±0
+
+--- OPQ-IVFPQ recall@20 curve (n_runs=3) ---
+  OPQ-IVFPQ (1): recall@20=0.2960, ms/q=0.0026±0.0000, qps=388096±4014
+  OPQ-IVFPQ (2): recall@20=0.3796, ms/q=0.0042±0.0000, qps=238073±352
+  OPQ-IVFPQ (4): recall@20=0.4489, ms/q=0.0068±0.0002, qps=147572±5132
+  OPQ-IVFPQ (8): recall@20=0.5056, ms/q=0.0117±0.0003, qps=85721±1900
+  OPQ-IVFPQ (16): recall@20=0.5510, ms/q=0.0212±0.0003, qps=47073±640
+  OPQ-IVFPQ (32): recall@20=0.5884, ms/q=0.0400±0.0003, qps=24995±161
+  OPQ-IVFPQ (64): recall@20=0.6183, ms/q=0.0769±0.0002, qps=12997±26
+  OPQ-IVFPQ (128): recall@20=0.6423, ms/q=0.1503±0.0000, qps=6654±1
+  OPQ-IVFPQ (256): recall@20=0.6609, ms/q=0.2972±0.0004, qps=3365±4
+  OPQ-IVFPQ (512): recall@20=0.6750, ms/q=0.5934±0.0007, qps=1685±2
+  OPQ-IVFPQ (1024): recall@20=0.6849, ms/q=1.1872±0.0007, qps=842±0
+
+--- OPQ-IVFPQ recall@50 curve (n_runs=3) ---
+  OPQ-IVFPQ (1): recall@50=0.2776, ms/q=0.0028±0.0000, qps=355161±1620
+  OPQ-IVFPQ (2): recall@50=0.3569, ms/q=0.0045±0.0000, qps=223634±751
+  OPQ-IVFPQ (4): recall@50=0.4238, ms/q=0.0070±0.0001, qps=143200±2337
+  OPQ-IVFPQ (8): recall@50=0.4800, ms/q=0.0119±0.0003, qps=83848±1778
+  OPQ-IVFPQ (16): recall@50=0.5271, ms/q=0.0215±0.0004, qps=46590±890
+  OPQ-IVFPQ (32): recall@50=0.5670, ms/q=0.0403±0.0004, qps=24839±257
+  OPQ-IVFPQ (64): recall@50=0.6001, ms/q=0.0771±0.0003, qps=12965±47
+  OPQ-IVFPQ (128): recall@50=0.6275, ms/q=0.1505±0.0001, qps=6645±5
+  OPQ-IVFPQ (256): recall@50=0.6492, ms/q=0.2971±0.0002, qps=3366±2
+  OPQ-IVFPQ (512): recall@50=0.6663, ms/q=0.5928±0.0001, qps=1687±0
+  OPQ-IVFPQ (1024): recall@50=0.6785, ms/q=1.1884±0.0006, qps=841±0
+
+--- OPQ-IVFPQ recall@100 curve (n_runs=3) ---
+  OPQ-IVFPQ (1): recall@100=0.2610, ms/q=0.0032±0.0000, qps=312864±2556
+  OPQ-IVFPQ (2): recall@100=0.3368, ms/q=0.0049±0.0000, qps=202317±305
+  OPQ-IVFPQ (4): recall@100=0.4018, ms/q=0.0075±0.0001, qps=132931±940
+  OPQ-IVFPQ (8): recall@100=0.4576, ms/q=0.0124±0.0003, qps=80335±1648
+  OPQ-IVFPQ (16): recall@100=0.5059, ms/q=0.0220±0.0005, qps=45408±965
+  OPQ-IVFPQ (32): recall@100=0.5480, ms/q=0.0408±0.0005, qps=24511±304
+  OPQ-IVFPQ (64): recall@100=0.5838, ms/q=0.0776±0.0004, qps=12886±66
+  OPQ-IVFPQ (128): recall@100=0.6140, ms/q=0.1508±0.0002, qps=6631±11
+  OPQ-IVFPQ (256): recall@100=0.6385, ms/q=0.2975±0.0001, qps=3362±1
+  OPQ-IVFPQ (512): recall@100=0.6576, ms/q=0.5925±0.0001, qps=1688±0
+  OPQ-IVFPQ (1024): recall@100=0.6716, ms/q=1.1871±0.0010, qps=842±1
+
+--- OPQ-IVFPQ robustness (k=20) ---
+  OPQ-IVFPQ: {'k': 20, 'param': 64, 'param_name': 'nprobe', 'mean_recall': 0.6183, 'median_recall': 0.65, 'min_recall': 0.0, 'max_recall': 1.0, 'q25_recall': 0.5, 'q75_recall': 0.75, 'ms_per_query': 0.0761}
+
+--- OPQ-IVFPQ hard-query robustness ---
+  OPQ-IVFPQ: easy={'n': 10000, 'mean_recall': 0.8205, 'median_recall': 0.85, 'min_recall': 0.25, 'p10_recall': 0.7, 'p90_recall': 0.9} hard={'n': 10000, 'mean_recall': 0.5922, 'median_recall': 0.6, 'min_recall': 0.15, 'p10_recall': 0.45, 'p90_recall': 0.75}
+
+--- OPQ-IVFPQ latency tail ---
+
+--- OPQ-IVFPQ cold/warm cache ---
+  OPQ-IVFPQ: {'param': 1024, 'achieved_recall': 0.68489, 'target_recall': 0.95, 'cold_mode': 'page_cache', 'page_evicted': True, 'system_cache_flushed': False, 'evict_buffer_mb': 2048, 'cold_first_ms': 1281.251991, 'cold_mean_ms': 380.981557, 'cold_p95_ms': 965.898094, 'warm_mean_ms': 40.25349, 'warm_p95_ms': 83.707033, 'cold_warm_ratio': 9.465, 'n_cold': 30, 'n_warm': 500}
+
+--- OPQ-IVFPQ MRE ---
+
+======================================================================
+BENCHMARK: construction - msturing10m
+======================================================================
+  SuCo: build=24.74s, peak_rss_delta=8542.03MB, serialized=4196.28MB
+  SHG: build=-1s, peak_rss_delta=-1MB, serialized=11483.1MB
+  CSPG: build=809.26s, peak_rss_delta=0.0MB, serialized=7936.45MB
+  HNSW32: build=534.61s, peak_rss_delta=0.0MB, serialized=6409.92MB
+  HNSW48: build=494.16s, peak_rss_delta=0.0MB, serialized=7630.26MB
+  OPQ-IVFPQ: build=88.29s, peak_rss_delta=0.0MB, serialized=317.89MB
+
+======================================================================
+BENCHMARK: unseen_robustness - msturing10m
+======================================================================
+
+  Unseen split: keep=9995000, query/held=5000
+  Computing brute-force GT for unseen queries (k=100)...
+
+  --- Rebuilding SuCo on kept set ---
+  SuCo: using nsubspaces=5 (preferred 8 invalid for d=100)
+  SuCo (Ns=5, nc=50): build=8.35s
+
+  --- Rebuilding SHG on kept set ---
+  SHG (M=48, efC=80): add=522.13s, shortcut=8.38s, total=530.50s
+
+  --- Rebuilding CSPG on kept set ---
+  CSPG (M=32, efC=128, m=2, λ=0.5): build=808.56s
+
+  --- Rebuilding HNSW32 on kept set ---
+  HNSW32 (M=32, efC=128): build=534.26s
+
+  --- Rebuilding HNSW48 on kept set ---
+  HNSW48 (M=48, efC=80): build=503.77s
+
+  --- Rebuilding OPQ-IVFPQ on kept set ---
+  OPQ-IVFPQ [OPQ25_100,IVF7812,PQ25x8]: build=88.59s
+
+======================================================================
+BENCHMARK: pareto - msturing10m
+======================================================================
+
+======================================================================
+BENCHMARK: time_at_recall - msturing10m
+======================================================================
+
+Results saved to /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router/results_msturing10m.json
