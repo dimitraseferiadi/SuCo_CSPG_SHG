@@ -168,6 +168,8 @@ struct IndexSuCo : Index {
             float candidate_ratio = 0.005f,
             int   niter           = 10);
 
+    IndexSuCo();
+
     ~IndexSuCo() override = default;
 
     // -----------------------------------------------------------------------

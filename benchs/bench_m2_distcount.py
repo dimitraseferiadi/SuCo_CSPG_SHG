@@ -186,17 +186,25 @@ def run_dataset(ds_name, args):
     for kind in args.index_types:
         label, builder = BUILDERS[kind]
         idx_path = index_path_for(ds_name, kind, args.index_dir, d)
-        if os.path.exists(idx_path):
-            print(f"  {label}: loading {idx_path}")
-            idx = faiss.read_index(idx_path)
-        else:
-            print(f"  {label}: building (no prebuilt index at {idx_path})")
-            if kind == "suco":
-                ns, _ = resolve_suco_nsubspaces(ds_name, d)
-                built = builder(xb, d, n_override=ns)
+        # One index that fails to load or build must not cost the whole sweep:
+        # the run is long, the indexes are independent, and a partial table is
+        # more useful than a traceback.
+        try:
+            if os.path.exists(idx_path):
+                print(f"  {label}: loading {idx_path}")
+                idx = faiss.read_index(idx_path)
             else:
-                built = builder(xb, d)
-            idx = built[0] if isinstance(built, tuple) else built
+                print(f"  {label}: building (no prebuilt index at {idx_path})")
+                if kind == "suco":
+                    ns, _ = resolve_suco_nsubspaces(ds_name, d)
+                    built = builder(xb, d, n_override=ns)
+                else:
+                    built = builder(xb, d)
+                idx = built[0] if isinstance(built, tuple) else built
+        except Exception as e:
+            print(f"  {label}: UNAVAILABLE — {e}")
+            out["indexes"][label] = {"instrumented": False, "error": str(e)}
+            continue
 
         if read_counters(kind, d, 1) is None:
             print(f"  {label}: no distance counter compiled in "
@@ -205,7 +213,13 @@ def run_dataset(ds_name, args):
             del idx
             continue
 
-        rows = sweep_counts(idx, kind, xq, gt, args.k, args.count_threads)
+        try:
+            rows = sweep_counts(idx, kind, xq, gt, args.k, args.count_threads)
+        except Exception as e:
+            print(f"  {label}: sweep FAILED — {e}")
+            out["indexes"][label] = {"instrumented": True, "error": str(e)}
+            del idx
+            continue
         entry = {"instrumented": True, "sweep": rows, "at_target": {}}
         for t in args.targets:
             sel = at_target(rows, t)
@@ -276,7 +290,10 @@ def main():
 
     for ds in args.dataset:
         print(f"\n=== {ds} ===")
-        print_table(run_dataset(ds, args), args.targets)
+        try:
+            print_table(run_dataset(ds, args), args.targets)
+        except Exception as e:
+            print(f"  {ds} FAILED — {e}; continuing to the next dataset")
 
 
 if __name__ == "__main__":

@@ -140,6 +140,19 @@ IndexSuCo::IndexSuCo(
     is_trained   = false;
 }
 
+IndexSuCo::IndexSuCo()
+        : Index(0, METRIC_L2),
+          nsubspaces(0),
+          ncentroids_half(0),
+          collision_ratio(0.0f),
+          candidate_ratio(0.0f),
+          niter(0),
+          subspace_dim(0),
+          half_dim(0) {
+    // Deliberately unvalidated: read_index() supplies and checks every field.
+    is_trained = false;
+}
+
 // ============================================================================
 // reset
 // ============================================================================

@@ -28,6 +28,7 @@ INDEX_COLOR = {
     "HNSW32":         "#d62728",
     "HNSW48":         "#9467bd",
     "OPQ-IVFPQ":      "#8c564b",   # quantisation family (accuracy / memory point)
+    "OPQ-IVFPQ+SQ8":  "#bc8f8f",   # same family, 8-bit scalar-quantised re-rank
     "IVFPQ-FastScan": "#bcbd22",   # quantisation family (throughput point)
 }
 
@@ -38,6 +39,7 @@ INDEX_MARKER = {
     "HNSW32":         "^",
     "HNSW48":         "v",
     "OPQ-IVFPQ":      "X",
+    "OPQ-IVFPQ+SQ8":  "P",
     "IVFPQ-FastScan": "P",
 }
 

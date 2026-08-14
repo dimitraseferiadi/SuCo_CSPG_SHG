@@ -93,7 +93,7 @@ DATASET_LABEL = {
 }
 
 INDICES = ["SuCo", "SHG", "CSPG", "HNSW32", "HNSW48",
-           "OPQ-IVFPQ"]  # + "IVFPQ-FastScan" when re-enabled in bench_router_paper.py
+           "OPQ-IVFPQ", "OPQ-IVFPQ+SQ8"]  # + "IVFPQ-FastScan" when re-enabled
 
 # INDEX_COLOR and INDEX_MARKER are imported from paper_style (canonical
 # cross-algorithm palette shared by every thesis figure).

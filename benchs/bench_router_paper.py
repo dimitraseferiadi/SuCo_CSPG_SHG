@@ -233,6 +233,7 @@ ALL_INDEX_TYPES = [
     "opq_ivfpq",                            # quantisation family (see below)
     "ivfflat",                              # full-precision partition baseline
     "opq_ivfpq_sq8",                        # quantisation + 4x-compressed re-rank
+    "opq_ivfpq_fp16",                       # quantisation + 2x-compressed re-rank
     # "ivfpq_fastscan",                     # FastScan disabled for now — re-enable here + in BUILDERS/SEARCH_FACTORY/ROBUSTNESS_BUDGET/INDEX_FAMILIES
 ]
 # The quantisation baselines are opt-in so existing runs reproduce unchanged;
@@ -244,7 +245,13 @@ INDEX_FAMILIES = {
     "graph":     ["hnsw32", "hnsw48", "shg", "cspg"],
     "collision": ["suco"],
     "partition": ["ivfflat"],
-    "quant":     ["opq_ivfpq", "opq_ivfpq_sq8"],  # + "ivfpq_fastscan" when re-enabled
+    "quant":     ["opq_ivfpq", "opq_ivfpq_sq8", "opq_ivfpq_fp16"],
+    # The refine-precision comparison: SQ8 degrades recall exactly on the
+    # benchmarks of highest pairwise-distance spread, where a uniform 8-bit
+    # per-dimension range is stretched by heavy-tailed coordinates. SQfp16
+    # makes no range assumption, so it isolates that effect from the
+    # candidate-truncation the refine stage also imposes.
+    "refine":    ["opq_ivfpq_sq8", "opq_ivfpq_fp16"],
     # Everything added for reviewer M6, in one gate.
     "m6":        ["ivfflat", "opq_ivfpq_sq8"],
     "all":       list(ALL_INDEX_TYPES),
@@ -504,6 +511,25 @@ def build_index_opq_ivfpq_sq8(xb, d):
     return _train_and_add(idx, xb, f"OPQ-IVFPQ+SQ8 [{key}]")
 
 
+def build_index_opq_ivfpq_fp16(xb, d):
+    """OPQ-IVFPQ with a 16-bit float re-ranking stage.
+
+    Identical to the SQ8 variant except for the refine precision. SQfp16 stores
+    an exponent per value and so makes no assumption about the coordinate range,
+    where SQ8 spreads a uniform 8-bit grid over each dimension's full extent and
+    loses resolution when that extent is set by outliers. Comparing the two
+    isolates the quantiser's range model from the refine stage itself, at 2x
+    rather than 4x compression.
+    """
+    n = xb.shape[0]
+    nlist = _pick_ivf_nlist(n)
+    m, d2 = _pick_pq_params(d, IVFPQ_PQ_NBITS)
+    key = f"OPQ{m}_{d2},IVF{nlist},PQ{m}x{IVFPQ_PQ_NBITS},Refine(SQfp16)"
+    idx = faiss.index_factory(d, key, faiss.METRIC_L2)
+    idx.k_factor = REFINE_K_FACTOR
+    return _train_and_add(idx, xb, f"OPQ-IVFPQ+FP16 [{key}]")
+
+
 BUILDERS = {
     "suco":           ("SuCo",           build_index_suco),
     "shg":            ("SHG",            build_index_shg),
@@ -513,6 +539,7 @@ BUILDERS = {
     "opq_ivfpq":      ("OPQ-IVFPQ",      build_index_opq_ivfpq),
     "ivfflat":        ("IVFFlat",        build_index_ivfflat),
     "opq_ivfpq_sq8":  ("OPQ-IVFPQ+SQ8",  build_index_opq_ivfpq_sq8),
+    "opq_ivfpq_fp16": ("OPQ-IVFPQ+FP16", build_index_opq_ivfpq_fp16),
     # "ivfpq_fastscan": ("IVFPQ-FastScan", build_index_ivfpq_fastscan),  # disabled for now
 }
 
@@ -681,6 +708,7 @@ SEARCH_FACTORY = {
     "opq_ivfpq":      (_make_ivf_search_factory(),  NPROBE_VALUES,              "nprobe"),
     "ivfflat":        (_make_ivf_search_factory(),  NPROBE_VALUES,              "nprobe"),
     "opq_ivfpq_sq8":  (_make_ivf_refine_search_factory(), NPROBE_VALUES,        "nprobe"),
+    "opq_ivfpq_fp16": (_make_ivf_refine_search_factory(), NPROBE_VALUES,        "nprobe"),
     # "ivfpq_fastscan": (_make_ivf_search_factory(),  NPROBE_VALUES,              "nprobe"),  # disabled for now
 }
 
@@ -696,6 +724,7 @@ ROBUSTNESS_BUDGET = {
     "opq_ivfpq":      64,                           # nprobe
     "ivfflat":        64,                           # nprobe
     "opq_ivfpq_sq8":  64,                           # nprobe
+    "opq_ivfpq_fp16": 64,                           # nprobe
     # "ivfpq_fastscan": 64,                         # disabled for now
 }
 

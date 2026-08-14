@@ -26,9 +26,13 @@ benchs/*.tsv
 venv/
 report*.pdf
 .DS_Store
-shg_index.pdf
 thesis_presentation.pdf
 thesis.pdf
 thesis/
-paper/
 benchs/M2_DISTANCE_COUNTERS.md
+suco.pdf
+shg_index.pdf
+cspg.pdf
+thesis.pdf
+paper/
+texput.log
