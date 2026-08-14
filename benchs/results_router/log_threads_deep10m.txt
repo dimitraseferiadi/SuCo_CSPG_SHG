@@ -1,9 +1,10 @@
+Scaling self-test: flat-scan 1->32 threads = 2.83x  [PASS]
 Data dir:       /leonardo_work/EUHPC_D32_102/dhm/data
 Index dir:      /leonardo_work/EUHPC_D32_102/dhm/indices
 Output dir:     /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router
 Datasets:       ['deep10m']
 Indexes:        ['suco', 'shg', 'cspg', 'hnsw32', 'hnsw48', 'opq_ivfpq']
-Thread counts:  [1, 2, 4, 8, 16, 32]   (cores available: 32)
+Thread counts:  [1, 2, 4, 8, 16, 32]   (CPUs in affinity mask: 32, OMP limit: 32)
 Recall targets: [0.9, 0.95]
 
 ######################################################################
@@ -16,7 +17,7 @@ Loading deep10m...
     query : /leonardo_work/EUHPC_D32_102/dhm/data/deep10m/deep1B_queries.fvecs (fvecs)
     train : /leonardo_work/EUHPC_D32_102/dhm/data/deep10m/learn_00
     gt    : /leonardo_work/EUHPC_D32_102/dhm/data/deep10m/deep10M_groundtruth.ivecs
-  Loaded in 9.0s: xb=(10000000, 96), xq=(10000, 96), gt=(10000, 100)
+  Loaded in 8.9s: xb=(10000000, 96), xq=(10000, 96), gt=(10000, 100)
 
 --- SuCo thread scaling (threads=[1, 2, 4, 8, 16, 32]) ---
     loading /leonardo_work/EUHPC_D32_102/dhm/indices/deep10m_suco_ns8.idx
@@ -25,66 +26,66 @@ Loading deep10m...
 --- SHG thread scaling (threads=[1, 2, 4, 8, 16, 32]) ---
     loading /leonardo_work/EUHPC_D32_102/dhm/indices/deep10m_shg.idx
     reusing stored recall_k10 curve (17 operating points)
-  shg threads=1 @recall≥0.9: qps=2542 ms/q=0.3934 speedup=1.0 eff=1.0
-  shg threads=2 @recall≥0.9: qps=2387 ms/q=0.4189 speedup=0.94 eff=0.47
-  shg threads=4 @recall≥0.9: qps=2380 ms/q=0.4201 speedup=0.94 eff=0.23
-  shg threads=8 @recall≥0.9: qps=2364 ms/q=0.4231 speedup=0.93 eff=0.12
-  shg threads=16 @recall≥0.9: qps=2328 ms/q=0.4296 speedup=0.92 eff=0.06
-  shg threads=32 @recall≥0.9: qps=2290 ms/q=0.4366 speedup=0.9 eff=0.03
-  shg threads=1 @recall≥0.95: qps=1381 ms/q=0.7241 speedup=1.0 eff=1.0
-  shg threads=2 @recall≥0.95: qps=1375 ms/q=0.7275 speedup=1.0 eff=0.5
-  shg threads=4 @recall≥0.95: qps=1369 ms/q=0.7304 speedup=0.99 eff=0.25
-  shg threads=8 @recall≥0.95: qps=1361 ms/q=0.7350 speedup=0.99 eff=0.12
-  shg threads=16 @recall≥0.95: qps=1328 ms/q=0.7529 speedup=0.96 eff=0.06
-  shg threads=32 @recall≥0.95: qps=1319 ms/q=0.7582 speedup=0.96 eff=0.03
+  shg threads=1 @recall≥0.9: qps=2325 ms/q=0.4301 speedup=1.0 eff=1.0
+  shg threads=2 @recall≥0.9: qps=4624 ms/q=0.2162 speedup=1.99 eff=0.99
+  shg threads=4 @recall≥0.9: qps=8981 ms/q=0.1113 speedup=3.86 eff=0.97
+  shg threads=8 @recall≥0.9: qps=17022 ms/q=0.0587 speedup=7.32 eff=0.92
+  shg threads=16 @recall≥0.9: qps=30231 ms/q=0.0331 speedup=13.0 eff=0.81
+  shg threads=32 @recall≥0.9: qps=42388 ms/q=0.0236 speedup=18.23 eff=0.57
+  shg threads=1 @recall≥0.95: qps=1273 ms/q=0.7854 speedup=1.0 eff=1.0
+  shg threads=2 @recall≥0.95: qps=2602 ms/q=0.3843 speedup=2.04 eff=1.02
+  shg threads=4 @recall≥0.95: qps=5125 ms/q=0.1951 speedup=4.02 eff=1.01
+  shg threads=8 @recall≥0.95: qps=9781 ms/q=0.1022 speedup=7.68 eff=0.96
+  shg threads=16 @recall≥0.95: qps=17496 ms/q=0.0572 speedup=13.74 eff=0.86
+  shg threads=32 @recall≥0.95: qps=24178 ms/q=0.0414 speedup=18.99 eff=0.59
 
 --- CSPG thread scaling (threads=[1, 2, 4, 8, 16, 32]) ---
     loading /leonardo_work/EUHPC_D32_102/dhm/indices/deep10m_cspg.idx
     reusing stored recall_k10 curve (17 operating points)
-  cspg threads=1 @recall≥0.9: qps=2526 ms/q=0.3959 speedup=1.0 eff=1.0
-  cspg threads=2 @recall≥0.9: qps=2525 ms/q=0.3960 speedup=1.0 eff=0.5
-  cspg threads=4 @recall≥0.9: qps=2505 ms/q=0.3992 speedup=0.99 eff=0.25
-  cspg threads=8 @recall≥0.9: qps=2438 ms/q=0.4101 speedup=0.97 eff=0.12
-  cspg threads=16 @recall≥0.9: qps=2383 ms/q=0.4196 speedup=0.94 eff=0.06
-  cspg threads=32 @recall≥0.9: qps=2351 ms/q=0.4253 speedup=0.93 eff=0.03
-  cspg threads=1 @recall≥0.95: qps=1403 ms/q=0.7129 speedup=1.0 eff=1.0
-  cspg threads=2 @recall≥0.95: qps=1399 ms/q=0.7150 speedup=1.0 eff=0.5
-  cspg threads=4 @recall≥0.95: qps=1388 ms/q=0.7202 speedup=0.99 eff=0.25
-  cspg threads=8 @recall≥0.95: qps=1344 ms/q=0.7440 speedup=0.96 eff=0.12
-  cspg threads=16 @recall≥0.95: qps=1298 ms/q=0.7702 speedup=0.93 eff=0.06
-  cspg threads=32 @recall≥0.95: qps=1272 ms/q=0.7861 speedup=0.91 eff=0.03
+  cspg threads=1 @recall≥0.9: qps=2506 ms/q=0.3991 speedup=1.0 eff=1.0
+  cspg threads=2 @recall≥0.9: qps=4822 ms/q=0.2074 speedup=1.92 eff=0.96
+  cspg threads=4 @recall≥0.9: qps=9519 ms/q=0.1051 speedup=3.8 eff=0.95
+  cspg threads=8 @recall≥0.9: qps=18081 ms/q=0.0553 speedup=7.22 eff=0.9
+  cspg threads=16 @recall≥0.9: qps=31672 ms/q=0.0316 speedup=12.64 eff=0.79
+  cspg threads=32 @recall≥0.9: qps=44538 ms/q=0.0225 speedup=17.78 eff=0.56
+  cspg threads=1 @recall≥0.95: qps=1392 ms/q=0.7183 speedup=1.0 eff=1.0
+  cspg threads=2 @recall≥0.95: qps=2677 ms/q=0.3736 speedup=1.92 eff=0.96
+  cspg threads=4 @recall≥0.95: qps=5273 ms/q=0.1897 speedup=3.79 eff=0.95
+  cspg threads=8 @recall≥0.95: qps=10023 ms/q=0.0998 speedup=7.2 eff=0.9
+  cspg threads=16 @recall≥0.95: qps=17733 ms/q=0.0564 speedup=12.74 eff=0.8
+  cspg threads=32 @recall≥0.95: qps=24415 ms/q=0.0410 speedup=17.54 eff=0.55
 
 --- HNSW32 thread scaling (threads=[1, 2, 4, 8, 16, 32]) ---
     loading /leonardo_work/EUHPC_D32_102/dhm/indices/deep10m_hnsw32.idx
     reusing stored recall_k10 curve (17 operating points)
-  hnsw32 threads=1 @recall≥0.9: qps=3198 ms/q=0.3127 speedup=1.0 eff=1.0
-  hnsw32 threads=2 @recall≥0.9: qps=3200 ms/q=0.3125 speedup=1.0 eff=0.5
-  hnsw32 threads=4 @recall≥0.9: qps=3176 ms/q=0.3149 speedup=0.99 eff=0.25
-  hnsw32 threads=8 @recall≥0.9: qps=3120 ms/q=0.3205 speedup=0.98 eff=0.12
-  hnsw32 threads=16 @recall≥0.9: qps=3045 ms/q=0.3284 speedup=0.95 eff=0.06
-  hnsw32 threads=32 @recall≥0.9: qps=2957 ms/q=0.3381 speedup=0.92 eff=0.03
-  hnsw32 threads=1 @recall≥0.95: qps=2495 ms/q=0.4007 speedup=1.0 eff=1.0
-  hnsw32 threads=2 @recall≥0.95: qps=2488 ms/q=0.4019 speedup=1.0 eff=0.5
-  hnsw32 threads=4 @recall≥0.95: qps=2469 ms/q=0.4050 speedup=0.99 eff=0.25
-  hnsw32 threads=8 @recall≥0.95: qps=2419 ms/q=0.4134 speedup=0.97 eff=0.12
-  hnsw32 threads=16 @recall≥0.95: qps=2374 ms/q=0.4212 speedup=0.95 eff=0.06
-  hnsw32 threads=32 @recall≥0.95: qps=2253 ms/q=0.4439 speedup=0.9 eff=0.03
+  hnsw32 threads=1 @recall≥0.9: qps=3239 ms/q=0.3087 speedup=1.0 eff=1.0
+  hnsw32 threads=2 @recall≥0.9: qps=6205 ms/q=0.1612 speedup=1.92 eff=0.96
+  hnsw32 threads=4 @recall≥0.9: qps=12131 ms/q=0.0824 speedup=3.75 eff=0.94
+  hnsw32 threads=8 @recall≥0.9: qps=22980 ms/q=0.0435 speedup=7.09 eff=0.89
+  hnsw32 threads=16 @recall≥0.9: qps=40303 ms/q=0.0248 speedup=12.44 eff=0.78
+  hnsw32 threads=32 @recall≥0.9: qps=53177 ms/q=0.0188 speedup=16.42 eff=0.51
+  hnsw32 threads=1 @recall≥0.95: qps=2515 ms/q=0.3976 speedup=1.0 eff=1.0
+  hnsw32 threads=2 @recall≥0.95: qps=4837 ms/q=0.2068 speedup=1.92 eff=0.96
+  hnsw32 threads=4 @recall≥0.95: qps=9461 ms/q=0.1057 speedup=3.76 eff=0.94
+  hnsw32 threads=8 @recall≥0.95: qps=17954 ms/q=0.0557 speedup=7.14 eff=0.89
+  hnsw32 threads=16 @recall≥0.95: qps=31594 ms/q=0.0317 speedup=12.56 eff=0.79
+  hnsw32 threads=32 @recall≥0.95: qps=41601 ms/q=0.0240 speedup=16.54 eff=0.52
 
 --- HNSW48 thread scaling (threads=[1, 2, 4, 8, 16, 32]) ---
     loading /leonardo_work/EUHPC_D32_102/dhm/indices/deep10m_hnsw48.idx
     reusing stored recall_k10 curve (17 operating points)
-  hnsw48 threads=1 @recall≥0.9: qps=3641 ms/q=0.2746 speedup=1.0 eff=1.0
-  hnsw48 threads=2 @recall≥0.9: qps=3647 ms/q=0.2742 speedup=1.0 eff=0.5
-  hnsw48 threads=4 @recall≥0.9: qps=3615 ms/q=0.2766 speedup=0.99 eff=0.25
-  hnsw48 threads=8 @recall≥0.9: qps=3551 ms/q=0.2816 speedup=0.98 eff=0.12
-  hnsw48 threads=16 @recall≥0.9: qps=3519 ms/q=0.2842 speedup=0.97 eff=0.06
-  hnsw48 threads=32 @recall≥0.9: qps=3486 ms/q=0.2868 speedup=0.96 eff=0.03
-  hnsw48 threads=1 @recall≥0.95: qps=2018 ms/q=0.4956 speedup=1.0 eff=1.0
-  hnsw48 threads=2 @recall≥0.95: qps=2017 ms/q=0.4959 speedup=1.0 eff=0.5
-  hnsw48 threads=4 @recall≥0.95: qps=2001 ms/q=0.4998 speedup=0.99 eff=0.25
-  hnsw48 threads=8 @recall≥0.95: qps=1981 ms/q=0.5049 speedup=0.98 eff=0.12
-  hnsw48 threads=16 @recall≥0.95: qps=1920 ms/q=0.5210 speedup=0.95 eff=0.06
-  hnsw48 threads=32 @recall≥0.95: qps=1844 ms/q=0.5424 speedup=0.91 eff=0.03
+  hnsw48 threads=1 @recall≥0.9: qps=3637 ms/q=0.2749 speedup=1.0 eff=1.0
+  hnsw48 threads=2 @recall≥0.9: qps=7042 ms/q=0.1420 speedup=1.94 eff=0.97
+  hnsw48 threads=4 @recall≥0.9: qps=13775 ms/q=0.0726 speedup=3.79 eff=0.95
+  hnsw48 threads=8 @recall≥0.9: qps=26008 ms/q=0.0384 speedup=7.15 eff=0.89
+  hnsw48 threads=16 @recall≥0.9: qps=45180 ms/q=0.0221 speedup=12.42 eff=0.78
+  hnsw48 threads=32 @recall≥0.9: qps=58443 ms/q=0.0171 speedup=16.07 eff=0.5
+  hnsw48 threads=1 @recall≥0.95: qps=2011 ms/q=0.4973 speedup=1.0 eff=1.0
+  hnsw48 threads=2 @recall≥0.95: qps=3902 ms/q=0.2563 speedup=1.94 eff=0.97
+  hnsw48 threads=4 @recall≥0.95: qps=7640 ms/q=0.1309 speedup=3.8 eff=0.95
+  hnsw48 threads=8 @recall≥0.95: qps=14553 ms/q=0.0687 speedup=7.24 eff=0.9
+  hnsw48 threads=16 @recall≥0.95: qps=25618 ms/q=0.0390 speedup=12.74 eff=0.8
+  hnsw48 threads=32 @recall≥0.95: qps=33372 ms/q=0.0300 speedup=16.6 eff=0.52
 
 --- OPQ-IVFPQ thread scaling (threads=[1, 2, 4, 8, 16, 32]) ---
     loading /leonardo_work/EUHPC_D32_102/dhm/indices/deep10m_opq_ivfpq.idx

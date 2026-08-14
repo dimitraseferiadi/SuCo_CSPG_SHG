@@ -1,0 +1,73 @@
+{
+  "threads": 32,
+  "stream_copy_gbs_1t": 25.354113131412802,
+  "stream_copy_gbs_nt": 96.95034291744007,
+  "fvec_L2sqr_ny_gbs_1t": {
+    "32": 16.12384445966516,
+    "128": 16.735522140628696,
+    "512": 16.735795257656285
+  },
+  "kernel_arithmetic_intensity_flop_per_byte": 0.5,
+  "padding": {
+    "dataset": "gist1m",
+    "d0": 960,
+    "M": 32,
+    "efc": 128,
+    "ef": 100,
+    "k": 10,
+    "rows": [
+      {
+        "d": 960,
+        "build_s": 175.455,
+        "recall": 0.8666,
+        "ndis_per_query": 2832.2,
+        "ms_per_query": 0.162377,
+        "ms_std": 0.000204,
+        "qps": 6158.5,
+        "achieved_gbs": 66.98,
+        "invariant": true
+      },
+      {
+        "d": 1920,
+        "build_s": 0.0,
+        "recall": 0.8666,
+        "ndis_per_query": 2832.2,
+        "ms_per_query": 0.302823,
+        "ms_std": 0.000189,
+        "qps": 3302.3,
+        "achieved_gbs": 71.83,
+        "invariant": true
+      },
+      {
+        "d": 3840,
+        "build_s": 0.0,
+        "recall": 0.8666,
+        "ndis_per_query": 2832.2,
+        "ms_per_query": 0.582026,
+        "ms_std": 0.00086,
+        "qps": 1718.1,
+        "achieved_gbs": 74.74,
+        "invariant": true
+      },
+      {
+        "d": 7680,
+        "build_s": 0.0,
+        "recall": 0.8666,
+        "ndis_per_query": 2832.2,
+        "ms_per_query": 1.122745,
+        "ms_std": 0.000902,
+        "qps": 890.7,
+        "achieved_gbs": 77.49,
+        "invariant": true
+      }
+    ],
+    "fit": {
+      "slope": 0.9311442107038754,
+      "intercept": -8.221711366772627,
+      "r2": 0.9998461429913321,
+      "n_points": 4
+    },
+    "peak_achieved_gbs": 77.49,
+    "peak_fraction_of_ceiling_nt": 0.7992751512595277
+  }
+}

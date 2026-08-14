@@ -1,9 +1,10 @@
+Scaling self-test: flat-scan 1->32 threads = 2.19x  [PASS]
 Data dir:       /leonardo_work/EUHPC_D32_102/dhm/data
 Index dir:      /leonardo_work/EUHPC_D32_102/dhm/indices
 Output dir:     /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router
 Datasets:       ['uqv']
 Indexes:        ['suco', 'shg', 'cspg', 'hnsw32', 'hnsw48', 'opq_ivfpq']
-Thread counts:  [1, 2, 4, 8, 16, 32]   (cores available: 32)
+Thread counts:  [1, 2, 4, 8, 16, 32]   (CPUs in affinity mask: 32, OMP limit: 32)
 Recall targets: [0.9, 0.95]
 
 ######################################################################
@@ -16,7 +17,7 @@ Loading uqv...
     query : /leonardo_work/EUHPC_D32_102/dhm/data/uqv/uqv_query.fvecs (fvecs)
     train : <sampled from base>
     gt    : /leonardo_work/EUHPC_D32_102/dhm/data/uqv/uqv_groundtruth.ivecs
-  Loaded in 2.7s: xb=(1000000, 256), xq=(10000, 256), gt=(10000, 100)
+  Loaded in 3.3s: xb=(1000000, 256), xq=(10000, 256), gt=(10000, 100)
 
 --- SuCo thread scaling (threads=[1, 2, 4, 8, 16, 32]) ---
     loading /leonardo_work/EUHPC_D32_102/dhm/indices/uqv_suco_ns8.idx

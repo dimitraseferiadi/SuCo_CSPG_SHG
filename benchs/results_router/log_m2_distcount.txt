@@ -1,0 +1,21 @@
+
+=== sift1m ===
+  sift1m: d=128 nb=1,000,000 nq=10,000 metric=L2
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/sift100M/bigann_base_100M.bvecs (bvecs, 100,000,000 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/sift100M/bigann_query.bvecs (bvecs)
+    train : /leonardo_work/EUHPC_D32_102/dhm/data/sift100M/bigann_learn.bvecs
+    gt    : /leonardo_work/EUHPC_D32_102/dhm/data/sift100M/gnd/idx_1M.ivecs
+  SuCo: loading /leonardo_work/EUHPC_D32_102/dhm/indices/sift1m_suco_ns8.idx
+Traceback (most recent call last):
+  File "/leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/bench_m2_distcount.py", line 283, in <module>
+    main()
+  File "/leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/bench_m2_distcount.py", line 279, in main
+    print_table(run_dataset(ds, args), args.targets)
+                ^^^^^^^^^^^^^^^^^^^^^
+  File "/leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/bench_m2_distcount.py", line 191, in run_dataset
+    idx = faiss.read_index(idx_path)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/leonardo/home/userexternal/afilippa/miniconda3/envs/anns/lib/python3.12/site-packages/faiss/swigfaiss_avx512.py", line 13983, in read_index
+    return _swigfaiss_avx512.read_index(*args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Error in faiss::IndexSuCo::IndexSuCo(faiss::idx_t, int, int, float, float, int) at /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/faiss/IndexSuCo.cpp:124: Error: '!(d % nsubspaces == 0)' failed: IndexSuCo: d must be divisible by nsubspaces

@@ -1,0 +1,21 @@
+threads=32
+
+E2: attainable bandwidth
+  STREAM copy, 1 thread       :   25.35 GB/s
+  STREAM copy, 32 threads     :   96.95 GB/s (3.82x the single-thread figure)
+  fvec_L2sqr_ny d=32   (1 thr) :   16.12 GB/s ( 63.6% of the 1-thread ceiling, ny=33554432)
+  fvec_L2sqr_ny d=128  (1 thr) :   16.74 GB/s ( 66.0% of the 1-thread ceiling, ny=8388608)
+  fvec_L2sqr_ny d=512  (1 thr) :   16.74 GB/s ( 66.0% of the 1-thread ceiling, ny=2097152)
+
+E1: zero-padding ablation on gist1m (n=1000000, d=960, M=32, efC=128, efSearch=100)
+  d=  960  recall=0.8666  ndis/q=  2832.2  ms/q=  0.1624    66.98 GB/s  ok
+  d= 1920  recall=0.8666  ndis/q=  2832.2  ms/q=  0.3028    71.83 GB/s  ok
+  d= 3840  recall=0.8666  ndis/q=  2832.2  ms/q=  0.5820    74.74 GB/s  ok
+  d= 7680  recall=0.8666  ndis/q=  2832.2  ms/q=  1.1227    77.49 GB/s  ok
+
+  d(log t)/d(log d) = 0.931 (R^2=0.9998, 4 widths)
+  1.0 => time is set by bytes streamed (bandwidth bound); 0.0 => bytes are not the constraint
+  peak achieved during graph search: 77.49 GB/s (79.9% of the 32-thread ceiling)
+
+wrote /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router/m2_padding_gist1m.csv
+wrote /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router/m2_bandwidth.json

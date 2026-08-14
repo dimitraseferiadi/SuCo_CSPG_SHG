@@ -1,3 +1,34 @@
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
 Log:        /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router/log_router_spacev10m.txt
 Data dir:   /leonardo_work/EUHPC_D32_102/dhm/data
 Index dir:  /leonardo_work/EUHPC_D32_102/dhm/indices
@@ -129,7 +160,38 @@ BENCHMARK: features - spacev10m
 
 --- OPQ-IVFPQ+SQ8 recall@10 curve (n_runs=3) ---
   OPQ-IVFPQ+SQ8 (1): recall@10=0.4066, ms/q=0.0031±0.0001, qps=317676±5716
-  OPQ-IVFPQ+SQ8 (2): recall@10=0.5286, ms/q=0.0047±0.0002, qps=211664±9226
+  OPQ-IVFPQ+SQ8 (2): recall@10=0.5286, ms/q=0.0047±0.0002, qps=211664±9226sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+sh: /proc/sys/vm/drop_caches: Permission denied
+
   OPQ-IVFPQ+SQ8 (4): recall@10=0.6332, ms/q=0.0071±0.0000, qps=141249±646
   OPQ-IVFPQ+SQ8 (8): recall@10=0.7180, ms/q=0.0120±0.0002, qps=83548±1183
   OPQ-IVFPQ+SQ8 (16): recall@10=0.7864, ms/q=0.0215±0.0001, qps=46470±173
