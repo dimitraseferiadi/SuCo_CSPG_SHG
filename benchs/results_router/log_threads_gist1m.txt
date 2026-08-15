@@ -1,9 +1,9 @@
-Scaling self-test: flat-scan 1->32 threads = 2.24x  [PASS]
+Scaling self-test: flat-scan 1->32 threads = 2.98x  [PASS]
 Data dir:       /leonardo_work/EUHPC_D32_102/dhm/data
 Index dir:      /leonardo_work/EUHPC_D32_102/dhm/indices
 Output dir:     /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router
 Datasets:       ['gist1m']
-Indexes:        ['suco', 'shg', 'cspg', 'hnsw32', 'hnsw48', 'opq_ivfpq']
+Indexes:        ['suco']
 Thread counts:  [1, 2, 4, 8, 16, 32]   (CPUs in affinity mask: 32, OMP limit: 32)
 Recall targets: [0.9, 0.95]
 
@@ -17,80 +17,22 @@ Loading gist1m...
     query : /leonardo_work/EUHPC_D32_102/dhm/data/gist1m/gist_query.fvecs (fvecs)
     train : /leonardo_work/EUHPC_D32_102/dhm/data/gist1m/gist_learn.fvecs
     gt    : /leonardo_work/EUHPC_D32_102/dhm/data/gist1m/gist_groundtruth.ivecs
-  Loaded in 9.3s: xb=(1000000, 960), xq=(1000, 960), gt=(1000, 100)
+  Loaded in 8.6s: xb=(1000000, 960), xq=(1000, 960), gt=(1000, 100)
 
 --- SuCo thread scaling (threads=[1, 2, 4, 8, 16, 32]) ---
     loading /leonardo_work/EUHPC_D32_102/dhm/indices/gist1m_suco_ns40.idx
-  SuCo: LOAD FAILED — Error in faiss::IndexSuCo::IndexSuCo(faiss::idx_t, int, int, float, float, int) at /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/faiss/IndexSuCo.cpp:124: Error: '!(d % nsubspaces == 0)' failed: IndexSuCo: d must be divisible by nsubspaces
-
---- SHG thread scaling (threads=[1, 2, 4, 8, 16, 32]) ---
-    loading /leonardo_work/EUHPC_D32_102/dhm/indices/gist1m_shg.idx
-    reusing stored recall_k10 curve (17 operating points)
-  shg threads=1 @recall≥0.9: qps=449 ms/q=2.2259 speedup=1.0 eff=1.0
-  shg threads=2 @recall≥0.9: qps=845 ms/q=1.1837 speedup=1.88 eff=0.94
-  shg threads=4 @recall≥0.9: qps=1482 ms/q=0.6747 speedup=3.3 eff=0.82
-  shg threads=8 @recall≥0.9: qps=2561 ms/q=0.3905 speedup=5.7 eff=0.71
-  shg threads=16 @recall≥0.9: qps=3324 ms/q=0.3009 speedup=7.4 eff=0.46
-  shg threads=32 @recall≥0.9: qps=3287 ms/q=0.3042 speedup=7.32 eff=0.23
-  shg threads=1 @recall≥0.95: qps=264 ms/q=3.7842 speedup=1.0 eff=1.0
-  shg threads=2 @recall≥0.95: qps=497 ms/q=2.0115 speedup=1.88 eff=0.94
-  shg threads=4 @recall≥0.95: qps=919 ms/q=1.0878 speedup=3.48 eff=0.87
-  shg threads=8 @recall≥0.95: qps=1488 ms/q=0.6721 speedup=5.63 eff=0.7
-  shg threads=16 @recall≥0.95: qps=1902 ms/q=0.5259 speedup=7.2 eff=0.45
-  shg threads=32 @recall≥0.95: qps=1939 ms/q=0.5156 speedup=7.34 eff=0.23
-
---- CSPG thread scaling (threads=[1, 2, 4, 8, 16, 32]) ---
-    loading /leonardo_work/EUHPC_D32_102/dhm/indices/gist1m_cspg.idx
-    reusing stored recall_k10 curve (17 operating points)
-  cspg threads=1 @recall≥0.9: qps=491 ms/q=2.0375 speedup=1.0 eff=1.0
-  cspg threads=2 @recall≥0.9: qps=913 ms/q=1.0953 speedup=1.86 eff=0.93
-  cspg threads=4 @recall≥0.9: qps=1693 ms/q=0.5905 speedup=3.45 eff=0.86
-  cspg threads=8 @recall≥0.9: qps=2799 ms/q=0.3573 speedup=5.7 eff=0.71
-  cspg threads=16 @recall≥0.9: qps=4006 ms/q=0.2496 speedup=8.16 eff=0.51
-  cspg threads=32 @recall≥0.9: qps=3955 ms/q=0.2528 speedup=8.06 eff=0.25
-  cspg threads=1 @recall≥0.95: qps=275 ms/q=3.6402 speedup=1.0 eff=1.0
-  cspg threads=2 @recall≥0.95: qps=512 ms/q=1.9523 speedup=1.86 eff=0.93
-  cspg threads=4 @recall≥0.95: qps=941 ms/q=1.0628 speedup=3.43 eff=0.86
-  cspg threads=8 @recall≥0.95: qps=1555 ms/q=0.6432 speedup=5.66 eff=0.71
-  cspg threads=16 @recall≥0.95: qps=2180 ms/q=0.4587 speedup=7.94 eff=0.5
-  cspg threads=32 @recall≥0.95: qps=2152 ms/q=0.4646 speedup=7.84 eff=0.24
-
---- HNSW32 thread scaling (threads=[1, 2, 4, 8, 16, 32]) ---
-    loading /leonardo_work/EUHPC_D32_102/dhm/indices/gist1m_hnsw32.idx
-    reusing stored recall_k10 curve (17 operating points)
-  hnsw32 threads=1 @recall≥0.9: qps=643 ms/q=1.5547 speedup=1.0 eff=1.0
-  hnsw32 threads=2 @recall≥0.9: qps=1215 ms/q=0.8228 speedup=1.89 eff=0.94
-  hnsw32 threads=4 @recall≥0.9: qps=2195 ms/q=0.4556 speedup=3.41 eff=0.85
-  hnsw32 threads=8 @recall≥0.9: qps=3574 ms/q=0.2798 speedup=5.56 eff=0.69
-  hnsw32 threads=16 @recall≥0.9: qps=4459 ms/q=0.2243 speedup=6.93 eff=0.43
-  hnsw32 threads=32 @recall≥0.9: qps=4101 ms/q=0.2438 speedup=6.38 eff=0.2
-  hnsw32 threads=1 @recall≥0.95: qps=347 ms/q=2.8780 speedup=1.0 eff=1.0
-  hnsw32 threads=2 @recall≥0.95: qps=660 ms/q=1.5147 speedup=1.9 eff=0.95
-  hnsw32 threads=4 @recall≥0.95: qps=1188 ms/q=0.8420 speedup=3.42 eff=0.85
-  hnsw32 threads=8 @recall≥0.95: qps=1935 ms/q=0.5169 speedup=5.57 eff=0.7
-  hnsw32 threads=16 @recall≥0.95: qps=2420 ms/q=0.4133 speedup=6.96 eff=0.44
-  hnsw32 threads=32 @recall≥0.95: qps=2406 ms/q=0.4156 speedup=6.92 eff=0.22
-
---- HNSW48 thread scaling (threads=[1, 2, 4, 8, 16, 32]) ---
-    loading /leonardo_work/EUHPC_D32_102/dhm/indices/gist1m_hnsw48.idx
-    reusing stored recall_k10 curve (17 operating points)
-  hnsw48 threads=1 @recall≥0.9: qps=523 ms/q=1.9122 speedup=1.0 eff=1.0
-  hnsw48 threads=2 @recall≥0.9: qps=1008 ms/q=0.9923 speedup=1.93 eff=0.96
-  hnsw48 threads=4 @recall≥0.9: qps=1820 ms/q=0.5495 speedup=3.48 eff=0.87
-  hnsw48 threads=8 @recall≥0.9: qps=2960 ms/q=0.3378 speedup=5.66 eff=0.71
-  hnsw48 threads=16 @recall≥0.9: qps=3595 ms/q=0.2782 speedup=6.87 eff=0.43
-  hnsw48 threads=32 @recall≥0.9: qps=3472 ms/q=0.2880 speedup=6.64 eff=0.21
-  hnsw48 threads=1 @recall≥0.95: qps=305 ms/q=3.2792 speedup=1.0 eff=1.0
-  hnsw48 threads=2 @recall≥0.95: qps=585 ms/q=1.7095 speedup=1.92 eff=0.96
-  hnsw48 threads=4 @recall≥0.95: qps=1048 ms/q=0.9538 speedup=3.44 eff=0.86
-  hnsw48 threads=8 @recall≥0.95: qps=1699 ms/q=0.5885 speedup=5.57 eff=0.7
-  hnsw48 threads=16 @recall≥0.95: qps=2055 ms/q=0.4867 speedup=6.74 eff=0.42
-  hnsw48 threads=32 @recall≥0.95: qps=2015 ms/q=0.4962 speedup=6.61 eff=0.21
-
---- OPQ-IVFPQ thread scaling (threads=[1, 2, 4, 8, 16, 32]) ---
-    loading /leonardo_work/EUHPC_D32_102/dhm/indices/gist1m_opq_ivfpq.idx
-    reusing stored recall_k10 curve (11 operating points)
-  opq_ivfpq: recall≥0.9 unreachable on the k=10 curve — skipping this target
-  opq_ivfpq: recall≥0.95 unreachable on the k=10 curve — skipping this target
+    reusing stored recall_k10 curve (9 operating points)
+  suco threads=1 @recall≥0.9: qps=127 ms/q=7.8934 speedup=1.0 eff=1.0
+  suco threads=2 @recall≥0.9: qps=245 ms/q=4.0750 speedup=1.94 eff=0.97
+  suco threads=4 @recall≥0.9: qps=475 ms/q=2.1074 speedup=3.75 eff=0.94
+  suco threads=8 @recall≥0.9: qps=867 ms/q=1.1537 speedup=6.84 eff=0.86
+  suco threads=16 @recall≥0.9: qps=1397 ms/q=0.7157 speedup=11.03 eff=0.69
+  suco threads=32 @recall≥0.9: qps=1552 ms/q=0.6442 speedup=12.25 eff=0.38
+  suco threads=1 @recall≥0.95: qps=101 ms/q=9.9031 speedup=1.0 eff=1.0
+  suco threads=2 @recall≥0.95: qps=194 ms/q=5.1670 speedup=1.92 eff=0.96
+  suco threads=4 @recall≥0.95: qps=374 ms/q=2.6764 speedup=3.7 eff=0.93
+  suco threads=8 @recall≥0.95: qps=657 ms/q=1.5225 speedup=6.5 eff=0.81
+  suco threads=16 @recall≥0.95: qps=1011 ms/q=0.9888 speedup=10.02 eff=0.63
+  suco threads=32 @recall≥0.95: qps=1051 ms/q=0.9516 speedup=10.41 eff=0.33
 
 Results merged into /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router/results_gist1m.json

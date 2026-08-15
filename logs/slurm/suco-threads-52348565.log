@@ -1,0 +1,367 @@
+Loading gcc/11.3.0
+  Loading requirement: gmp/6.2.1 mpfr/4.1.0 mpc/1.2.1
+--- CPU affinity ---
+SLURM_CPUS_PER_TASK = 32
+SLURM_JOB_CPUS_PER_NODE = 32
+pid 2855579's current affinity list: 0-31
+sched_getaffinity: 32 CPUs -> [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+policy: default
+preferred node: current
+physcpubind: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 
+cpubind: 0 1 
+nodebind: 0 1 
+--------------------
+data-dir: /leonardo_work/EUHPC_D32_102/dhm/data
+contents: deep10m, enron, gist1m, msong, msturing10m, openai1m, sift100M, spacev10m, uqv
+faiss   : /leonardo/home/userexternal/afilippa/miniconda3/envs/anns/lib/python3.12/site-packages/faiss/__init__.py
+          IndexSuCo / IndexSHG / IndexCSPG all present
+          OPQ-IVFPQ factory OK ('OPQ8_64,IVF64,PQ8x8')
+------------------------------------------------------------------------
+[ ok ] gist1m: d=960 nb=1,000,000 nq=1,000 metric=L2
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/gist1m/gist_base.fvecs (fvecs, 1,000,000 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/gist1m/gist_query.fvecs (fvecs)
+    train : /leonardo_work/EUHPC_D32_102/dhm/data/gist1m/gist_learn.fvecs
+    gt    : /leonardo_work/EUHPC_D32_102/dhm/data/gist1m/gist_groundtruth.ivecs
+[ ok ] deep1m: d=96 nb=1,000,000 nq=10,000 metric=L2 (raw Deep1B chunks)
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/deep10m/base_00 (fvecs, 27,397,020 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/deep10m/deep1B_queries.fvecs (fvecs)
+    train : /leonardo_work/EUHPC_D32_102/dhm/data/deep10m/learn_00
+    gt    : /leonardo_work/EUHPC_D32_102/dhm/data/deep10m/deep1M_groundtruth.ivecs
+[ ok ] msong: d=420 nb=992,272 nq=200 metric=L2
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/msong/msong_base.fvecs (fvecs, 992,272 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/msong/msong_query.fvecs (fvecs)
+    train : <sampled from base>
+    gt    : /leonardo_work/EUHPC_D32_102/dhm/data/msong/msong_groundtruth.ivecs
+       WARN: no learn file; training vectors sampled from the base
+[ ok ] openai: d=1536 nb=1,000,000 nq=10,000 metric=IP
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/openai1m/base.fbin (fbin, 1,000,000 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/openai1m/queries.fbin (fbin)
+    train : <sampled from base>
+    gt    : <computed and cached>
+       WARN: groundtruth will be computed on first run (slow, then cached)
+       WARN: no learn file; training vectors sampled from the base
+[ ok ] sift10m: d=128 nb=10,000,000 nq=10,000 metric=L2
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/sift100M/bigann_base_100M.bvecs (bvecs, 100,000,000 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/sift100M/bigann_query.bvecs (bvecs)
+    train : /leonardo_work/EUHPC_D32_102/dhm/data/sift100M/bigann_learn.bvecs
+    gt    : /leonardo_work/EUHPC_D32_102/dhm/data/sift100M/gnd/idx_10M.ivecs
+[ ok ] deep10m: d=96 nb=10,000,000 nq=10,000 metric=L2 (raw Deep1B chunks)
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/deep10m/base_00 (fvecs, 27,397,020 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/deep10m/deep1B_queries.fvecs (fvecs)
+    train : /leonardo_work/EUHPC_D32_102/dhm/data/deep10m/learn_00
+    gt    : /leonardo_work/EUHPC_D32_102/dhm/data/deep10m/deep10M_groundtruth.ivecs
+[ ok ] spacev10m: d=100 nb=10,000,000 nq=29,316 metric=L2
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/spacev10m/spacev1b_base.i8bin.crop_nb_10000000 (i8bin, 10,000,000 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/spacev10m/query.i8bin (i8bin)
+    train : <sampled from base>
+    gt    : /leonardo_work/EUHPC_D32_102/dhm/data/spacev10m/msspacev-gt-10M
+       WARN: no learn file; training vectors sampled from the base
+------------------------------------------------------------------------
+7/7 datasets resolved
+=== thread-scaling run start 2026-08-15 02:10:16 ===
+    datasets : gist1m deep1m msong openai1m sift10m deep10m spacev10m
+    indexes  : suco
+    threads  : 1 2 4 8 16 32  (cpus-per-task=32)
+    targets  : 0.90 0.95
+
+############################################################
+# 2026-08-15 02:10:16  dataset: gist1m
+############################################################
+Scaling self-test: flat-scan 1->32 threads = 2.98x  [PASS]
+Data dir:       /leonardo_work/EUHPC_D32_102/dhm/data
+Index dir:      /leonardo_work/EUHPC_D32_102/dhm/indices
+Output dir:     /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router
+Datasets:       ['gist1m']
+Indexes:        ['suco']
+Thread counts:  [1, 2, 4, 8, 16, 32]   (CPUs in affinity mask: 32, OMP limit: 32)
+Recall targets: [0.9, 0.95]
+
+######################################################################
+# Thread scaling: GIST1M
+######################################################################
+
+Loading gist1m...
+  gist1m: d=960 nb=1,000,000 nq=1,000 metric=L2
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/gist1m/gist_base.fvecs (fvecs, 1,000,000 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/gist1m/gist_query.fvecs (fvecs)
+    train : /leonardo_work/EUHPC_D32_102/dhm/data/gist1m/gist_learn.fvecs
+    gt    : /leonardo_work/EUHPC_D32_102/dhm/data/gist1m/gist_groundtruth.ivecs
+  Loaded in 8.6s: xb=(1000000, 960), xq=(1000, 960), gt=(1000, 100)
+
+--- SuCo thread scaling (threads=[1, 2, 4, 8, 16, 32]) ---
+    loading /leonardo_work/EUHPC_D32_102/dhm/indices/gist1m_suco_ns40.idx
+    reusing stored recall_k10 curve (9 operating points)
+  suco threads=1 @recall≥0.9: qps=127 ms/q=7.8934 speedup=1.0 eff=1.0
+  suco threads=2 @recall≥0.9: qps=245 ms/q=4.0750 speedup=1.94 eff=0.97
+  suco threads=4 @recall≥0.9: qps=475 ms/q=2.1074 speedup=3.75 eff=0.94
+  suco threads=8 @recall≥0.9: qps=867 ms/q=1.1537 speedup=6.84 eff=0.86
+  suco threads=16 @recall≥0.9: qps=1397 ms/q=0.7157 speedup=11.03 eff=0.69
+  suco threads=32 @recall≥0.9: qps=1552 ms/q=0.6442 speedup=12.25 eff=0.38
+  suco threads=1 @recall≥0.95: qps=101 ms/q=9.9031 speedup=1.0 eff=1.0
+  suco threads=2 @recall≥0.95: qps=194 ms/q=5.1670 speedup=1.92 eff=0.96
+  suco threads=4 @recall≥0.95: qps=374 ms/q=2.6764 speedup=3.7 eff=0.93
+  suco threads=8 @recall≥0.95: qps=657 ms/q=1.5225 speedup=6.5 eff=0.81
+  suco threads=16 @recall≥0.95: qps=1011 ms/q=0.9888 speedup=10.02 eff=0.63
+  suco threads=32 @recall≥0.95: qps=1051 ms/q=0.9516 speedup=10.41 eff=0.33
+
+Results merged into /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router/results_gist1m.json
+
+############################################################
+# 2026-08-15 02:12:33  dataset: deep1m
+############################################################
+Scaling self-test: flat-scan 1->32 threads = 2.98x  [PASS]
+Data dir:       /leonardo_work/EUHPC_D32_102/dhm/data
+Index dir:      /leonardo_work/EUHPC_D32_102/dhm/indices
+Output dir:     /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router
+Datasets:       ['deep1m']
+Indexes:        ['suco']
+Thread counts:  [1, 2, 4, 8, 16, 32]   (CPUs in affinity mask: 32, OMP limit: 32)
+Recall targets: [0.9, 0.95]
+
+######################################################################
+# Thread scaling: DEEP1M
+######################################################################
+
+Loading deep1m...
+  deep1m: d=96 nb=1,000,000 nq=10,000 metric=L2 (raw Deep1B chunks)
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/deep10m/base_00 (fvecs, 27,397,020 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/deep10m/deep1B_queries.fvecs (fvecs)
+    train : /leonardo_work/EUHPC_D32_102/dhm/data/deep10m/learn_00
+    gt    : /leonardo_work/EUHPC_D32_102/dhm/data/deep10m/deep1M_groundtruth.ivecs
+  Loaded in 1.3s: xb=(1000000, 96), xq=(10000, 96), gt=(10000, 100)
+
+--- SuCo thread scaling (threads=[1, 2, 4, 8, 16, 32]) ---
+    loading /leonardo_work/EUHPC_D32_102/dhm/indices/deep1m_suco_ns8.idx
+    reusing stored recall_k10 curve (9 operating points)
+  suco threads=1 @recall≥0.9: qps=276 ms/q=3.6288 speedup=1.0 eff=1.0
+  suco threads=2 @recall≥0.9: qps=564 ms/q=1.7742 speedup=2.05 eff=1.02
+  suco threads=4 @recall≥0.9: qps=1121 ms/q=0.8921 speedup=4.07 eff=1.02
+  suco threads=8 @recall≥0.9: qps=2209 ms/q=0.4527 speedup=8.02 eff=1.0
+  suco threads=16 @recall≥0.9: qps=4029 ms/q=0.2482 speedup=14.62 eff=0.91
+  suco threads=32 @recall≥0.9: qps=6349 ms/q=0.1575 speedup=23.04 eff=0.72
+  suco threads=1 @recall≥0.95: qps=284 ms/q=3.5247 speedup=1.0 eff=1.0
+  suco threads=2 @recall≥0.95: qps=564 ms/q=1.7727 speedup=1.99 eff=0.99
+  suco threads=4 @recall≥0.95: qps=1124 ms/q=0.8894 speedup=3.96 eff=0.99
+  suco threads=8 @recall≥0.95: qps=2198 ms/q=0.4550 speedup=7.75 eff=0.97
+  suco threads=16 @recall≥0.95: qps=3869 ms/q=0.2585 speedup=13.64 eff=0.85
+  suco threads=32 @recall≥0.95: qps=6374 ms/q=0.1569 speedup=22.47 eff=0.7
+
+Results merged into /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router/results_deep1m.json
+
+############################################################
+# 2026-08-15 02:19:45  dataset: msong
+############################################################
+Scaling self-test: flat-scan 1->32 threads = 2.96x  [PASS]
+Data dir:       /leonardo_work/EUHPC_D32_102/dhm/data
+Index dir:      /leonardo_work/EUHPC_D32_102/dhm/indices
+Output dir:     /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router
+Datasets:       ['msong']
+Indexes:        ['suco']
+Thread counts:  [1, 2, 4, 8, 16, 32]   (CPUs in affinity mask: 32, OMP limit: 32)
+Recall targets: [0.9, 0.95]
+
+######################################################################
+# Thread scaling: MSONG
+######################################################################
+
+Loading msong...
+  msong: d=420 nb=992,272 nq=200 metric=L2
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/msong/msong_base.fvecs (fvecs, 992,272 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/msong/msong_query.fvecs (fvecs)
+    train : <sampled from base>
+    gt    : /leonardo_work/EUHPC_D32_102/dhm/data/msong/msong_groundtruth.ivecs
+  msong_groundtruth.ivecs has only 20 neighbours per query but k=100 was requested; computing a deeper groundtruth
+  groundtruth from cache: /leonardo_work/EUHPC_D32_102/dhm/indices/gt_msong_k100_53667c6aae11.npy
+  (computed groundtruth agrees with the shipped 20-NN file on 100.0% of top-1)
+  Loaded in 3.8s: xb=(992272, 420), xq=(200, 420), gt=(200, 100)
+
+--- SuCo thread scaling (threads=[1, 2, 4, 8, 16, 32]) ---
+    loading /leonardo_work/EUHPC_D32_102/dhm/indices/msong_suco_ns7.idx
+    reusing stored recall_k10 curve (9 operating points)
+  suco threads=1 @recall≥0.9: qps=139 ms/q=7.2150 speedup=1.0 eff=1.0
+  suco threads=2 @recall≥0.9: qps=260 ms/q=3.8534 speedup=1.87 eff=0.94
+  suco threads=4 @recall≥0.9: qps=487 ms/q=2.0532 speedup=3.51 eff=0.88
+  suco threads=8 @recall≥0.9: qps=828 ms/q=1.2074 speedup=5.98 eff=0.75
+  suco threads=16 @recall≥0.9: qps=1210 ms/q=0.8266 speedup=8.73 eff=0.55
+  suco threads=32 @recall≥0.9: qps=1529 ms/q=0.6541 speedup=11.03 eff=0.34
+  suco threads=1 @recall≥0.95: qps=75 ms/q=13.3483 speedup=1.0 eff=1.0
+  suco threads=2 @recall≥0.95: qps=145 ms/q=6.9062 speedup=1.93 eff=0.97
+  suco threads=4 @recall≥0.95: qps=265 ms/q=3.7783 speedup=3.53 eff=0.88
+  suco threads=8 @recall≥0.95: qps=441 ms/q=2.2680 speedup=5.89 eff=0.74
+  suco threads=16 @recall≥0.95: qps=623 ms/q=1.6041 speedup=8.32 eff=0.52
+  suco threads=32 @recall≥0.95: qps=704 ms/q=1.4199 speedup=9.4 eff=0.29
+
+Results merged into /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router/results_msong.json
+
+############################################################
+# 2026-08-15 02:20:26  dataset: openai1m
+############################################################
+Scaling self-test: flat-scan 1->32 threads = 2.39x  [PASS]
+Data dir:       /leonardo_work/EUHPC_D32_102/dhm/data
+Index dir:      /leonardo_work/EUHPC_D32_102/dhm/indices
+Output dir:     /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router
+Datasets:       ['openai1m']
+Indexes:        ['suco']
+Thread counts:  [1, 2, 4, 8, 16, 32]   (CPUs in affinity mask: 32, OMP limit: 32)
+Recall targets: [0.9, 0.95]
+
+######################################################################
+# Thread scaling: OPENAI1M
+######################################################################
+
+Loading openai1m...
+  openai: d=1536 nb=1,000,000 nq=10,000 metric=IP
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/openai1m/base.fbin (fbin, 1,000,000 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/openai1m/queries.fbin (fbin)
+    train : <sampled from base>
+    gt    : <computed and cached>
+  groundtruth from cache: /leonardo_work/EUHPC_D32_102/dhm/indices/gt_openai_k100_476dfdc645bb.npy
+  Loaded in 0.3s: xb=(1000000, 1536), xq=(10000, 1536), gt=(10000, 100)
+
+--- SuCo thread scaling (threads=[1, 2, 4, 8, 16, 32]) ---
+    loading /leonardo_work/EUHPC_D32_102/dhm/indices/openai1m_suco_ns8.idx
+    reusing stored recall_k10 curve (9 operating points)
+  suco threads=1 @recall≥0.9: qps=70 ms/q=14.2355 speedup=1.0 eff=1.0
+  suco threads=2 @recall≥0.9: qps=136 ms/q=7.3488 speedup=1.94 eff=0.97
+  suco threads=4 @recall≥0.9: qps=250 ms/q=4.0005 speedup=3.56 eff=0.89
+  suco threads=8 @recall≥0.9: qps=412 ms/q=2.4273 speedup=5.86 eff=0.73
+  suco threads=16 @recall≥0.9: qps=528 ms/q=1.8942 speedup=7.52 eff=0.47
+  suco threads=32 @recall≥0.9: qps=534 ms/q=1.8739 speedup=7.6 eff=0.24
+  suco threads=1 @recall≥0.95: qps=34 ms/q=29.3198 speedup=1.0 eff=1.0
+  suco threads=2 @recall≥0.95: qps=65 ms/q=15.2840 speedup=1.92 eff=0.96
+  suco threads=4 @recall≥0.95: qps=117 ms/q=8.5645 speedup=3.42 eff=0.86
+  suco threads=8 @recall≥0.95: qps=186 ms/q=5.3768 speedup=5.45 eff=0.68
+  suco threads=16 @recall≥0.95: qps=223 ms/q=4.4820 speedup=6.54 eff=0.41
+  suco threads=32 @recall≥0.95: qps=213 ms/q=4.6849 speedup=6.26 eff=0.2
+
+Results merged into /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router/results_openai1m.json
+
+############################################################
+# 2026-08-15 03:10:36  dataset: sift10m
+############################################################
+Scaling self-test: flat-scan 1->32 threads = 2.39x  [PASS]
+Data dir:       /leonardo_work/EUHPC_D32_102/dhm/data
+Index dir:      /leonardo_work/EUHPC_D32_102/dhm/indices
+Output dir:     /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router
+Datasets:       ['sift10m']
+Indexes:        ['suco']
+Thread counts:  [1, 2, 4, 8, 16, 32]   (CPUs in affinity mask: 32, OMP limit: 32)
+Recall targets: [0.9, 0.95]
+
+######################################################################
+# Thread scaling: SIFT10M
+######################################################################
+
+Loading sift10m...
+  sift10m: d=128 nb=10,000,000 nq=10,000 metric=L2
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/sift100M/bigann_base_100M.bvecs (bvecs, 100,000,000 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/sift100M/bigann_query.bvecs (bvecs)
+    train : /leonardo_work/EUHPC_D32_102/dhm/data/sift100M/bigann_learn.bvecs
+    gt    : /leonardo_work/EUHPC_D32_102/dhm/data/sift100M/gnd/idx_10M.ivecs
+  Loaded in 3.3s: xb=(10000000, 128), xq=(10000, 128), gt=(10000, 100)
+
+--- SuCo thread scaling (threads=[1, 2, 4, 8, 16, 32]) ---
+    loading /leonardo_work/EUHPC_D32_102/dhm/indices/sift10m_suco_ns8.idx
+    reusing stored recall_k10 curve (9 operating points)
+  suco threads=1 @recall≥0.9: qps=27 ms/q=36.4811 speedup=1.0 eff=1.0
+  suco threads=2 @recall≥0.9: qps=54 ms/q=18.6202 speedup=1.96 eff=0.98
+  suco threads=4 @recall≥0.9: qps=101 ms/q=9.8994 speedup=3.69 eff=0.92
+  suco threads=8 @recall≥0.9: qps=164 ms/q=6.0953 speedup=5.99 eff=0.75
+  suco threads=16 @recall≥0.9: qps=165 ms/q=6.0550 speedup=6.02 eff=0.38
+  suco threads=32 @recall≥0.9: qps=161 ms/q=6.2117 speedup=5.87 eff=0.18
+  suco threads=1 @recall≥0.95: qps=27 ms/q=37.3843 speedup=1.0 eff=1.0
+  suco threads=2 @recall≥0.95: qps=49 ms/q=20.4106 speedup=1.83 eff=0.92
+  suco threads=4 @recall≥0.95: qps=90 ms/q=11.1480 speedup=3.35 eff=0.84
+  suco threads=8 @recall≥0.95: qps=156 ms/q=6.4144 speedup=5.83 eff=0.73
+  suco threads=16 @recall≥0.95: qps=165 ms/q=6.0455 speedup=6.18 eff=0.39
+  suco threads=32 @recall≥0.95: qps=161 ms/q=6.2142 speedup=6.02 eff=0.19
+
+Results merged into /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router/results_sift10m.json
+
+############################################################
+# 2026-08-15 04:36:44  dataset: deep10m
+############################################################
+Scaling self-test: flat-scan 1->32 threads = 3.11x  [PASS]
+Data dir:       /leonardo_work/EUHPC_D32_102/dhm/data
+Index dir:      /leonardo_work/EUHPC_D32_102/dhm/indices
+Output dir:     /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router
+Datasets:       ['deep10m']
+Indexes:        ['suco']
+Thread counts:  [1, 2, 4, 8, 16, 32]   (CPUs in affinity mask: 32, OMP limit: 32)
+Recall targets: [0.9, 0.95]
+
+######################################################################
+# Thread scaling: DEEP10M
+######################################################################
+
+Loading deep10m...
+  deep10m: d=96 nb=10,000,000 nq=10,000 metric=L2 (raw Deep1B chunks)
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/deep10m/base_00 (fvecs, 27,397,020 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/deep10m/deep1B_queries.fvecs (fvecs)
+    train : /leonardo_work/EUHPC_D32_102/dhm/data/deep10m/learn_00
+    gt    : /leonardo_work/EUHPC_D32_102/dhm/data/deep10m/deep10M_groundtruth.ivecs
+  Loaded in 7.3s: xb=(10000000, 96), xq=(10000, 96), gt=(10000, 100)
+
+--- SuCo thread scaling (threads=[1, 2, 4, 8, 16, 32]) ---
+    loading /leonardo_work/EUHPC_D32_102/dhm/indices/deep10m_suco_ns8.idx
+    reusing stored recall_k10 curve (9 operating points)
+  suco threads=1 @recall≥0.9: qps=27 ms/q=36.6113 speedup=1.0 eff=1.0
+  suco threads=2 @recall≥0.9: qps=54 ms/q=18.4514 speedup=1.98 eff=0.99
+  suco threads=4 @recall≥0.9: qps=100 ms/q=9.9862 speedup=3.67 eff=0.92
+  suco threads=8 @recall≥0.9: qps=145 ms/q=6.8786 speedup=5.32 eff=0.67
+  suco threads=16 @recall≥0.9: qps=151 ms/q=6.6255 speedup=5.53 eff=0.35
+  suco threads=32 @recall≥0.9: qps=156 ms/q=6.3928 speedup=5.73 eff=0.18
+  suco threads=1 @recall≥0.95: qps=27 ms/q=37.1112 speedup=1.0 eff=1.0
+  suco threads=2 @recall≥0.95: qps=53 ms/q=18.8792 speedup=1.97 eff=0.98
+  suco threads=4 @recall≥0.95: qps=96 ms/q=10.4034 speedup=3.57 eff=0.89
+  suco threads=8 @recall≥0.95: qps=153 ms/q=6.5216 speedup=5.69 eff=0.71
+  suco threads=16 @recall≥0.95: qps=154 ms/q=6.4763 speedup=5.73 eff=0.36
+  suco threads=32 @recall≥0.95: qps=142 ms/q=7.0618 speedup=5.26 eff=0.16
+
+Results merged into /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router/results_deep10m.json
+
+############################################################
+# 2026-08-15 06:03:05  dataset: spacev10m
+############################################################
+Scaling self-test: flat-scan 1->32 threads = 3.02x  [PASS]
+Data dir:       /leonardo_work/EUHPC_D32_102/dhm/data
+Index dir:      /leonardo_work/EUHPC_D32_102/dhm/indices
+Output dir:     /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router
+Datasets:       ['spacev10m']
+Indexes:        ['suco']
+Thread counts:  [1, 2, 4, 8, 16, 32]   (CPUs in affinity mask: 32, OMP limit: 32)
+Recall targets: [0.9, 0.95]
+
+######################################################################
+# Thread scaling: SPACEV10M
+######################################################################
+
+Loading spacev10m...
+  spacev10m: d=100 nb=10,000,000 nq=29,316 metric=L2
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/spacev10m/spacev1b_base.i8bin.crop_nb_10000000 (i8bin, 10,000,000 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/spacev10m/query.i8bin (i8bin)
+    train : <sampled from base>
+    gt    : /leonardo_work/EUHPC_D32_102/dhm/data/spacev10m/msspacev-gt-10M
+  Loaded in 2.2s: xb=(10000000, 100), xq=(29316, 100), gt=(29316, 100)
+
+--- SuCo thread scaling (threads=[1, 2, 4, 8, 16, 32]) ---
+    loading /leonardo_work/EUHPC_D32_102/dhm/indices/spacev10m_suco_ns10.idx
+    reusing stored recall_k10 curve (9 operating points)
+  suco threads=1 @recall≥0.9: qps=28 ms/q=35.8401 speedup=1.0 eff=1.0
+  suco threads=2 @recall≥0.9: qps=50 ms/q=20.0321 speedup=1.79 eff=0.89
+  suco threads=4 @recall≥0.9: qps=94 ms/q=10.6945 speedup=3.35 eff=0.84
+  suco threads=8 @recall≥0.9: qps=141 ms/q=7.1172 speedup=5.04 eff=0.63
+  suco threads=16 @recall≥0.9: qps=162 ms/q=6.1868 speedup=5.79 eff=0.36
+  suco threads=32 @recall≥0.9: qps=146 ms/q=6.8640 speedup=5.22 eff=0.16
+  suco threads=1 @recall≥0.95: qps=23 ms/q=43.6079 speedup=1.0 eff=1.0
+  suco threads=2 @recall≥0.95: qps=48 ms/q=20.6392 speedup=2.11 eff=1.06
+  suco threads=4 @recall≥0.95: qps=83 ms/q=11.9983 speedup=3.63 eff=0.91
+  suco threads=8 @recall≥0.95: qps=143 ms/q=7.0173 speedup=6.21 eff=0.78
+  suco threads=16 @recall≥0.95: qps=162 ms/q=6.1639 speedup=7.07 eff=0.44
+  suco threads=32 @recall≥0.95: qps=146 ms/q=6.8500 speedup=6.37 eff=0.2
+
+Results merged into /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router/results_spacev10m.json
+
+=== thread-scaling run done 2026-08-15 10:31:58 ===
+Regenerate figures + tables with:
+  python benchs/plot_router_paper.py --results-dir benchs/results_router --out-dir benchs/figures_router

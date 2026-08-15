@@ -1,0 +1,242 @@
+Loading gcc/11.3.0
+  Loading requirement: gmp/6.2.1 mpfr/4.1.0 mpc/1.2.1
+--- CPU affinity ---
+SLURM_CPUS_PER_TASK = 32
+pid 2971090's current affinity list: 0-31
+sched_getaffinity: 32 CPUs
+--------------------
+data-dir: /leonardo_work/EUHPC_D32_102/dhm/data
+contents: deep10m, enron, gist1m, msong, msturing10m, openai1m, sift100M, spacev10m, uqv
+faiss   : /leonardo/home/userexternal/afilippa/miniconda3/envs/anns/lib/python3.12/site-packages/faiss/__init__.py
+          IndexSuCo / IndexSHG / IndexCSPG all present
+          OPQ-IVFPQ factory OK ('OPQ8_64,IVF64,PQ8x8')
+------------------------------------------------------------------------
+[ ok ] enron: d=1369 nb=94,987 nq=200 metric=L2
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/enron/enron_base.fvecs (fvecs, 94,987 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/enron/enron_query.fvecs (fvecs)
+    train : <sampled from base>
+    gt    : /leonardo_work/EUHPC_D32_102/dhm/data/enron/enron_groundtruth.ivecs
+       WARN: no learn file; training vectors sampled from the base
+[ ok ] msong: d=420 nb=992,272 nq=200 metric=L2
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/msong/msong_base.fvecs (fvecs, 992,272 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/msong/msong_query.fvecs (fvecs)
+    train : <sampled from base>
+    gt    : /leonardo_work/EUHPC_D32_102/dhm/data/msong/msong_groundtruth.ivecs
+       WARN: no learn file; training vectors sampled from the base
+[ ok ] uqv: d=256 nb=1,000,000 nq=10,000 metric=L2
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/uqv/uqv_base.fvecs (fvecs, 1,000,000 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/uqv/uqv_query.fvecs (fvecs)
+    train : <sampled from base>
+    gt    : /leonardo_work/EUHPC_D32_102/dhm/data/uqv/uqv_groundtruth.ivecs
+       WARN: no learn file; training vectors sampled from the base
+------------------------------------------------------------------------
+3/3 datasets resolved
+=== M6 baselines run start 2026-08-15 21:49:35 ===
+    datasets   : enron msong uqv
+    indexes    : opq_ivfpq_fp16
+    benchmarks : construction recall_k10 pareto time_at_recall
+
+############################################################
+# 2026-08-15 21:49:35  dataset: enron
+############################################################
+Log:        /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router/log_router_enron.txt
+Data dir:   /leonardo_work/EUHPC_D32_102/dhm/data
+Index dir:  /leonardo_work/EUHPC_D32_102/dhm/indices
+Output dir: /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router
+Datasets:   ['enron']
+Benchmarks: ['construction', 'recall_k10', 'pareto', 'time_at_recall']
+Indexes:    ['opq_ivfpq_fp16']
+N runs:     3
+
+######################################################################
+# Dataset: ENRON
+######################################################################
+
+Loading enron...
+  enron: d=1369 nb=94,987 nq=200 metric=L2
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/enron/enron_base.fvecs (fvecs, 94,987 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/enron/enron_query.fvecs (fvecs)
+    train : <sampled from base>
+    gt    : /leonardo_work/EUHPC_D32_102/dhm/data/enron/enron_groundtruth.ivecs
+  enron_groundtruth.ivecs has only 20 neighbours per query but k=100 was requested; computing a deeper groundtruth
+  groundtruth from cache: /leonardo_work/EUHPC_D32_102/dhm/indices/gt_enron_k100_2762d77dc557.npy
+  (computed groundtruth agrees with the shipped 20-NN file on 100.0% of top-1)
+  Loaded in 1.6s: xb=(94987, 1369), xq=(200, 1369), gt=(200, 100)
+
+--- Building OPQ-IVFPQ+FP16 ---
+  OPQ-IVFPQ+FP16 [OPQ64_1344,IVF1232,PQ64x8,Refine(SQfp16)]: build=106.34s
+  Saved to /leonardo_work/EUHPC_D32_102/dhm/indices/enron_opq_ivfpq_fp16.idx
+
+--- OPQ-IVFPQ+FP16 recall@10 curve (n_runs=3) ---
+  OPQ-IVFPQ+FP16 (1): recall@10=0.4015, ms/q=0.0316±0.0008, qps=31688±851
+  OPQ-IVFPQ+FP16 (2): recall@10=0.5490, ms/q=0.0314±0.0010, qps=31854±993
+  OPQ-IVFPQ+FP16 (4): recall@10=0.6795, ms/q=0.0318±0.0015, qps=31446±1527
+  OPQ-IVFPQ+FP16 (8): recall@10=0.7940, ms/q=0.0360±0.0047, qps=27750±3601
+  OPQ-IVFPQ+FP16 (16): recall@10=0.8795, ms/q=0.0390±0.0026, qps=25666±1698
+  OPQ-IVFPQ+FP16 (32): recall@10=0.9315, ms/q=0.0462±0.0010, qps=21665±475
+  OPQ-IVFPQ+FP16 (64): recall@10=0.9695, ms/q=0.0601±0.0044, qps=16652±1221
+  OPQ-IVFPQ+FP16 (128): recall@10=0.9795, ms/q=0.0882±0.0029, qps=11339±367
+  OPQ-IVFPQ+FP16 (256): recall@10=0.9830, ms/q=0.1480±0.0023, qps=6755±105
+  OPQ-IVFPQ+FP16 (512): recall@10=0.9830, ms/q=0.2545±0.0022, qps=3929±34
+  OPQ-IVFPQ+FP16 (1024): recall@10=0.9830, ms/q=0.4940±0.0046, qps=2024±19
+
+======================================================================
+BENCHMARK: construction - enron
+======================================================================
+  SHG: build=13.46s, peak_rss_delta=588.38MB, serialized=1029.08MB
+  CSPG: build=11.35s, peak_rss_delta=0.0MB, serialized=535.21MB
+  HNSW32: build=8.35s, peak_rss_delta=0.0MB, serialized=520.71MB
+  HNSW48: build=12.75s, peak_rss_delta=0.0MB, serialized=532.3MB
+  OPQ-IVFPQ: build=107.29s, peak_rss_delta=0.0MB, serialized=21.18MB
+  IVFFlat: build=2.19s, peak_rss_delta=233.68MB, serialized=503.22MB
+  OPQ-IVFPQ+SQ8: build=105.24s, peak_rss_delta=1348.31MB, serialized=145.2MB
+  OPQ-IVFPQ+FP16: build=106.34s, peak_rss_delta=5467.01MB, serialized=269.21MB
+
+======================================================================
+BENCHMARK: pareto - enron
+======================================================================
+
+======================================================================
+BENCHMARK: time_at_recall - enron
+======================================================================
+
+Results saved to /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router/results_enron.json
+
+############################################################
+# 2026-08-15 21:51:25  dataset: msong
+############################################################
+Log:        /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router/log_router_msong.txt
+Data dir:   /leonardo_work/EUHPC_D32_102/dhm/data
+Index dir:  /leonardo_work/EUHPC_D32_102/dhm/indices
+Output dir: /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router
+Datasets:   ['msong']
+Benchmarks: ['construction', 'recall_k10', 'pareto', 'time_at_recall']
+Indexes:    ['opq_ivfpq_fp16']
+N runs:     3
+
+######################################################################
+# Dataset: MSONG
+######################################################################
+
+Loading msong...
+  msong: d=420 nb=992,272 nq=200 metric=L2
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/msong/msong_base.fvecs (fvecs, 992,272 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/msong/msong_query.fvecs (fvecs)
+    train : <sampled from base>
+    gt    : /leonardo_work/EUHPC_D32_102/dhm/data/msong/msong_groundtruth.ivecs
+  msong_groundtruth.ivecs has only 20 neighbours per query but k=100 was requested; computing a deeper groundtruth
+  groundtruth from cache: /leonardo_work/EUHPC_D32_102/dhm/indices/gt_msong_k100_53667c6aae11.npy
+  (computed groundtruth agrees with the shipped 20-NN file on 100.0% of top-1)
+  Loaded in 3.7s: xb=(992272, 420), xq=(200, 420), gt=(200, 100)
+
+--- Building OPQ-IVFPQ+FP16 ---
+  OPQ-IVFPQ+FP16 [OPQ64_448,IVF3984,PQ64x8,Refine(SQfp16)]: build=73.08s
+  Saved to /leonardo_work/EUHPC_D32_102/dhm/indices/msong_opq_ivfpq_fp16.idx
+
+--- OPQ-IVFPQ+FP16 recall@10 curve (n_runs=3) ---
+  OPQ-IVFPQ+FP16 (1): recall@10=0.3565, ms/q=0.0326±0.0005, qps=30653±515
+  OPQ-IVFPQ+FP16 (2): recall@10=0.5265, ms/q=0.0333±0.0007, qps=29996±654
+  OPQ-IVFPQ+FP16 (4): recall@10=0.7075, ms/q=0.0349±0.0006, qps=28680±466
+  OPQ-IVFPQ+FP16 (8): recall@10=0.8630, ms/q=0.0408±0.0012, qps=24485±741
+  OPQ-IVFPQ+FP16 (16): recall@10=0.9555, ms/q=0.0498±0.0015, qps=20100±601
+  OPQ-IVFPQ+FP16 (32): recall@10=0.9840, ms/q=0.0663±0.0015, qps=15091±337
+  OPQ-IVFPQ+FP16 (64): recall@10=0.9915, ms/q=0.0985±0.0009, qps=10155±97
+  OPQ-IVFPQ+FP16 (128): recall@10=0.9925, ms/q=0.1586±0.0007, qps=6304±27
+  OPQ-IVFPQ+FP16 (256): recall@10=0.9925, ms/q=0.2834±0.0012, qps=3528±15
+  OPQ-IVFPQ+FP16 (512): recall@10=0.9925, ms/q=0.5313±0.0015, qps=1882±5
+  OPQ-IVFPQ+FP16 (1024): recall@10=0.9925, ms/q=1.0018±0.0024, qps=998±2
+
+======================================================================
+BENCHMARK: construction - msong
+======================================================================
+  SuCo: build=2.16s, peak_rss_delta=206.88MB, serialized=1643.0MB
+  SHG: build=75.73s, peak_rss_delta=0.0MB, serialized=3565.75MB
+  CSPG: build=80.92s, peak_rss_delta=0.0MB, serialized=1998.79MB
+  HNSW32: build=56.87s, peak_rss_delta=0.0MB, serialized=1847.31MB
+  HNSW48: build=71.08s, peak_rss_delta=0.0MB, serialized=1968.39MB
+  OPQ-IVFPQ: build=71.92s, peak_rss_delta=0.0MB, serialized=76.13MB
+  IVFFlat: build=20.18s, peak_rss_delta=582.24MB, serialized=1603.78MB
+  OPQ-IVFPQ+SQ8: build=72.17s, peak_rss_delta=0.0MB, serialized=473.58MB
+  OPQ-IVFPQ+FP16: build=73.08s, peak_rss_delta=668.09MB, serialized=871.02MB
+
+======================================================================
+BENCHMARK: pareto - msong
+======================================================================
+
+======================================================================
+BENCHMARK: time_at_recall - msong
+======================================================================
+
+Results saved to /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router/results_msong.json
+
+############################################################
+# 2026-08-15 21:52:45  dataset: uqv
+############################################################
+Log:        /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router/log_router_uqv.txt
+Data dir:   /leonardo_work/EUHPC_D32_102/dhm/data
+Index dir:  /leonardo_work/EUHPC_D32_102/dhm/indices
+Output dir: /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router
+Datasets:   ['uqv']
+Benchmarks: ['construction', 'recall_k10', 'pareto', 'time_at_recall']
+Indexes:    ['opq_ivfpq_fp16']
+N runs:     3
+
+######################################################################
+# Dataset: UQV
+######################################################################
+
+Loading uqv...
+  uqv: d=256 nb=1,000,000 nq=10,000 metric=L2
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/uqv/uqv_base.fvecs (fvecs, 1,000,000 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/uqv/uqv_query.fvecs (fvecs)
+    train : <sampled from base>
+    gt    : /leonardo_work/EUHPC_D32_102/dhm/data/uqv/uqv_groundtruth.ivecs
+  Loaded in 3.2s: xb=(1000000, 256), xq=(10000, 256), gt=(10000, 100)
+
+--- Building OPQ-IVFPQ+FP16 ---
+  OPQ-IVFPQ+FP16 [OPQ64_256,IVF4000,PQ64x8,Refine(SQfp16)]: build=50.90s
+  Saved to /leonardo_work/EUHPC_D32_102/dhm/indices/uqv_opq_ivfpq_fp16.idx
+
+--- OPQ-IVFPQ+FP16 recall@10 curve (n_runs=3) ---
+  OPQ-IVFPQ+FP16 (1): recall@10=0.5211, ms/q=0.0027±0.0001, qps=368253±8784
+  OPQ-IVFPQ+FP16 (2): recall@10=0.6318, ms/q=0.0033±0.0001, qps=300733±6672
+  OPQ-IVFPQ+FP16 (4): recall@10=0.7370, ms/q=0.0047±0.0001, qps=212323±5405
+  OPQ-IVFPQ+FP16 (8): recall@10=0.8158, ms/q=0.0075±0.0002, qps=132747±3455
+  OPQ-IVFPQ+FP16 (16): recall@10=0.8597, ms/q=0.0136±0.0005, qps=73616±2896
+  OPQ-IVFPQ+FP16 (32): recall@10=0.8753, ms/q=0.0254±0.0000, qps=39371±62
+  OPQ-IVFPQ+FP16 (64): recall@10=0.8787, ms/q=0.0518±0.0002, qps=19323±90
+  OPQ-IVFPQ+FP16 (128): recall@10=0.8790, ms/q=0.1026±0.0000, qps=9744±2
+  OPQ-IVFPQ+FP16 (256): recall@10=0.8790, ms/q=0.2051±0.0002, qps=4875±4
+  OPQ-IVFPQ+FP16 (512): recall@10=0.8790, ms/q=0.4147±0.0006, qps=2411±3
+  OPQ-IVFPQ+FP16 (1024): recall@10=0.8790, ms/q=0.8261±0.0022, qps=1210±3
+
+======================================================================
+BENCHMARK: construction - uqv
+======================================================================
+  SuCo: build=1.6s, peak_rss_delta=180.83MB, serialized=1037.8MB
+  SHG: build=38.49s, peak_rss_delta=0.0MB, serialized=2327.04MB
+  CSPG: build=42.65s, peak_rss_delta=0.0MB, serialized=1388.74MB
+  HNSW32: build=29.98s, peak_rss_delta=0.0MB, serialized=1236.09MB
+  HNSW48: build=35.57s, peak_rss_delta=0.0MB, serialized=1358.11MB
+  OPQ-IVFPQ: build=48.98s, peak_rss_delta=0.0MB, serialized=73.1MB
+  IVFFlat: build=17.15s, peak_rss_delta=370.76MB, serialized=988.13MB
+  OPQ-IVFPQ+SQ8: build=49.98s, peak_rss_delta=0.0MB, serialized=317.24MB
+  OPQ-IVFPQ+FP16: build=50.9s, peak_rss_delta=531.16MB, serialized=561.38MB
+
+======================================================================
+BENCHMARK: pareto - uqv
+======================================================================
+
+======================================================================
+BENCHMARK: time_at_recall - uqv
+======================================================================
+
+Results saved to /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router/results_uqv.json
+
+=== M6 baselines run done 2026-08-15 21:54:31 ===
+Then, with no cluster time needed:
+  python benchs/analyze_ci.py --results-dir benchs/results_router \
+                             --out-dir benchs/figures_router/tables --paired-baseline
+  python benchs/plot_paper_figures.py --out-dir benchs/figures_paper
+  python benchs/plot_router_paper.py --results-dir benchs/results_router \
+                                    --out-dir benchs/figures_router

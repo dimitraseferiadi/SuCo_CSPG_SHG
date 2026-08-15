@@ -1,41 +1,10 @@
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
 Log:        /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router/log_router_enron.txt
 Data dir:   /leonardo_work/EUHPC_D32_102/dhm/data
 Index dir:  /leonardo_work/EUHPC_D32_102/dhm/indices
 Output dir: /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router
 Datasets:   ['enron']
-Benchmarks: ['construction', 'features', 'recall_k1', 'recall_k10', 'recall_k20', 'recall_k50', 'recall_k100', 'robustness', 'unseen_robustness', 'hard_robustness', 'latency_tail', 'cold_warm', 'mre', 'pareto', 'time_at_recall']
-Indexes:    ['ivfflat', 'opq_ivfpq_sq8']
+Benchmarks: ['construction', 'recall_k10', 'pareto', 'time_at_recall']
+Indexes:    ['opq_ivfpq_fp16']
 N runs:     3
 
 ######################################################################
@@ -51,213 +20,24 @@ Loading enron...
   enron_groundtruth.ivecs has only 20 neighbours per query but k=100 was requested; computing a deeper groundtruth
   groundtruth from cache: /leonardo_work/EUHPC_D32_102/dhm/indices/gt_enron_k100_2762d77dc557.npy
   (computed groundtruth agrees with the shipped 20-NN file on 100.0% of top-1)
-  Loaded in 2.0s: xb=(94987, 1369), xq=(200, 1369), gt=(200, 100)
+  Loaded in 1.6s: xb=(94987, 1369), xq=(200, 1369), gt=(200, 100)
 
-======================================================================
-BENCHMARK: features - enron
-======================================================================
-  {'n': 94987, 'd': 1369, 'nq': 200, 'lid_mle': 26.911365509033203, 'pdist_mean': 384.01312255859375, 'pdist_std': 895.726806640625, 'kmeans_inertia_ratio_16': 0.7839132165592744}
+--- Building OPQ-IVFPQ+FP16 ---
+  OPQ-IVFPQ+FP16 [OPQ64_1344,IVF1232,PQ64x8,Refine(SQfp16)]: build=106.34s
+  Saved to /leonardo_work/EUHPC_D32_102/dhm/indices/enron_opq_ivfpq_fp16.idx
 
---- Building IVFFlat ---
-  IVFFlat [IVF1232,Flat]: build=2.19s
-  Saved to /leonardo_work/EUHPC_D32_102/dhm/indices/enron_ivfflat.idx
-
---- IVFFlat recall@1 curve (n_runs=3) ---
-  IVFFlat (1): recall@1=0.4750, ms/q=0.0226±0.0007, qps=44310±1295
-  IVFFlat (2): recall@1=0.6650, ms/q=0.0269±0.0005, qps=37156±694
-  IVFFlat (4): recall@1=0.7650, ms/q=0.0359±0.0002, qps=27867±123
-  IVFFlat (8): recall@1=0.8500, ms/q=0.0533±0.0004, qps=18777±133
-  IVFFlat (16): recall@1=0.9100, ms/q=0.0867±0.0005, qps=11539±64
-  IVFFlat (32): recall@1=0.9450, ms/q=0.1498±0.0003, qps=6676±15
-  IVFFlat (64): recall@1=0.9750, ms/q=0.2712±0.0003, qps=3687±5
-  IVFFlat (128): recall@1=0.9950, ms/q=0.4880±0.0020, qps=2049±8
-  IVFFlat (256): recall@1=1.0000, ms/q=0.8580±0.0037, qps=1166±5
-  IVFFlat (512): recall@1=1.0000, ms/q=1.4127±0.0195, qps=708±10
-  IVFFlat (1024): recall@1=1.0000, ms/q=2.3839±0.0260, qps=419±5
-
---- IVFFlat recall@10 curve (n_runs=3) ---
-  IVFFlat (1): recall@10=0.4060, ms/q=0.0227±0.0009, qps=44100±1835
-  IVFFlat (2): recall@10=0.5485, ms/q=0.0286±0.0016, qps=34938±1935
-  IVFFlat (4): recall@10=0.6885, ms/q=0.0377±0.0003, qps=26558±203
-  IVFFlat (8): recall@10=0.8060, ms/q=0.0552±0.0008, qps=18128±267
-  IVFFlat (16): recall@10=0.8975, ms/q=0.0889±0.0004, qps=11247±51
-  IVFFlat (32): recall@10=0.9515, ms/q=0.1549±0.0009, qps=6456±39
-  IVFFlat (64): recall@10=0.9845, ms/q=0.2777±0.0012, qps=3601±15
-  IVFFlat (128): recall@10=0.9955, ms/q=0.4967±0.0028, qps=2013±11
-  IVFFlat (256): recall@10=0.9990, ms/q=0.8763±0.0043, qps=1141±6
-  IVFFlat (512): recall@10=1.0000, ms/q=1.4252±0.0052, qps=702±3
-  IVFFlat (1024): recall@10=1.0000, ms/q=2.3903±0.0151, qps=418±3
-
---- IVFFlat recall@20 curve (n_runs=3) ---
-  IVFFlat (1): recall@20=0.3683, ms/q=0.0221±0.0003, qps=45230±531
-  IVFFlat (2): recall@20=0.5118, ms/q=0.0285±0.0017, qps=35085±2106
-  IVFFlat (4): recall@20=0.6550, ms/q=0.0370±0.0002, qps=27047±155
-  IVFFlat (8): recall@20=0.7837, ms/q=0.0551±0.0005, qps=18153±168
-  IVFFlat (16): recall@20=0.8855, ms/q=0.0893±0.0002, qps=11196±28
-  IVFFlat (32): recall@20=0.9490, ms/q=0.1550±0.0017, qps=6450±72
-  IVFFlat (64): recall@20=0.9852, ms/q=0.2774±0.0004, qps=3606±5
-  IVFFlat (128): recall@20=0.9960, ms/q=0.5010±0.0056, qps=1996±22
-  IVFFlat (256): recall@20=0.9992, ms/q=0.8738±0.0009, qps=1144±1
-  IVFFlat (512): recall@20=1.0000, ms/q=1.4280±0.0048, qps=700±2
-  IVFFlat (1024): recall@20=1.0000, ms/q=2.4012±0.0111, qps=416±2
-
---- IVFFlat recall@50 curve (n_runs=3) ---
-  IVFFlat (1): recall@50=0.2953, ms/q=0.0224±0.0003, qps=44735±669
-  IVFFlat (2): recall@50=0.4427, ms/q=0.0282±0.0020, qps=35441±2454
-  IVFFlat (4): recall@50=0.5912, ms/q=0.0373±0.0001, qps=26786±44
-  IVFFlat (8): recall@50=0.7371, ms/q=0.0557±0.0011, qps=17959±342
-  IVFFlat (16): recall@50=0.8494, ms/q=0.0892±0.0010, qps=11215±129
-  IVFFlat (32): recall@50=0.9321, ms/q=0.1545±0.0012, qps=6474±48
-  IVFFlat (64): recall@50=0.9815, ms/q=0.2782±0.0016, qps=3595±21
-  IVFFlat (128): recall@50=0.9963, ms/q=0.4994±0.0013, qps=2002±5
-  IVFFlat (256): recall@50=0.9995, ms/q=0.8763±0.0009, qps=1141±1
-  IVFFlat (512): recall@50=1.0000, ms/q=1.4309±0.0053, qps=699±3
-  IVFFlat (1024): recall@50=1.0000, ms/q=2.4021±0.0163, qps=416±3
-
---- IVFFlat recall@100 curve (n_runs=3) ---
-  IVFFlat (1): recall@100=0.2349, ms/q=0.0226±0.0004, qps=44153±693
-  IVFFlat (2): recall@100=0.3802, ms/q=0.0269±0.0004, qps=37228±512
-  IVFFlat (4): recall@100=0.5358, ms/q=0.0369±0.0007, qps=27078±489
-  IVFFlat (8): recall@100=0.6929, ms/q=0.0555±0.0011, qps=18005±341
-  IVFFlat (16): recall@100=0.8198, ms/q=0.0891±0.0008, qps=11222±106
-  IVFFlat (32): recall@100=0.9143, ms/q=0.1551±0.0014, qps=6449±57
-  IVFFlat (64): recall@100=0.9745, ms/q=0.2786±0.0013, qps=3589±17
-  IVFFlat (128): recall@100=0.9941, ms/q=0.5008±0.0019, qps=1997±7
-  IVFFlat (256): recall@100=0.9990, ms/q=0.8778±0.0026, qps=1139±3
-  IVFFlat (512): recall@100=0.9998, ms/q=1.4360±0.0031, qps=696±1
-  IVFFlat (1024): recall@100=1.0000, ms/q=2.3966±0.0238, qps=417±4
-
---- IVFFlat robustness (k=20) ---
-  IVFFlat: {'k': 20, 'param': 64, 'param_name': 'nprobe', 'mean_recall': 0.9853, 'median_recall': 1.0, 'min_recall': 0.65, 'max_recall': 1.0, 'q25_recall': 1.0, 'q75_recall': 1.0, 'ms_per_query': 0.2755}
-
---- IVFFlat hard-query robustness ---
-  IVFFlat: easy={'n': 20, 'mean_recall': 0.9975, 'median_recall': 1.0, 'min_recall': 0.95, 'p10_recall': 1.0, 'p90_recall': 1.0} hard={'n': 20, 'mean_recall': 0.9875, 'median_recall': 1.0, 'min_recall': 0.9, 'p10_recall': 0.945, 'p90_recall': 1.0}
-
---- IVFFlat latency tail ---
-  ivfflat latency @recall≥0.9: p50=1.781 p95=2.657 p99=2.930 p999=2.967 ms
-  ivfflat latency @recall≥0.95: p50=3.263 p95=4.780 p99=5.074 p999=5.109 ms
-  ivfflat latency @recall≥0.99: p50=6.045 p95=8.213 p99=8.424 p999=8.451 ms
-
---- IVFFlat cold/warm cache ---
-  IVFFlat: {'param': 64, 'achieved_recall': 0.98525, 'target_recall': 0.95, 'cold_mode': 'page_cache', 'page_evicted': True, 'system_cache_flushed': False, 'evict_buffer_mb': 2048, 'cold_first_ms': 1992.271931, 'cold_mean_ms': 655.520925, 'cold_p95_ms': 1370.761977, 'warm_mean_ms': 25.13122, 'warm_p95_ms': 94.481131, 'cold_warm_ratio': 26.084, 'n_cold': 30, 'n_warm': 200}
-
---- IVFFlat MRE ---
-  ivfflat MRE @recall≥0.9: mean=1.0036 median=1.0000 (approx-ratio^2=1.0085)
-  ivfflat MRE @recall≥0.95: mean=1.0010 median=1.0000 (approx-ratio^2=1.0021)
-  ivfflat MRE @recall≥0.99: mean=1.0004 median=1.0000 (approx-ratio^2=1.0008)
-
---- Building OPQ-IVFPQ+SQ8 ---
-  OPQ-IVFPQ+SQ8 [OPQ64_1344,IVF1232,PQ64x8,Refine(SQ8)]: build=105.24s
-  Saved to /leonardo_work/EUHPC_D32_102/dhm/indices/enron_opq_ivfpq_sq8.idx
-
---- OPQ-IVFPQ+SQ8 recall@1 curve (n_runs=3) ---
-  OPQ-IVFPQ+SQ8 (1): recall@1=0.2850, ms/q=0.0264±0.0012, qps=37881±1711
-  OPQ-IVFPQ+SQ8 (2): recall@1=0.3900, ms/q=0.0270±0.0004, qps=37042±599
-  OPQ-IVFPQ+SQ8 (4): recall@1=0.4300, ms/q=0.0281±0.0026, qps=35638±3273
-  OPQ-IVFPQ+SQ8 (8): recall@1=0.4900, ms/q=0.0302±0.0029, qps=33147±3185
-  OPQ-IVFPQ+SQ8 (16): recall@1=0.5400, ms/q=0.0349±0.0035, qps=28631±2841
-  OPQ-IVFPQ+SQ8 (32): recall@1=0.5650, ms/q=0.0415±0.0020, qps=24090±1153
-  OPQ-IVFPQ+SQ8 (64): recall@1=0.5850, ms/q=0.0546±0.0023, qps=18305±772
-  OPQ-IVFPQ+SQ8 (128): recall@1=0.5850, ms/q=0.0799±0.0009, qps=12509±138sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-sh: /proc/sys/vm/drop_caches: Permission denied
-
-  OPQ-IVFPQ+SQ8 (256): recall@1=0.5850, ms/q=0.1362±0.0068, qps=7344±367
-  OPQ-IVFPQ+SQ8 (512): recall@1=0.5850, ms/q=0.2324±0.0011, qps=4303±21
-  OPQ-IVFPQ+SQ8 (1024): recall@1=0.5850, ms/q=0.4485±0.0032, qps=2230±16
-
---- OPQ-IVFPQ+SQ8 recall@10 curve (n_runs=3) ---
-  OPQ-IVFPQ+SQ8 (1): recall@10=0.2790, ms/q=0.0284±0.0007, qps=35225±818
-  OPQ-IVFPQ+SQ8 (2): recall@10=0.3475, ms/q=0.0305±0.0003, qps=32781±338
-  OPQ-IVFPQ+SQ8 (4): recall@10=0.3930, ms/q=0.0307±0.0011, qps=32622±1198
-  OPQ-IVFPQ+SQ8 (8): recall@10=0.4275, ms/q=0.0341±0.0015, qps=29328±1280
-  OPQ-IVFPQ+SQ8 (16): recall@10=0.4490, ms/q=0.0384±0.0038, qps=26018±2569
-  OPQ-IVFPQ+SQ8 (32): recall@10=0.4705, ms/q=0.0463±0.0006, qps=21617±260
-  OPQ-IVFPQ+SQ8 (64): recall@10=0.4845, ms/q=0.0574±0.0007, qps=17415±224
-  OPQ-IVFPQ+SQ8 (128): recall@10=0.4885, ms/q=0.0835±0.0023, qps=11972±331
-  OPQ-IVFPQ+SQ8 (256): recall@10=0.4915, ms/q=0.1355±0.0020, qps=7378±111
-  OPQ-IVFPQ+SQ8 (512): recall@10=0.4915, ms/q=0.2494±0.0134, qps=4009±216
-  OPQ-IVFPQ+SQ8 (1024): recall@10=0.4915, ms/q=0.4836±0.0074, qps=2068±32
-
---- OPQ-IVFPQ+SQ8 recall@20 curve (n_runs=3) ---
-  OPQ-IVFPQ+SQ8 (1): recall@20=0.2742, ms/q=0.0335±0.0011, qps=29806±1014
-  OPQ-IVFPQ+SQ8 (2): recall@20=0.3417, ms/q=0.0358±0.0003, qps=27944±250
-  OPQ-IVFPQ+SQ8 (4): recall@20=0.3867, ms/q=0.0368±0.0015, qps=27207±1116
-  OPQ-IVFPQ+SQ8 (8): recall@20=0.4328, ms/q=0.0391±0.0009, qps=25563±561
-  OPQ-IVFPQ+SQ8 (16): recall@20=0.4560, ms/q=0.0425±0.0023, qps=23548±1264
-  OPQ-IVFPQ+SQ8 (32): recall@20=0.4788, ms/q=0.0495±0.0024, qps=20187±986
-  OPQ-IVFPQ+SQ8 (64): recall@20=0.4915, ms/q=0.0629±0.0025, qps=15897±644
-  OPQ-IVFPQ+SQ8 (128): recall@20=0.4928, ms/q=0.0904±0.0033, qps=11058±407
-  OPQ-IVFPQ+SQ8 (256): recall@20=0.4940, ms/q=0.1464±0.0040, qps=6830±187
-  OPQ-IVFPQ+SQ8 (512): recall@20=0.4940, ms/q=0.2565±0.0046, qps=3899±70
-  OPQ-IVFPQ+SQ8 (1024): recall@20=0.4940, ms/q=0.4841±0.0022, qps=2066±9
-
---- OPQ-IVFPQ+SQ8 recall@50 curve (n_runs=3) ---
-  OPQ-IVFPQ+SQ8 (1): recall@50=0.2450, ms/q=0.0406±0.0021, qps=24607±1250
-  OPQ-IVFPQ+SQ8 (2): recall@50=0.3287, ms/q=0.0449±0.0025, qps=22285±1242
-  OPQ-IVFPQ+SQ8 (4): recall@50=0.3778, ms/q=0.0483±0.0027, qps=20725±1173
-  OPQ-IVFPQ+SQ8 (8): recall@50=0.4167, ms/q=0.0492±0.0020, qps=20321±835
-  OPQ-IVFPQ+SQ8 (16): recall@50=0.4517, ms/q=0.0530±0.0023, qps=18877±829
-  OPQ-IVFPQ+SQ8 (32): recall@50=0.4779, ms/q=0.0603±0.0021, qps=16572±584
-  OPQ-IVFPQ+SQ8 (64): recall@50=0.4926, ms/q=0.0744±0.0022, qps=13448±397
-  OPQ-IVFPQ+SQ8 (128): recall@50=0.4964, ms/q=0.1013±0.0023, qps=9872±224
-  OPQ-IVFPQ+SQ8 (256): recall@50=0.4973, ms/q=0.1567±0.0027, qps=6382±109
-  OPQ-IVFPQ+SQ8 (512): recall@50=0.4973, ms/q=0.2713±0.0036, qps=3686±49
-  OPQ-IVFPQ+SQ8 (1024): recall@50=0.4973, ms/q=0.4935±0.0025, qps=2026±10
-
---- OPQ-IVFPQ+SQ8 recall@100 curve (n_runs=3) ---
-  OPQ-IVFPQ+SQ8 (1): recall@100=0.2132, ms/q=0.0446±0.0015, qps=22442±765
-  OPQ-IVFPQ+SQ8 (2): recall@100=0.3146, ms/q=0.0559±0.0020, qps=17903±634
-  OPQ-IVFPQ+SQ8 (4): recall@100=0.3768, ms/q=0.0629±0.0014, qps=15886±354
-  OPQ-IVFPQ+SQ8 (8): recall@100=0.4174, ms/q=0.0658±0.0039, qps=15205±901
-  OPQ-IVFPQ+SQ8 (16): recall@100=0.4492, ms/q=0.0691±0.0039, qps=14481±827
-  OPQ-IVFPQ+SQ8 (32): recall@100=0.4707, ms/q=0.0777±0.0025, qps=12874±417
-  OPQ-IVFPQ+SQ8 (64): recall@100=0.4865, ms/q=0.0904±0.0039, qps=11063±474
-  OPQ-IVFPQ+SQ8 (128): recall@100=0.4918, ms/q=0.1177±0.0041, qps=8497±299
-  OPQ-IVFPQ+SQ8 (256): recall@100=0.4935, ms/q=0.1741±0.0052, qps=5743±172
-  OPQ-IVFPQ+SQ8 (512): recall@100=0.4938, ms/q=0.2840±0.0062, qps=3521±77
-  OPQ-IVFPQ+SQ8 (1024): recall@100=0.4938, ms/q=0.5071±0.0115, qps=1972±45
-
---- OPQ-IVFPQ+SQ8 robustness (k=20) ---
-  OPQ-IVFPQ+SQ8: {'k': 20, 'param': 64, 'param_name': 'nprobe', 'mean_recall': 0.4915, 'median_recall': 0.45, 'min_recall': 0.15, 'max_recall': 1.0, 'q25_recall': 0.35, 'q75_recall': 0.6, 'ms_per_query': 0.0645}
-
---- OPQ-IVFPQ+SQ8 hard-query robustness ---
-  OPQ-IVFPQ+SQ8: easy={'n': 20, 'mean_recall': 0.43, 'median_recall': 0.35, 'min_recall': 0.2, 'p10_recall': 0.25, 'p90_recall': 0.715} hard={'n': 20, 'mean_recall': 0.7525, 'median_recall': 0.8, 'min_recall': 0.45, 'p10_recall': 0.545, 'p90_recall': 0.9}
-
---- OPQ-IVFPQ+SQ8 latency tail ---
-
---- OPQ-IVFPQ+SQ8 cold/warm cache ---
-  OPQ-IVFPQ+SQ8: {'param': 1024, 'achieved_recall': 0.494, 'target_recall': 0.95, 'cold_mode': 'page_cache', 'page_evicted': True, 'system_cache_flushed': False, 'evict_buffer_mb': 2048, 'cold_first_ms': 215.846728, 'cold_mean_ms': 19.521996, 'cold_p95_ms': 29.812373, 'warm_mean_ms': 10.317139, 'warm_p95_ms': 10.408197, 'cold_warm_ratio': 1.892, 'n_cold': 30, 'n_warm': 200}
-
---- OPQ-IVFPQ+SQ8 MRE ---
+--- OPQ-IVFPQ+FP16 recall@10 curve (n_runs=3) ---
+  OPQ-IVFPQ+FP16 (1): recall@10=0.4015, ms/q=0.0316±0.0008, qps=31688±851
+  OPQ-IVFPQ+FP16 (2): recall@10=0.5490, ms/q=0.0314±0.0010, qps=31854±993
+  OPQ-IVFPQ+FP16 (4): recall@10=0.6795, ms/q=0.0318±0.0015, qps=31446±1527
+  OPQ-IVFPQ+FP16 (8): recall@10=0.7940, ms/q=0.0360±0.0047, qps=27750±3601
+  OPQ-IVFPQ+FP16 (16): recall@10=0.8795, ms/q=0.0390±0.0026, qps=25666±1698
+  OPQ-IVFPQ+FP16 (32): recall@10=0.9315, ms/q=0.0462±0.0010, qps=21665±475
+  OPQ-IVFPQ+FP16 (64): recall@10=0.9695, ms/q=0.0601±0.0044, qps=16652±1221
+  OPQ-IVFPQ+FP16 (128): recall@10=0.9795, ms/q=0.0882±0.0029, qps=11339±367
+  OPQ-IVFPQ+FP16 (256): recall@10=0.9830, ms/q=0.1480±0.0023, qps=6755±105
+  OPQ-IVFPQ+FP16 (512): recall@10=0.9830, ms/q=0.2545±0.0022, qps=3929±34
+  OPQ-IVFPQ+FP16 (1024): recall@10=0.9830, ms/q=0.4940±0.0046, qps=2024±19
 
 ======================================================================
 BENCHMARK: construction - enron
@@ -269,19 +49,7 @@ BENCHMARK: construction - enron
   OPQ-IVFPQ: build=107.29s, peak_rss_delta=0.0MB, serialized=21.18MB
   IVFFlat: build=2.19s, peak_rss_delta=233.68MB, serialized=503.22MB
   OPQ-IVFPQ+SQ8: build=105.24s, peak_rss_delta=1348.31MB, serialized=145.2MB
-
-======================================================================
-BENCHMARK: unseen_robustness - enron
-======================================================================
-
-  Unseen split: keep=90238, query/held=4749
-  Computing brute-force GT for unseen queries (k=100)...
-
-  --- Rebuilding IVFFlat on kept set ---
-  IVFFlat [IVF1200,Flat]: build=2.01s
-
-  --- Rebuilding OPQ-IVFPQ+SQ8 on kept set ---
-  OPQ-IVFPQ+SQ8 [OPQ64_1344,IVF1200,PQ64x8,Refine(SQ8)]: build=103.87s
+  OPQ-IVFPQ+FP16: build=106.34s, peak_rss_delta=5467.01MB, serialized=269.21MB
 
 ======================================================================
 BENCHMARK: pareto - enron

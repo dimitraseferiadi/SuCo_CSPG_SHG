@@ -1,3 +1,38 @@
+Loading gcc/11.3.0
+  Loading requirement: gmp/6.2.1 mpfr/4.1.0 mpc/1.2.1
+--- CPU affinity ---
+SLURM_CPUS_PER_TASK = 32
+SLURM_JOB_CPUS_PER_NODE = 32
+pid 280371's current affinity list: 0-31
+sched_getaffinity: 32 CPUs -> [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+policy: default
+preferred node: current
+physcpubind: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 
+cpubind: 0 1 
+nodebind: 0 1 
+--------------------
+data-dir: /leonardo_work/EUHPC_D32_102/dhm/data
+contents: deep10m, enron, gist1m, msong, msturing10m, openai1m, sift100M, spacev10m, uqv
+faiss   : /leonardo/home/userexternal/afilippa/miniconda3/envs/anns/lib/python3.12/site-packages/faiss/__init__.py
+          IndexSuCo / IndexSHG / IndexCSPG all present
+          OPQ-IVFPQ factory OK ('OPQ8_64,IVF64,PQ8x8')
+------------------------------------------------------------------------
+[ ok ] sift1m: d=128 nb=1,000,000 nq=10,000 metric=L2
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/sift100M/bigann_base_100M.bvecs (bvecs, 100,000,000 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/sift100M/bigann_query.bvecs (bvecs)
+    train : /leonardo_work/EUHPC_D32_102/dhm/data/sift100M/bigann_learn.bvecs
+    gt    : /leonardo_work/EUHPC_D32_102/dhm/data/sift100M/gnd/idx_1M.ivecs
+------------------------------------------------------------------------
+1/1 datasets resolved
+=== thread-scaling run start 2026-08-14 20:30:34 ===
+    datasets : sift1m
+    indexes  : suco shg cspg hnsw32 hnsw48 opq_ivfpq
+    threads  : 1 2 4 8 16 32  (cpus-per-task=32)
+    targets  : 0.90 0.95
+
+############################################################
+# 2026-08-14 20:30:34  dataset: sift1m
+############################################################
 Scaling self-test: flat-scan 1->32 threads = 3.25x  [PASS]
 Data dir:       /leonardo_work/EUHPC_D32_102/dhm/data
 Index dir:      /leonardo_work/EUHPC_D32_102/dhm/indices
@@ -106,3 +141,7 @@ Loading sift1m...
   opq_ivfpq: recall≥0.95 unreachable on the k=10 curve — skipping this target
 
 Results merged into /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router/results_sift1m.json
+
+=== thread-scaling run done 2026-08-14 20:40:36 ===
+Regenerate figures + tables with:
+  python benchs/plot_router_paper.py --results-dir benchs/results_router --out-dir benchs/figures_router

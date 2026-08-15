@@ -3,8 +3,8 @@ Data dir:   /leonardo_work/EUHPC_D32_102/dhm/data
 Index dir:  /leonardo_work/EUHPC_D32_102/dhm/indices
 Output dir: /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router
 Datasets:   ['uqv']
-Benchmarks: ['construction', 'features', 'recall_k1', 'recall_k10', 'recall_k20', 'recall_k50', 'recall_k100', 'robustness', 'unseen_robustness', 'hard_robustness', 'latency_tail', 'cold_warm', 'mre', 'pareto', 'time_at_recall']
-Indexes:    ['ivfflat', 'opq_ivfpq_sq8']
+Benchmarks: ['construction', 'recall_k10', 'pareto', 'time_at_recall']
+Indexes:    ['opq_ivfpq_fp16']
 N runs:     3
 
 ######################################################################
@@ -17,176 +17,24 @@ Loading uqv...
     query : /leonardo_work/EUHPC_D32_102/dhm/data/uqv/uqv_query.fvecs (fvecs)
     train : <sampled from base>
     gt    : /leonardo_work/EUHPC_D32_102/dhm/data/uqv/uqv_groundtruth.ivecs
-  Loaded in 2.5s: xb=(1000000, 256), xq=(10000, 256), gt=(10000, 100)
+  Loaded in 3.2s: xb=(1000000, 256), xq=(10000, 256), gt=(10000, 100)
 
-======================================================================
-BENCHMARK: features - uqv
-======================================================================
-  {'n': 1000000, 'd': 256, 'nq': 10000, 'lid_mle': 11.998940467834473, 'pdist_mean': 0.25264546275138855, 'pdist_std': 0.3149239420890808, 'kmeans_inertia_ratio_16': 0.18682676112857152}
+--- Building OPQ-IVFPQ+FP16 ---
+  OPQ-IVFPQ+FP16 [OPQ64_256,IVF4000,PQ64x8,Refine(SQfp16)]: build=50.90s
+  Saved to /leonardo_work/EUHPC_D32_102/dhm/indices/uqv_opq_ivfpq_fp16.idx
 
---- Building IVFFlat ---
-  IVFFlat [IVF4000,Flat]: build=17.15s
-  Saved to /leonardo_work/EUHPC_D32_102/dhm/indices/uqv_ivfflat.idx
-
---- IVFFlat recall@1 curve (n_runs=3) ---
-  IVFFlat (1): recall@1=0.7221, ms/q=0.0024±0.0001, qps=424517±13822
-  IVFFlat (2): recall@1=0.8171, ms/q=0.0034±0.0001, qps=294563±7831
-  IVFFlat (4): recall@1=0.9041, ms/q=0.0061±0.0001, qps=163925±2148
-  IVFFlat (8): recall@1=0.9644, ms/q=0.0120±0.0001, qps=83319±717
-  IVFFlat (16): recall@1=0.9908, ms/q=0.0249±0.0001, qps=40210±173
-  IVFFlat (32): recall@1=0.9980, ms/q=0.0528±0.0016, qps=18956±559
-  IVFFlat (64): recall@1=0.9998, ms/q=0.1098±0.0000, qps=9110±2
-  IVFFlat (128): recall@1=1.0000, ms/q=0.2218±0.0005, qps=4509±10
-  IVFFlat (256): recall@1=1.0000, ms/q=0.4449±0.0003, qps=2248±1
-  IVFFlat (512): recall@1=1.0000, ms/q=0.8727±0.0019, qps=1146±3
-  IVFFlat (1024): recall@1=1.0000, ms/q=1.7063±0.0045, qps=586±2
-
---- IVFFlat recall@10 curve (n_runs=3) ---
-  IVFFlat (1): recall@10=0.5252, ms/q=0.0024±0.0001, qps=417627±20843
-  IVFFlat (2): recall@10=0.6382, ms/q=0.0034±0.0000, qps=292387±3019
-  IVFFlat (4): recall@10=0.7425, ms/q=0.0062±0.0001, qps=161827±1864
-  IVFFlat (8): recall@10=0.8219, ms/q=0.0125±0.0002, qps=79991±1439
-  IVFFlat (16): recall@10=0.8660, ms/q=0.0259±0.0001, qps=38627±174
-  IVFFlat (32): recall@10=0.8813, ms/q=0.0536±0.0003, qps=18650±99
-  IVFFlat (64): recall@10=0.8847, ms/q=0.1096±0.0003, qps=9126±23
-  IVFFlat (128): recall@10=0.8850, ms/q=0.2217±0.0002, qps=4510±4
-  IVFFlat (256): recall@10=0.8851, ms/q=0.4452±0.0004, qps=2246±2
-  IVFFlat (512): recall@10=0.8851, ms/q=0.8742±0.0011, qps=1144±1
-  IVFFlat (1024): recall@10=0.8851, ms/q=1.7013±0.0026, qps=588±1
-
---- IVFFlat recall@20 curve (n_runs=3) ---
-  IVFFlat (1): recall@20=0.4680, ms/q=0.0024±0.0001, qps=423037±12799
-  IVFFlat (2): recall@20=0.5872, ms/q=0.0035±0.0001, qps=287852±8694
-  IVFFlat (4): recall@20=0.6999, ms/q=0.0062±0.0001, qps=161995±2319
-  IVFFlat (8): recall@20=0.7893, ms/q=0.0124±0.0004, qps=80357±2268
-  IVFFlat (16): recall@20=0.8420, ms/q=0.0260±0.0002, qps=38509±235
-  IVFFlat (32): recall@20=0.8617, ms/q=0.0539±0.0000, qps=18543±15
-  IVFFlat (64): recall@20=0.8665, ms/q=0.1103±0.0003, qps=9063±28
-  IVFFlat (128): recall@20=0.8670, ms/q=0.2227±0.0008, qps=4491±16
-  IVFFlat (256): recall@20=0.8671, ms/q=0.4464±0.0005, qps=2240±3
-  IVFFlat (512): recall@20=0.8671, ms/q=0.8787±0.0012, qps=1138±2
-  IVFFlat (1024): recall@20=0.8671, ms/q=1.7022±0.0035, qps=587±1
-
---- IVFFlat recall@50 curve (n_runs=3) ---
-  IVFFlat (1): recall@50=0.5022, ms/q=0.0024±0.0001, qps=409040±17416
-  IVFFlat (2): recall@50=0.6262, ms/q=0.0035±0.0001, qps=287464±7100
-  IVFFlat (4): recall@50=0.7487, ms/q=0.0063±0.0001, qps=158660±2219
-  IVFFlat (8): recall@50=0.8512, ms/q=0.0124±0.0002, qps=80752±1494
-  IVFFlat (16): recall@50=0.9173, ms/q=0.0257±0.0003, qps=38856±429
-  IVFFlat (32): recall@50=0.9450, ms/q=0.0528±0.0000, qps=18934±10
-  IVFFlat (64): recall@50=0.9517, ms/q=0.1089±0.0003, qps=9183±27
-  IVFFlat (128): recall@50=0.9527, ms/q=0.2220±0.0004, qps=4505±9
-  IVFFlat (256): recall@50=0.9528, ms/q=0.4461±0.0003, qps=2242±1
-  IVFFlat (512): recall@50=0.9528, ms/q=0.8769±0.0017, qps=1140±2
-  IVFFlat (1024): recall@50=0.9528, ms/q=1.7009±0.0040, qps=588±1
-
---- IVFFlat recall@100 curve (n_runs=3) ---
-  IVFFlat (1): recall@100=0.4709, ms/q=0.0026±0.0002, qps=389304±22825
-  IVFFlat (2): recall@100=0.6039, ms/q=0.0038±0.0001, qps=264298±8770
-  IVFFlat (4): recall@100=0.7347, ms/q=0.0065±0.0001, qps=153843±2328
-  IVFFlat (8): recall@100=0.8487, ms/q=0.0125±0.0001, qps=79859±559
-  IVFFlat (16): recall@100=0.9266, ms/q=0.0257±0.0009, qps=38984±1294
-  IVFFlat (32): recall@100=0.9631, ms/q=0.0530±0.0007, qps=18865±265
-  IVFFlat (64): recall@100=0.9731, ms/q=0.1082±0.0006, qps=9244±52
-  IVFFlat (128): recall@100=0.9745, ms/q=0.2210±0.0006, qps=4526±12
-  IVFFlat (256): recall@100=0.9747, ms/q=0.4454±0.0011, qps=2245±5
-  IVFFlat (512): recall@100=0.9747, ms/q=0.8747±0.0060, qps=1143±8
-  IVFFlat (1024): recall@100=0.9747, ms/q=1.7010±0.0041, qps=588±1
-
---- IVFFlat robustness (k=20) ---
-  IVFFlat: {'k': 20, 'param': 64, 'param_name': 'nprobe', 'mean_recall': 0.8665, 'median_recall': 1.0, 'min_recall': 0.1, 'max_recall': 1.0, 'q25_recall': 0.9, 'q75_recall': 1.0, 'ms_per_query': 0.1051}
-
---- IVFFlat hard-query robustness ---
-  IVFFlat: easy={'n': 1320, 'mean_recall': 0.2903, 'median_recall': 0.25, 'min_recall': 0.15, 'p10_recall': 0.25, 'p90_recall': 0.45} hard={'n': 1000, 'mean_recall': 0.9804, 'median_recall': 1.0, 'min_recall': 0.3, 'p10_recall': 0.95, 'p90_recall': 1.0}
-
---- IVFFlat latency tail ---
-
---- IVFFlat cold/warm cache ---
-  IVFFlat: {'param': 1024, 'achieved_recall': 0.86712, 'target_recall': 0.95, 'cold_mode': 'page_cache', 'page_evicted': True, 'system_cache_flushed': False, 'evict_buffer_mb': 2048, 'cold_first_ms': 3126.990405, 'cold_mean_ms': 338.8512, 'cold_p95_ms': 1825.485998, 'warm_mean_ms': 33.059227, 'warm_p95_ms': 53.441604, 'cold_warm_ratio': 10.25, 'n_cold': 30, 'n_warm': 500}
-
---- IVFFlat MRE ---
-
---- Building OPQ-IVFPQ+SQ8 ---
-  OPQ-IVFPQ+SQ8 [OPQ64_256,IVF4000,PQ64x8,Refine(SQ8)]: build=49.98s
-  Saved to /leonardo_work/EUHPC_D32_102/dhm/indices/uqv_opq_ivfpq_sq8.idx
-
---- OPQ-IVFPQ+SQ8 recall@1 curve (n_runs=3) ---
-  OPQ-IVFPQ+SQ8 (1): recall@1=0.6327, ms/q=0.0024±0.0002, qps=418643±33675
-  OPQ-IVFPQ+SQ8 (2): recall@1=0.6915, ms/q=0.0029±0.0001, qps=340352±7452
-  OPQ-IVFPQ+SQ8 (4): recall@1=0.7374, ms/q=0.0043±0.0001, qps=234344±5313
-  OPQ-IVFPQ+SQ8 (8): recall@1=0.7645, ms/q=0.0071±0.0001, qps=141360±2439
-  OPQ-IVFPQ+SQ8 (16): recall@1=0.7773, ms/q=0.0128±0.0001, qps=78060±706
-  OPQ-IVFPQ+SQ8 (32): recall@1=0.7809, ms/q=0.0248±0.0000, qps=40355±77
-  OPQ-IVFPQ+SQ8 (64): recall@1=0.7813, ms/q=0.0511±0.0001, qps=19578±43
-  OPQ-IVFPQ+SQ8 (128): recall@1=0.7814, ms/q=0.1031±0.0000, qps=9703±2
-  OPQ-IVFPQ+SQ8 (256): recall@1=0.7814, ms/q=0.2057±0.0002, qps=4861±5
-  OPQ-IVFPQ+SQ8 (512): recall@1=0.7814, ms/q=0.4121±0.0003, qps=2426±2
-  OPQ-IVFPQ+SQ8 (1024): recall@1=0.7814, ms/q=0.8327±0.0007, qps=1201±1
-
---- OPQ-IVFPQ+SQ8 recall@10 curve (n_runs=3) ---
-  OPQ-IVFPQ+SQ8 (1): recall@10=0.4662, ms/q=0.0026±0.0001, qps=383063±8698
-  OPQ-IVFPQ+SQ8 (2): recall@10=0.5393, ms/q=0.0033±0.0000, qps=304888±2520
-  OPQ-IVFPQ+SQ8 (4): recall@10=0.5988, ms/q=0.0048±0.0001, qps=210311±5937
-  OPQ-IVFPQ+SQ8 (8): recall@10=0.6362, ms/q=0.0075±0.0001, qps=132962±982
-  OPQ-IVFPQ+SQ8 (16): recall@10=0.6533, ms/q=0.0134±0.0003, qps=74660±1668
-  OPQ-IVFPQ+SQ8 (32): recall@10=0.6589, ms/q=0.0259±0.0001, qps=38600±206
-  OPQ-IVFPQ+SQ8 (64): recall@10=0.6597, ms/q=0.0516±0.0002, qps=19379±61
-  OPQ-IVFPQ+SQ8 (128): recall@10=0.6597, ms/q=0.1033±0.0001, qps=9682±11
-  OPQ-IVFPQ+SQ8 (256): recall@10=0.6598, ms/q=0.2052±0.0001, qps=4873±3
-  OPQ-IVFPQ+SQ8 (512): recall@10=0.6598, ms/q=0.4123±0.0006, qps=2425±3
-  OPQ-IVFPQ+SQ8 (1024): recall@10=0.6598, ms/q=0.8312±0.0011, qps=1203±2
-
---- OPQ-IVFPQ+SQ8 recall@20 curve (n_runs=3) ---
-  OPQ-IVFPQ+SQ8 (1): recall@20=0.4165, ms/q=0.0031±0.0002, qps=324842±22440
-  OPQ-IVFPQ+SQ8 (2): recall@20=0.4970, ms/q=0.0037±0.0000, qps=268115±1826
-  OPQ-IVFPQ+SQ8 (4): recall@20=0.5620, ms/q=0.0052±0.0001, qps=191792±4915
-  OPQ-IVFPQ+SQ8 (8): recall@20=0.6042, ms/q=0.0080±0.0001, qps=125531±2094
-  OPQ-IVFPQ+SQ8 (16): recall@20=0.6242, ms/q=0.0139±0.0003, qps=72096±1316
-  OPQ-IVFPQ+SQ8 (32): recall@20=0.6308, ms/q=0.0264±0.0002, qps=37851±301
-  OPQ-IVFPQ+SQ8 (64): recall@20=0.6320, ms/q=0.0522±0.0002, qps=19174±63
-  OPQ-IVFPQ+SQ8 (128): recall@20=0.6321, ms/q=0.1040±0.0004, qps=9617±34
-  OPQ-IVFPQ+SQ8 (256): recall@20=0.6321, ms/q=0.2058±0.0001, qps=4858±2
-  OPQ-IVFPQ+SQ8 (512): recall@20=0.6321, ms/q=0.4126±0.0003, qps=2424±2
-  OPQ-IVFPQ+SQ8 (1024): recall@20=0.6321, ms/q=0.8314±0.0016, qps=1203±2
-
---- OPQ-IVFPQ+SQ8 recall@50 curve (n_runs=3) ---
-  OPQ-IVFPQ+SQ8 (1): recall@50=0.4632, ms/q=0.0039±0.0001, qps=254295±8339
-  OPQ-IVFPQ+SQ8 (2): recall@50=0.5556, ms/q=0.0050±0.0001, qps=199976±4993
-  OPQ-IVFPQ+SQ8 (4): recall@50=0.6309, ms/q=0.0065±0.0001, qps=153989±2508
-  OPQ-IVFPQ+SQ8 (8): recall@50=0.6816, ms/q=0.0094±0.0001, qps=106799±1560
-  OPQ-IVFPQ+SQ8 (16): recall@50=0.7078, ms/q=0.0154±0.0003, qps=64989±1347
-  OPQ-IVFPQ+SQ8 (32): recall@50=0.7167, ms/q=0.0280±0.0000, qps=35707±42
-  OPQ-IVFPQ+SQ8 (64): recall@50=0.7183, ms/q=0.0536±0.0003, qps=18647±89
-  OPQ-IVFPQ+SQ8 (128): recall@50=0.7185, ms/q=0.1054±0.0003, qps=9490±24
-  OPQ-IVFPQ+SQ8 (256): recall@50=0.7186, ms/q=0.2076±0.0004, qps=4816±8
-  OPQ-IVFPQ+SQ8 (512): recall@50=0.7186, ms/q=0.4139±0.0003, qps=2416±2
-  OPQ-IVFPQ+SQ8 (1024): recall@50=0.7186, ms/q=0.8341±0.0010, qps=1199±1
-
---- OPQ-IVFPQ+SQ8 recall@100 curve (n_runs=3) ---
-  OPQ-IVFPQ+SQ8 (1): recall@100=0.4472, ms/q=0.0050±0.0001, qps=201847±3322
-  OPQ-IVFPQ+SQ8 (2): recall@100=0.5530, ms/q=0.0068±0.0002, qps=147617±3332
-  OPQ-IVFPQ+SQ8 (4): recall@100=0.6408, ms/q=0.0086±0.0001, qps=116284±1856
-  OPQ-IVFPQ+SQ8 (8): recall@100=0.7015, ms/q=0.0117±0.0001, qps=85591±771
-  OPQ-IVFPQ+SQ8 (16): recall@100=0.7335, ms/q=0.0175±0.0001, qps=57092±361
-  OPQ-IVFPQ+SQ8 (32): recall@100=0.7449, ms/q=0.0297±0.0008, qps=33662±904
-  OPQ-IVFPQ+SQ8 (64): recall@100=0.7475, ms/q=0.0553±0.0008, qps=18075±257
-  OPQ-IVFPQ+SQ8 (128): recall@100=0.7477, ms/q=0.1072±0.0006, qps=9325±54
-  OPQ-IVFPQ+SQ8 (256): recall@100=0.7479, ms/q=0.2090±0.0009, qps=4785±20
-  OPQ-IVFPQ+SQ8 (512): recall@100=0.7479, ms/q=0.4164±0.0010, qps=2402±6
-  OPQ-IVFPQ+SQ8 (1024): recall@100=0.7479, ms/q=0.8359±0.0018, qps=1196±3
-
---- OPQ-IVFPQ+SQ8 robustness (k=20) ---
-  OPQ-IVFPQ+SQ8: {'k': 20, 'param': 64, 'param_name': 'nprobe', 'mean_recall': 0.632, 'median_recall': 0.65, 'min_recall': 0.0, 'max_recall': 1.0, 'q25_recall': 0.5, 'q75_recall': 0.8, 'ms_per_query': 0.0502}
-
---- OPQ-IVFPQ+SQ8 hard-query robustness ---
-  OPQ-IVFPQ+SQ8: easy={'n': 1320, 'mean_recall': 0.2888, 'median_recall': 0.25, 'min_recall': 0.05, 'p10_recall': 0.25, 'p90_recall': 0.45} hard={'n': 1000, 'mean_recall': 0.7782, 'median_recall': 0.8, 'min_recall': 0.05, 'p10_recall': 0.65, 'p90_recall': 0.9}
-
---- OPQ-IVFPQ+SQ8 latency tail ---
-
---- OPQ-IVFPQ+SQ8 cold/warm cache ---
-  OPQ-IVFPQ+SQ8: {'param': 1024, 'achieved_recall': 0.63212, 'target_recall': 0.95, 'cold_mode': 'page_cache', 'page_evicted': True, 'system_cache_flushed': False, 'evict_buffer_mb': 2048, 'cold_first_ms': 686.778508, 'cold_mean_ms': 76.621792, 'cold_p95_ms': 232.510324, 'warm_mean_ms': 22.164463, 'warm_p95_ms': 26.610593, 'cold_warm_ratio': 3.457, 'n_cold': 30, 'n_warm': 500}
-
---- OPQ-IVFPQ+SQ8 MRE ---
+--- OPQ-IVFPQ+FP16 recall@10 curve (n_runs=3) ---
+  OPQ-IVFPQ+FP16 (1): recall@10=0.5211, ms/q=0.0027±0.0001, qps=368253±8784
+  OPQ-IVFPQ+FP16 (2): recall@10=0.6318, ms/q=0.0033±0.0001, qps=300733±6672
+  OPQ-IVFPQ+FP16 (4): recall@10=0.7370, ms/q=0.0047±0.0001, qps=212323±5405
+  OPQ-IVFPQ+FP16 (8): recall@10=0.8158, ms/q=0.0075±0.0002, qps=132747±3455
+  OPQ-IVFPQ+FP16 (16): recall@10=0.8597, ms/q=0.0136±0.0005, qps=73616±2896
+  OPQ-IVFPQ+FP16 (32): recall@10=0.8753, ms/q=0.0254±0.0000, qps=39371±62
+  OPQ-IVFPQ+FP16 (64): recall@10=0.8787, ms/q=0.0518±0.0002, qps=19323±90
+  OPQ-IVFPQ+FP16 (128): recall@10=0.8790, ms/q=0.1026±0.0000, qps=9744±2
+  OPQ-IVFPQ+FP16 (256): recall@10=0.8790, ms/q=0.2051±0.0002, qps=4875±4
+  OPQ-IVFPQ+FP16 (512): recall@10=0.8790, ms/q=0.4147±0.0006, qps=2411±3
+  OPQ-IVFPQ+FP16 (1024): recall@10=0.8790, ms/q=0.8261±0.0022, qps=1210±3
 
 ======================================================================
 BENCHMARK: construction - uqv
@@ -199,19 +47,7 @@ BENCHMARK: construction - uqv
   OPQ-IVFPQ: build=48.98s, peak_rss_delta=0.0MB, serialized=73.1MB
   IVFFlat: build=17.15s, peak_rss_delta=370.76MB, serialized=988.13MB
   OPQ-IVFPQ+SQ8: build=49.98s, peak_rss_delta=0.0MB, serialized=317.24MB
-
-======================================================================
-BENCHMARK: unseen_robustness - uqv
-======================================================================
-
-  Unseen split: keep=995000, query/held=5000
-  Computing brute-force GT for unseen queries (k=100)...
-
-  --- Rebuilding IVFFlat on kept set ---
-  IVFFlat [IVF3988,Flat]: build=17.16s
-
-  --- Rebuilding OPQ-IVFPQ+SQ8 on kept set ---
-  OPQ-IVFPQ+SQ8 [OPQ64_256,IVF3988,PQ64x8,Refine(SQ8)]: build=50.04s
+  OPQ-IVFPQ+FP16: build=50.9s, peak_rss_delta=531.16MB, serialized=561.38MB
 
 ======================================================================
 BENCHMARK: pareto - uqv
