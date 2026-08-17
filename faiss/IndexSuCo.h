@@ -87,6 +87,28 @@ struct SearchParametersSuCo : SearchParameters {
     ~SearchParametersSuCo() override = default;
 };
 
+struct SuCoStats {
+    size_t n_dis_rerank = 0;
+    size_t n_dis_centroid = 0;
+    size_t centroid_floats = 0;
+    size_t n_queries = 0;
+
+    void reset() {
+        n_dis_rerank = 0;
+        n_dis_centroid = 0;
+        centroid_floats = 0;
+        n_queries = 0;
+    }
+    void combine(const SuCoStats& o) {
+        n_dis_rerank += o.n_dis_rerank;
+        n_dis_centroid += o.n_dis_centroid;
+        centroid_floats += o.centroid_floats;
+        n_queries += o.n_queries;
+    }
+};
+
+FAISS_API extern SuCoStats suco_stats;
+
 // ---------------------------------------------------------------------------
 // IndexSuCo
 // ---------------------------------------------------------------------------

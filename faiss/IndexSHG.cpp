@@ -71,6 +71,14 @@
 
 namespace faiss {
 
+SHGStats shg_stats;
+
+namespace {
+    
+thread_local SHGStats shg_tls;
+
+} // namespace
+
 // ---------------------------------------------------------------------------
 // SHGDistanceComputer — level-aware DistanceComputer for construction
 // ---------------------------------------------------------------------------
@@ -201,6 +209,8 @@ static void greedy_update_nearest_shg(
                         d_nearest = dis;
                     }
                 }
+                shg_tls.n_dis_compressed += 4;
+                shg_tls.compressed_floats += (size_t)4 * cdim;
                 n_buffered = 0;
             }
         }
@@ -214,6 +224,8 @@ static void greedy_update_nearest_shg(
                 d_nearest = dis;
             }
         }
+        shg_tls.n_dis_compressed += (size_t)n_buffered;
+        shg_tls.compressed_floats += (size_t)n_buffered * cdim;
 
         if (nearest == prev_nearest) {
             return;
@@ -335,8 +347,11 @@ static void search_from_candidates_shg(
             if (q_lb != nullptr) {
                 const float* c = shg.get_compressed_data(cand, L);
                 float approx = fvec_L2sqr(q_lb, c, (size_t)lb_cdim);
+                shg_tls.n_dis_compressed += 1;
+                shg_tls.compressed_floats += (size_t)lb_cdim;
                 float lowerbound = approx * lb_scale;
                 if (lowerbound > threshold) {
+                    shg_tls.n_lb_pruned += 1;
                     continue;
                 }
             }
@@ -354,6 +369,7 @@ static void search_from_candidates_shg(
                         dis[1],
                         dis[2],
                         dis[3]);
+                shg_tls.n_dis_full += 4;
                 for (int b = 0; b < 4; b++) {
                     add_to_heap(buffered_ids[b], dis[b]);
                 }
@@ -362,6 +378,7 @@ static void search_from_candidates_shg(
         }
 
         // Process remaining buffered candidates
+        shg_tls.n_dis_full += (size_t)n_buffered;
         for (int b = 0; b < n_buffered; b++) {
             float dis = qdis(buffered_ids[b]);
             add_to_heap(buffered_ids[b], dis);
@@ -1062,6 +1079,8 @@ IndexSHG::storage_idx_t IndexSHG::navigate_upper_levels(
     const float* q_comp = query_rep.data() + offset_at_level[cl];
     const float* c_data = get_compressed_data(currObj, cl);
     float curdist = fvec_L2sqr(q_comp, c_data, (size_t)dim_at_level[cl]);
+    shg_tls.n_dis_compressed += 1;
+    shg_tls.compressed_floats += (size_t)dim_at_level[cl];
 
     // Algorithm 3, lines 3-7: shortcut loop.
     // Paper condition: "while l − f(dis̃) ≥ 1 do".
@@ -1081,6 +1100,8 @@ IndexSHG::storage_idx_t IndexSHG::navigate_upper_levels(
             c_data = get_compressed_data(currObj, cl);
             curdist = fvec_L2sqr(
                     q_comp, c_data, (size_t)dim_at_level[cl]);
+            shg_tls.n_dis_compressed += 1;
+            shg_tls.compressed_floats += (size_t)dim_at_level[cl];
 
             // Greedy 1-NN search at this level (FAISS batch-4 pattern)
             greedy_update_nearest_shg(
@@ -1096,6 +1117,8 @@ IndexSHG::storage_idx_t IndexSHG::navigate_upper_levels(
             c_data = get_compressed_data(currObj, cl);
             curdist = fvec_L2sqr(
                     q_comp, c_data, (size_t)dim_at_level[cl]);
+            shg_tls.n_dis_compressed += 1;
+            shg_tls.compressed_floats += (size_t)dim_at_level[cl];
 
             greedy_update_nearest_shg(
                     hns, *this, query_rep, level, currObj, curdist);
@@ -1199,6 +1222,8 @@ void IndexSHG::search(
 
             // Compute exact distance to entry point for base search
             float ep_dist = (*qdis)(ep);
+            shg_tls.n_dis_full += 1;
+            shg_tls.n_queries += 1;
 
             // Phase 2: Base-level search with LB pruning (Algorithm 3, lines 8-19)
             // ef = max(k, efSearch) to allow recall-time tradeoff sweep.
@@ -1211,6 +1236,14 @@ void IndexSHG::search(
 
             res.end();
             vt.advance();
+        }
+
+        // One flush per thread, outside the query loop: the global is a
+        // shared cache line and must never be touched from an inner loop.
+#pragma omp critical
+        {
+            shg_stats.combine(shg_tls);
+            shg_tls.reset();
         }
     }
 }

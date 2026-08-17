@@ -64,15 +64,28 @@ struct CSPGStats {
     /// Number of queries contributing to the accumulated counters.
     size_t n_queries = 0;
 
+    /// Full-precision L2 evaluations over base vectors, both stages, d floats
+    /// each.  Directly comparable with HNSWStats::ndis on the HNSW baseline:
+    /// same kernel, same width, same storage layout.
+    size_t n_dis = 0;
+    /// The subset of n_dis spent in Stage 1 (the greedy descent through
+    /// partition 0, plus the optional ef1>1 beam).  n_dis - n_dis_stage1 is
+    /// the cross-partition expansion, which is what CSPG claims to shorten.
+    size_t n_dis_stage1 = 0;
+
     void reset() {
         search_seq_len = 0;
         n_backtracks = 0;
         n_queries = 0;
+        n_dis = 0;
+        n_dis_stage1 = 0;
     }
     void combine(const CSPGStats& o) {
         search_seq_len += o.search_seq_len;
         n_backtracks += o.n_backtracks;
         n_queries += o.n_queries;
+        n_dis += o.n_dis;
+        n_dis_stage1 += o.n_dis_stage1;
     }
 };
 

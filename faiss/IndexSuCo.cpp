@@ -59,6 +59,27 @@
 
 namespace faiss {
 
+SuCoStats suco_stats;
+
+namespace {
+
+thread_local SuCoStats suco_tls;
+
+inline void flush_suco_tls() {
+    suco_tls.n_queries += 1;
+#pragma omp atomic
+    suco_stats.n_dis_rerank += suco_tls.n_dis_rerank;
+#pragma omp atomic
+    suco_stats.n_dis_centroid += suco_tls.n_dis_centroid;
+#pragma omp atomic
+    suco_stats.centroid_floats += suco_tls.centroid_floats;
+#pragma omp atomic
+    suco_stats.n_queries += suco_tls.n_queries;
+    suco_tls.reset();
+}
+
+} // namespace
+
 // ============================================================================
 // IO helper macros  (modelled on FAISS internal convention)
 // ============================================================================
@@ -425,6 +446,7 @@ void IndexSuCo::rerank(
                     xq,
                     xb.data() + static_cast<size_t>(j) * d,
                     static_cast<size_t>(d));
+        suco_tls.n_dis_rerank += (size_t)ntotal;
 
         const idx_t result_k = std::min(k, ntotal);
         std::vector<idx_t> order(ntotal);
@@ -511,6 +533,9 @@ void IndexSuCo::rerank(
                 xq,
                 xb.data() + static_cast<size_t>(candidates[j]) * d,
                 static_cast<size_t>(d));
+    // nc == candidate_num by construction, so this doubles as a check that the
+    // budget really is max(k, beta * ntotal).
+    suco_tls.n_dis_rerank += (size_t)nc;
 
     const idx_t result_k = std::min(k, nc);
     std::vector<idx_t> order(nc);
@@ -577,6 +602,11 @@ void IndexSuCo::search_one(
                 cents2,
                 static_cast<size_t>(half_dim),
                 static_cast<size_t>(ncentroids_half));
+
+        // Two halves of one subspace, ncentroids_half centroids each.
+        suco_tls.n_dis_centroid += (size_t)2 * ncentroids_half;
+        suco_tls.centroid_floats +=
+                (size_t)2 * ncentroids_half * half_dim;
 
         std::iota(idx1.begin(), idx1.end(), 0);
         std::sort(idx1.begin(), idx1.end(),
@@ -662,6 +692,7 @@ void IndexSuCo::search(
                 labels    + i * k,
                 scratch_bufs[tid].data(),
                 cr, cdr);
+        flush_suco_tls();
     }
 }
 
@@ -880,6 +911,7 @@ void IndexSuCo::search_multisequence(
                 x + i * d, k,
                 distances + i * k, labels + i * k,
                 scratch_bufs[tid].data(), cr, cdr);
+        flush_suco_tls();
     }
 }
 
@@ -987,6 +1019,9 @@ void IndexSuCo::search_linear(
                              static_cast<int32_t>(nsubspaces)));
 
         rerank(xq, k, candidate_num, sc_u8.data(), out_dist, out_ids);
+        // The exhaustive subspace scan above is not counted: it is the
+        // index-free baseline's own cost, not a base-vector evaluation.
+        flush_suco_tls();
     }
 }
 

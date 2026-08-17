@@ -576,6 +576,12 @@ void cspg_stats_reset() { faiss::cspg_stats.reset(); }
 %ignore faiss::ShortcutMap::pgm_index_t;
 %include  <faiss/IndexSHG.h>
 
+// Same treatment for the SHG distance counters.
+%inline %{
+faiss::SHGStats shg_stats_get() { return faiss::shg_stats; }
+void shg_stats_reset() { faiss::shg_stats.reset(); }
+%}
+
 %include <faiss/impl/kmeans1d.h>
 
 %ignore faiss::nndescent::Nhood::lock;
@@ -669,6 +675,12 @@ struct faiss::simd16uint16 {};
 %include <faiss/IndexIVFRaBitQFastScan.h>
 
 %include  <faiss/IndexSuCo.h>
+
+// Same treatment for the SuCo distance counters.
+%inline %{
+faiss::SuCoStats suco_stats_get() { return faiss::suco_stats; }
+void suco_stats_reset() { faiss::suco_stats.reset(); }
+%}
 
 %ignore faiss::BufferList::Buffer;
 %ignore faiss::RangeSearchPartialResult::QueryResult;

@@ -27,12 +27,11 @@ venv/
 report*.pdf
 .DS_Store
 thesis_presentation.pdf
-thesis.pdf
 thesis/
 benchs/M2_DISTANCE_COUNTERS.md
 suco.pdf
 cspg.pdf
-shg_index.pdf
 texput.log
 thesis.pdf
+shg_index.pdf
 paper/

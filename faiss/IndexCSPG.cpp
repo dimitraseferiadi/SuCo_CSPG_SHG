@@ -349,6 +349,12 @@ void IndexCSPG::search(
                 res_lab[j] = -1;
             }
 
+            // Full-precision distance evaluations for this query, split by
+            // stage.  Accumulated in locals and flushed once per query, so no
+            // atomic ever appears in an inner loop.
+            size_t q_n_dis = 0;
+            size_t q_n_dis_stage1 = 0;
+
             // ==============================================================
             // Stage 1: Fast approaching — descend partition 0's HNSW
             // ==============================================================
@@ -362,9 +368,15 @@ void IndexCSPG::search(
             rdc.set_mapping(refunction[0].data());
 
             float d_nearest = rdc(nearest);
+            q_n_dis_stage1 += 1; // the entry-point distance
 
             for (int level = hnsw0.max_level; level >= 1; level--) {
-                greedy_update_nearest(hnsw0, rdc, level, nearest, d_nearest);
+                // greedy_update_nearest returns the HNSWStats it accumulated,
+                // so the descent needs no instrumentation of its own — this is
+                // the same ndis the HNSW baseline reports.
+                q_n_dis_stage1 += greedy_update_nearest(
+                                          hnsw0, rdc, level, nearest, d_nearest)
+                                          .ndis;
             }
 
             // If ef1 > 1: beam search at level 0 in partition 0.
@@ -378,6 +390,8 @@ void IndexCSPG::search(
                         cur_ef1,
                         &visited[0],
                         stats_s1);
+
+                q_n_dis_stage1 += stats_s1.ndis;
 
                 while (top_cands.size() > 1)
                     top_cands.pop();
@@ -565,6 +579,7 @@ void IndexCSPG::search(
                             dis[1],
                             dis[2],
                             dis[3]);
+                    q_n_dis += 4;
                     for (int id4 = 0; id4 < 4; id4++) {
                         process_neighbor(unvis[i4 + id4], dis[id4]);
                     }
@@ -572,6 +587,7 @@ void IndexCSPG::search(
                 for (; i4 < n_unvis; i4++) {
                     float dis = fvec_L2sqr(
                             query, xb + map[unvis[i4]] * d, d);
+                    q_n_dis += 1;
                     process_neighbor(unvis[i4], dis);
                 }
             }
@@ -596,13 +612,17 @@ void IndexCSPG::search(
                 res_lab[ri] = refunction[r.gid][r.lid];
             }
 
-            // Accumulate MSNET counters into the global (OMP-safe).
+            // Accumulate MSNET and distance counters into the global (OMP-safe).
 #pragma omp atomic
             cspg_stats.search_seq_len += q_search_seq_len;
 #pragma omp atomic
             cspg_stats.n_backtracks += q_n_backtracks;
 #pragma omp atomic
             cspg_stats.n_queries += 1;
+#pragma omp atomic
+            cspg_stats.n_dis += q_n_dis + q_n_dis_stage1;
+#pragma omp atomic
+            cspg_stats.n_dis_stage1 += q_n_dis_stage1;
         }
     }
 }

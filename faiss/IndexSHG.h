@@ -196,6 +196,35 @@ struct SearchParametersSHG : SearchParametersHNSW {
 };
 
 // ---------------------------------------------------------------------------
+// SHG search statistics
+// ---------------------------------------------------------------------------
+
+struct SHGStats {
+    size_t n_dis_full = 0;
+    size_t n_dis_compressed = 0;
+    size_t compressed_floats = 0;
+    size_t n_lb_pruned = 0;
+    size_t n_queries = 0;
+
+    void reset() {
+        n_dis_full = 0;
+        n_dis_compressed = 0;
+        compressed_floats = 0;
+        n_lb_pruned = 0;
+        n_queries = 0;
+    }
+    void combine(const SHGStats& o) {
+        n_dis_full += o.n_dis_full;
+        n_dis_compressed += o.n_dis_compressed;
+        compressed_floats += o.compressed_floats;
+        n_lb_pruned += o.n_lb_pruned;
+        n_queries += o.n_queries;
+    }
+};
+
+FAISS_API extern SHGStats shg_stats;
+
+// ---------------------------------------------------------------------------
 // IndexSHG
 // ---------------------------------------------------------------------------
 
