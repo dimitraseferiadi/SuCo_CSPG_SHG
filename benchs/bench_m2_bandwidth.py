@@ -373,8 +373,18 @@ def run_thread_sweep(xb0, xq0, gt, pad_dims, M, efc, ef, k, n_runs, threads,
     the widest padding; the subsample is identical across thread counts, so the
     speedup and the achieved bandwidth are comparable within a width.
     """
+    # Take the count back from the array: a dataset with fewer queries than the
+    # requested subsample (GIST1M and MSong ship 1000 and 200) otherwise leaves
+    # `nq` above the number actually searched, and every per-query time and
+    # bandwidth derived from it is wrong by that ratio.
     xq0 = xq0[:nq]
+    nq = int(xq0.shape[0])
     gt = gt[:nq]
+    # A dataset may hold fewer queries than the subsample asks for -- GIST1M
+    # and OpenAI1M ship 1000, MSong and Enron 200 -- and normalising by the
+    # request rather than by what the slice returned scales ms/query and
+    # achieved GB/s by nq_requested/nq_actual. On GIST1M that is exactly 2x.
+    nq = int(xq0.shape[0])
     # Ascending, so the first timing is the single-thread baseline that
     # speedup and efficiency are measured against.
     threads = sorted(int(t) for t in threads)

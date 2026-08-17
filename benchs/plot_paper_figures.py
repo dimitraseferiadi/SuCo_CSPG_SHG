@@ -117,7 +117,9 @@ def fig_tails(all_results, out_dir, target="r95", formats=("pdf", "png")):
     ax.set_yticks([1, 2, 5, 10, 20])
     ax.get_yaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
     ax.set_ylabel(r"$p_{99.9}\,/\,p_{50}$")
-    ax.set_title(f"Tail-to-median latency at Recall@10 $\\geq$ "
+    # latency_tail is measured at k=20 (bench_router_paper.run_latency_tail),
+    # not at the k=10 used for the Pareto and crossover figures.
+    ax.set_title(f"Tail-to-median latency at Recall@20 $\\geq$ "
                  f"0.{target[1:]}", pad=6)
     ax.grid(axis="y", alpha=0.45, which="both")
     clean_ax(ax)
