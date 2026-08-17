@@ -1,0 +1,24 @@
+{
+  "threads": 1,
+  "stream_gbs": {"copy": 14.3254, "scale": 14.3798, "add": 16.5856, "triad": 16.5849},
+  "stream_array_bytes": 4294967296,
+  "gather_array_bytes": 17179869184,
+  "bw_rand_gbs": [
+    {"d": 96, "chunk_bytes": 384, "chunks_addressed": 33554432, "covered_bytes": 12884901888, "C1": 1.6058, "C4": 1.8445, "C16": 1.9466, "C64": 2.0007},
+    {"d": 100, "chunk_bytes": 400, "chunks_addressed": 33554432, "covered_bytes": 13421772800, "C1": 1.5839, "C4": 1.9178, "C16": 2.0423, "C64": 2.0915},
+    {"d": 128, "chunk_bytes": 512, "chunks_addressed": 33554432, "covered_bytes": 17179869184, "C1": 1.7295, "C4": 2.1868, "C16": 2.3352, "C64": 2.3787},
+    {"d": 200, "chunk_bytes": 800, "chunks_addressed": 16777216, "covered_bytes": 13421772800, "C1": 2.1711, "C4": 2.3672, "C16": 2.4330, "C64": 2.4492},
+    {"d": 256, "chunk_bytes": 1024, "chunks_addressed": 16777216, "covered_bytes": 17179869184, "C1": 2.5453, "C4": 2.7187, "C16": 2.7855, "C64": 2.8000},
+    {"d": 420, "chunk_bytes": 1680, "chunks_addressed": 8388608, "covered_bytes": 14092861440, "C1": 3.4452, "C4": 3.6790, "C16": 3.7379, "C64": 3.7558},
+    {"d": 512, "chunk_bytes": 2048, "chunks_addressed": 8388608, "covered_bytes": 17179869184, "C1": 4.4897, "C4": 4.7396, "C16": 4.7895, "C64": 4.8122},
+    {"d": 960, "chunk_bytes": 3840, "chunks_addressed": 4194304, "covered_bytes": 16106127360, "C1": 6.1513, "C4": 6.3449, "C16": 6.3924, "C64": 6.4073},
+    {"d": 1024, "chunk_bytes": 4096, "chunks_addressed": 4194304, "covered_bytes": 17179869184, "C1": 6.8178, "C4": 6.9957, "C16": 7.0485, "C64": 7.0534},
+    {"d": 1369, "chunk_bytes": 5476, "chunks_addressed": 2097152, "covered_bytes": 11484004352, "C1": 6.9636, "C4": 7.1155, "C16": 7.1698, "C64": 7.1856},
+    {"d": 1536, "chunk_bytes": 6144, "chunks_addressed": 2097152, "covered_bytes": 12884901888, "C1": 7.4965, "C4": 7.6629, "C16": 7.7149, "C64": 7.7288},
+    {"d": 1920, "chunk_bytes": 7680, "chunks_addressed": 2097152, "covered_bytes": 16106127360, "C1": 7.7810, "C4": 7.9335, "C16": 7.9564, "C64": 7.9796},
+    {"d": 3840, "chunk_bytes": 15360, "chunks_addressed": 1048576, "covered_bytes": 16106127360, "C1": 9.1497, "C4": 9.2247, "C16": 9.2913, "C64": 9.2602},
+    {"d": 7680, "chunk_bytes": 30720, "chunks_addressed": 524288, "covered_bytes": 16106127360, "C1": 10.1579, "C4": 10.1654, "C16": 10.1478, "C64": 10.1371}
+  ],
+  "sequential_read_gbs": 16.6255,
+  "note": "bw_rand is the denominator for a dependent random-read pattern; stream.read is the sequential upper bound for a read-only path"
+}

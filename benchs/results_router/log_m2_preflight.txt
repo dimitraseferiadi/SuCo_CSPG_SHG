@@ -1,0 +1,36 @@
+====================================================================
+SuCo load pre-flight
+====================================================================
+1. provenance
+   faiss package : /leonardo/home/userexternal/afilippa/miniconda3/envs/anns/lib/python3.12/site-packages/faiss/__init__.py
+   compiled lib  : /leonardo/home/userexternal/afilippa/miniconda3/envs/anns/lib/python3.12/site-packages/faiss/_swigfaiss_avx512.so
+   built         : 2026-08-14 19:28:12
+   IndexSuCo.cpp : 2026-08-14 19:12:31
+   -> compiled library postdates the source
+
+2. SWIG binding freshness (advisory -- does not decide anything)
+   PASS  IndexSuCo() constructs, d=0: the wrapper was regenerated after 17f60df4
+
+3. IxSC round trip through read_index (AUTHORITATIVE)
+   PASS  read back d=32 ntotal=2000 (expected d=32 ntotal=2000)
+
+4. prebuilt indexes in /leonardo_work/EUHPC_D32_102/dhm/indices
+   PASS  sift1m_opq_ivfpq.idx                             42 MB  d=128 ntotal=1000000  2.8s
+   PASS  gist1m_opq_ivfpq.idx                             92 MB  d=960 ntotal=1000000  0.7s
+   PASS  sift1m_opq_ivfpq_sq8.idx                        170 MB  d=128 ntotal=1000000  0.5s
+   PASS  sift1m_ivfflat.idx                              522 MB  d=128 ntotal=1000000  1.3s
+   PASS  sift1m_suco_ns8.idx                             576 MB  d=128 ntotal=1000000  1.5s
+   PASS  sift1m_hnsw32.idx                               784 MB  d=128 ntotal=1000000  2.1s
+   PASS  sift1m_hnsw48.idx                               912 MB  d=128 ntotal=1000000  2.5s
+   PASS  sift1m_cspg.idx                                 944 MB  d=128 ntotal=1000000  2.4s
+   PASS  gist1m_opq_ivfpq_sq8.idx                       1052 MB  d=960 ntotal=1000000  3.2s
+   PASS  sift1m_shg.idx                                 1416 MB  d=128 ntotal=1000000  3.1s
+   PASS  gist1m_ivfflat.idx                             3863 MB  d=960 ntotal=1000000  8.5s
+   skip  gist1m_hnsw32.idx                              4112 MB  (over --max-mb 4096.0)
+   skip  gist1m_suco_ns40.idx                           4161 MB  (over --max-mb 4096.0)
+   skip  gist1m_hnsw48.idx                              4240 MB  (over --max-mb 4096.0)
+   skip  gist1m_cspg.idx                                4272 MB  (over --max-mb 4096.0)
+   skip  gist1m_shg.idx                                 8076 MB  (over --max-mb 4096.0)
+
+====================================================================
+VERDICT: SuCo indexes load. Step 6 is safe to run.

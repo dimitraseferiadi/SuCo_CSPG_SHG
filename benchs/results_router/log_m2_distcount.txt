@@ -6,16 +6,49 @@
     train : /leonardo_work/EUHPC_D32_102/dhm/data/sift100M/bigann_learn.bvecs
     gt    : /leonardo_work/EUHPC_D32_102/dhm/data/sift100M/gnd/idx_1M.ivecs
   SuCo: loading /leonardo_work/EUHPC_D32_102/dhm/indices/sift1m_suco_ns8.idx
-Traceback (most recent call last):
-  File "/leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/bench_m2_distcount.py", line 283, in <module>
-    main()
-  File "/leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/bench_m2_distcount.py", line 279, in main
-    print_table(run_dataset(ds, args), args.targets)
-                ^^^^^^^^^^^^^^^^^^^^^
-  File "/leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/bench_m2_distcount.py", line 191, in run_dataset
-    idx = faiss.read_index(idx_path)
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/leonardo/home/userexternal/afilippa/miniconda3/envs/anns/lib/python3.12/site-packages/faiss/swigfaiss_avx512.py", line 13983, in read_index
-    return _swigfaiss_avx512.read_index(*args)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-RuntimeError: Error in faiss::IndexSuCo::IndexSuCo(faiss::idx_t, int, int, float, float, int) at /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/faiss/IndexSuCo.cpp:124: Error: '!(d % nsubspaces == 0)' failed: IndexSuCo: d must be divisible by nsubspaces
+  SuCo: no distance counter compiled in (see benchs/M2_DISTANCE_COUNTERS.md) — skipped
+  SHG: loading /leonardo_work/EUHPC_D32_102/dhm/indices/sift1m_shg.idx
+  SHG: no distance counter compiled in (see benchs/M2_DISTANCE_COUNTERS.md) — skipped
+  CSPG: loading /leonardo_work/EUHPC_D32_102/dhm/indices/sift1m_cspg.idx
+  CSPG: no distance counter compiled in (see benchs/M2_DISTANCE_COUNTERS.md) — skipped
+  HNSW32: loading /leonardo_work/EUHPC_D32_102/dhm/indices/sift1m_hnsw32.idx
+  HNSW48: loading /leonardo_work/EUHPC_D32_102/dhm/indices/sift1m_hnsw48.idx
+  wrote /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router/m2_distcount_sift1m.json
+
+sift1m  (n=1000000, d=128, k=10)
+index             target       dis/q    narrow/q      kB/q      ms/q    ns/dis
+------------------------------------------------------------------------------
+SuCo                   —                              not instrumented
+SHG                    —                              not instrumented
+CSPG                   —                              not instrumented
+HNSW32              0.95      1271.0         0.0     635.5    0.0125      9.81
+HNSW32              0.99      2516.3         0.0    1258.1    0.0265     10.53
+HNSW48              0.95      1502.0         0.0     751.0    0.0142      9.46
+HNSW48              0.99      3088.9         0.0    1544.5    0.0285      9.24
+
+=== gist1m ===
+  gist1m: d=960 nb=1,000,000 nq=1,000 metric=L2
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/gist1m/gist_base.fvecs (fvecs, 1,000,000 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/gist1m/gist_query.fvecs (fvecs)
+    train : /leonardo_work/EUHPC_D32_102/dhm/data/gist1m/gist_learn.fvecs
+    gt    : /leonardo_work/EUHPC_D32_102/dhm/data/gist1m/gist_groundtruth.ivecs
+  SuCo: loading /leonardo_work/EUHPC_D32_102/dhm/indices/gist1m_suco_ns40.idx
+  SuCo: no distance counter compiled in (see benchs/M2_DISTANCE_COUNTERS.md) — skipped
+  SHG: loading /leonardo_work/EUHPC_D32_102/dhm/indices/gist1m_shg.idx
+  SHG: no distance counter compiled in (see benchs/M2_DISTANCE_COUNTERS.md) — skipped
+  CSPG: loading /leonardo_work/EUHPC_D32_102/dhm/indices/gist1m_cspg.idx
+  CSPG: no distance counter compiled in (see benchs/M2_DISTANCE_COUNTERS.md) — skipped
+  HNSW32: loading /leonardo_work/EUHPC_D32_102/dhm/indices/gist1m_hnsw32.idx
+  HNSW48: loading /leonardo_work/EUHPC_D32_102/dhm/indices/gist1m_hnsw48.idx
+  wrote /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router/m2_distcount_gist1m.json
+
+gist1m  (n=1000000, d=960, k=10)
+index             target       dis/q    narrow/q      kB/q      ms/q    ns/dis
+------------------------------------------------------------------------------
+SuCo                   —                              not instrumented
+SHG                    —                              not instrumented
+CSPG                   —                              not instrumented
+HNSW32              0.95      6774.2         0.0   25403.4    0.3805     56.17
+HNSW32              0.99     23472.0         0.0   88019.9    1.3718     58.44
+HNSW48              0.95      8047.1         0.0   30176.6    0.4124     51.25
+HNSW48              0.99     17693.7         0.0   66351.3    1.0919     61.71

@@ -1,0 +1,357 @@
+{
+  "threads": 32,
+  "padding": {
+    "dataset": "sift1m",
+    "d0": 128,
+    "M": 32,
+    "efc": 128,
+    "ef": 100,
+    "k": 10,
+    "rows": [
+      {
+        "d": 128,
+        "build_s": 32.876,
+        "recall": 0.99198,
+        "ndis_per_query": 2517.6,
+        "ms_per_query": 0.029243,
+        "ms_std": 1.8e-05,
+        "qps": 34196.0,
+        "achieved_gbs": 44.08,
+        "invariant": true
+      },
+      {
+        "d": 256,
+        "build_s": 0.0,
+        "recall": 0.99198,
+        "ndis_per_query": 2517.6,
+        "ms_per_query": 0.051758,
+        "ms_std": 2.1e-05,
+        "qps": 19320.5,
+        "achieved_gbs": 49.81,
+        "invariant": true
+      },
+      {
+        "d": 512,
+        "build_s": 0.0,
+        "recall": 0.99198,
+        "ndis_per_query": 2517.6,
+        "ms_per_query": 0.090329,
+        "ms_std": 9.5e-05,
+        "qps": 11070.7,
+        "achieved_gbs": 57.08,
+        "invariant": true
+      },
+      {
+        "d": 1024,
+        "build_s": 0.0,
+        "recall": 0.99198,
+        "ndis_per_query": 2517.6,
+        "ms_per_query": 0.154962,
+        "ms_std": 2.6e-05,
+        "qps": 6453.2,
+        "achieved_gbs": 66.54,
+        "invariant": true
+      }
+    ],
+    "fit": {
+      "slope": 0.8020661119681365,
+      "intercept": -7.416114692985751,
+      "r2": 0.9998420647171782,
+      "n_points": 4
+    },
+    "affine": {
+      "fixed_s_per_query": 1.5028304347826103e-05,
+      "per_dim_s_per_query": 1.3863478260869564e-07,
+      "r2": 0.9959544217724492,
+      "marginal_gbs_global": 72.63977921344791,
+      "fixed_fraction_at_d": {
+        "128": 0.4585496950218883,
+        "256": 0.2974793890798832,
+        "512": 0.1747288033823639,
+        "1024": 0.09572758486856608
+      },
+      "segments": [
+        {
+          "d_lo": 128,
+          "d_hi": 256,
+          "marginal_gbs": 57.251
+        },
+        {
+          "d_lo": 256,
+          "d_hi": 512,
+          "marginal_gbs": 66.838
+        },
+        {
+          "d_lo": 512,
+          "d_hi": 1024,
+          "marginal_gbs": 79.774
+        }
+      ]
+    },
+    "peak_achieved_gbs": 66.54
+  },
+  "thread_sweep": {
+    "dataset": "sift1m",
+    "rows": [
+      {
+        "d": 128,
+        "threads": 1,
+        "nq": 2000,
+        "recall": 0.99185,
+        "ndis_per_query": 2510.6,
+        "ms_per_query": 0.446643,
+        "speedup_vs_1t": 1.0,
+        "efficiency": 1.0,
+        "achieved_gbs": 2.88
+      },
+      {
+        "d": 128,
+        "threads": 2,
+        "nq": 2000,
+        "recall": 0.99185,
+        "ndis_per_query": 2510.6,
+        "ms_per_query": 0.225833,
+        "speedup_vs_1t": 1.978,
+        "efficiency": 0.9889,
+        "achieved_gbs": 5.69
+      },
+      {
+        "d": 128,
+        "threads": 4,
+        "nq": 2000,
+        "recall": 0.99185,
+        "ndis_per_query": 2510.6,
+        "ms_per_query": 0.118691,
+        "speedup_vs_1t": 3.763,
+        "efficiency": 0.9408,
+        "achieved_gbs": 10.83
+      },
+      {
+        "d": 128,
+        "threads": 8,
+        "nq": 2000,
+        "recall": 0.99185,
+        "ndis_per_query": 2510.6,
+        "ms_per_query": 0.063339,
+        "speedup_vs_1t": 7.052,
+        "efficiency": 0.8815,
+        "achieved_gbs": 20.29
+      },
+      {
+        "d": 128,
+        "threads": 16,
+        "nq": 2000,
+        "recall": 0.99185,
+        "ndis_per_query": 2510.6,
+        "ms_per_query": 0.038325,
+        "speedup_vs_1t": 11.654,
+        "efficiency": 0.7284,
+        "achieved_gbs": 33.54
+      },
+      {
+        "d": 128,
+        "threads": 32,
+        "nq": 2000,
+        "recall": 0.99185,
+        "ndis_per_query": 2510.6,
+        "ms_per_query": 0.029393,
+        "speedup_vs_1t": 15.196,
+        "efficiency": 0.4749,
+        "achieved_gbs": 43.73
+      },
+      {
+        "d": 512,
+        "threads": 1,
+        "nq": 2000,
+        "recall": 0.99185,
+        "ndis_per_query": 2510.6,
+        "ms_per_query": 0.735934,
+        "speedup_vs_1t": 1.0,
+        "efficiency": 1.0,
+        "achieved_gbs": 6.99
+      },
+      {
+        "d": 512,
+        "threads": 2,
+        "nq": 2000,
+        "recall": 0.99185,
+        "ndis_per_query": 2510.6,
+        "ms_per_query": 0.376234,
+        "speedup_vs_1t": 1.956,
+        "efficiency": 0.978,
+        "achieved_gbs": 13.67
+      },
+      {
+        "d": 512,
+        "threads": 4,
+        "nq": 2000,
+        "recall": 0.99185,
+        "ndis_per_query": 2510.6,
+        "ms_per_query": 0.20572,
+        "speedup_vs_1t": 3.577,
+        "efficiency": 0.8943,
+        "achieved_gbs": 24.99
+      },
+      {
+        "d": 512,
+        "threads": 8,
+        "nq": 2000,
+        "recall": 0.99185,
+        "ndis_per_query": 2510.6,
+        "ms_per_query": 0.119272,
+        "speedup_vs_1t": 6.17,
+        "efficiency": 0.7713,
+        "achieved_gbs": 43.11
+      },
+      {
+        "d": 512,
+        "threads": 16,
+        "nq": 2000,
+        "recall": 0.99185,
+        "ndis_per_query": 2510.6,
+        "ms_per_query": 0.089951,
+        "speedup_vs_1t": 8.181,
+        "efficiency": 0.5113,
+        "achieved_gbs": 57.16
+      },
+      {
+        "d": 512,
+        "threads": 32,
+        "nq": 2000,
+        "recall": 0.99185,
+        "ndis_per_query": 2510.6,
+        "ms_per_query": 0.090227,
+        "speedup_vs_1t": 8.156,
+        "efficiency": 0.2549,
+        "achieved_gbs": 56.99
+      }
+    ]
+  },
+  "ef_sweep": {
+    "dataset": "sift1m",
+    "d0": 128,
+    "rows": [
+      {
+        "ef": 10,
+        "ndis_per_query": 568.3,
+        "recall": 0.76865,
+        "ms_per_query": 0.004893,
+        "qps": 204367.8
+      },
+      {
+        "ef": 20,
+        "ndis_per_query": 812.7,
+        "recall": 0.88361,
+        "ms_per_query": 0.007765,
+        "qps": 128781.5
+      },
+      {
+        "ef": 40,
+        "ndis_per_query": 1272.0,
+        "recall": 0.95462,
+        "ms_per_query": 0.013229,
+        "qps": 75591.9
+      },
+      {
+        "ef": 60,
+        "ndis_per_query": 1706.7,
+        "recall": 0.97777,
+        "ms_per_query": 0.018659,
+        "qps": 53594.2
+      },
+      {
+        "ef": 80,
+        "ndis_per_query": 2120.8,
+        "recall": 0.98716,
+        "ms_per_query": 0.023971,
+        "qps": 41717.0
+      },
+      {
+        "ef": 100,
+        "ndis_per_query": 2518.1,
+        "recall": 0.99184,
+        "ms_per_query": 0.029248,
+        "qps": 34190.1
+      },
+      {
+        "ef": 150,
+        "ndis_per_query": 3452.9,
+        "recall": 0.99669,
+        "ms_per_query": 0.042559,
+        "qps": 23496.9
+      },
+      {
+        "ef": 200,
+        "ndis_per_query": 4327.0,
+        "recall": 0.99825,
+        "ms_per_query": 0.055493,
+        "qps": 18020.4
+      },
+      {
+        "ef": 300,
+        "ndis_per_query": 5948.3,
+        "recall": 0.9993,
+        "ms_per_query": 0.079299,
+        "qps": 12610.5
+      },
+      {
+        "ef": 400,
+        "ndis_per_query": 7450.4,
+        "recall": 0.99965,
+        "ms_per_query": 0.10369,
+        "qps": 9644.2
+      },
+      {
+        "ef": 600,
+        "ndis_per_query": 10217.2,
+        "recall": 0.99987,
+        "ms_per_query": 0.150125,
+        "qps": 6661.1
+      },
+      {
+        "ef": 800,
+        "ndis_per_query": 12759.5,
+        "recall": 0.99988,
+        "ms_per_query": 0.196175,
+        "qps": 5097.5
+      },
+      {
+        "ef": 1000,
+        "ndis_per_query": 15141.1,
+        "recall": 0.9999,
+        "ms_per_query": 0.242486,
+        "qps": 4124.0
+      },
+      {
+        "ef": 1500,
+        "ndis_per_query": 20606.6,
+        "recall": 0.99993,
+        "ms_per_query": 0.358844,
+        "qps": 2786.7
+      },
+      {
+        "ef": 2000,
+        "ndis_per_query": 25578.2,
+        "recall": 0.99994,
+        "ms_per_query": 0.482614,
+        "qps": 2072.0
+      }
+    ],
+    "elasticity": {
+      "all": {
+        "slope": 1.1872547491703076,
+        "r2": 0.9997673906947186,
+        "n_points": 15
+      },
+      "matched_recall_band": {
+        "slope": 1.1613513638437984,
+        "r2": 0.9999891853293463,
+        "n_points": 4
+      },
+      "band": [
+        0.95,
+        0.995
+      ]
+    }
+  }
+}

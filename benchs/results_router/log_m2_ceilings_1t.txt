@@ -1,0 +1,36 @@
+m2_ceilings: threads=1
+
+A) STREAM  (1 threads, 4.0 GiB per array, best of 10)
+   copy      14.33 GB/s
+   scale     14.38 GB/s
+   add       16.59 GB/s
+   triad     16.58 GB/s
+   copy is what the numpy proxy in bench_m2_bandwidth.py stood in for;
+   the read ceiling a read-only search needs is in B).
+
+B) BW_rand(B, C)  (1 threads, 16 GiB array, best of 3)
+   B = 4d bytes per chunk at a random chunk-aligned offset;
+   C chunks independent per hop, hops dependent on bytes read.
+
+        d  B(byte)    lines   C=1     C=4     C=16    C=64       (GB/s)
+       96      384      6.0    1.61    1.84    1.95    2.00
+      100      400      6.2    1.58    1.92    2.04    2.09
+      128      512      8.0    1.73    2.19    2.34    2.38
+      200      800     12.5    2.17    2.37    2.43    2.45
+      256     1024     16.0    2.55    2.72    2.79    2.80
+      420     1680     26.2    3.45    3.68    3.74    3.76
+      512     2048     32.0    4.49    4.74    4.79    4.81
+      960     3840     60.0    6.15    6.34    6.39    6.41
+     1024     4096     64.0    6.82    7.00    7.05    7.05
+     1369     5476     85.6    6.96    7.12    7.17    7.19
+     1536     6144     96.0    7.50    7.66    7.71    7.73
+     1920     7680    120.0    7.78    7.93    7.96    7.98
+     3840    15360    240.0    9.15    9.22    9.29    9.26
+     7680    30720    480.0   10.16   10.17   10.15   10.14
+
+   sequential read, same array, no writes:   16.63 GB/s
+   This is the read-only sequential ceiling: the upper bound the
+   search approaches only once a vector is wide enough that a
+   'random' access has become a multi-page burst.
+
+wrote /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router/m2_ceilings_1t.json

@@ -1,0 +1,103 @@
+Loading gcc/11.3.0
+  Loading requirement: gmp/6.2.1 mpfr/4.1.0 mpc/1.2.1
+--- CPU affinity ---
+SLURM_CPUS_PER_TASK = 32
+sched_getaffinity: 32 CPUs
+--------------------
+data-dir: /leonardo_work/EUHPC_D32_102/dhm/data
+contents: deep10m, enron, gist1m, msong, msturing10m, openai1m, sift100M, spacev10m, uqv
+faiss   : /leonardo/home/userexternal/afilippa/miniconda3/envs/anns/lib/python3.12/site-packages/faiss/__init__.py
+          IndexSuCo / IndexSHG / IndexCSPG all present
+          OPQ-IVFPQ factory OK ('OPQ8_64,IVF64,PQ8x8')
+------------------------------------------------------------------------
+[ ok ] uqv: d=256 nb=1,000,000 nq=10,000 metric=L2
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/uqv/uqv_base.fvecs (fvecs, 1,000,000 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/uqv/uqv_query.fvecs (fvecs)
+    train : <sampled from base>
+    gt    : /leonardo_work/EUHPC_D32_102/dhm/data/uqv/uqv_groundtruth.ivecs
+       WARN: no learn file; training vectors sampled from the base
+------------------------------------------------------------------------
+1/1 datasets resolved
+=== eps-recall run start 2026-08-17 18:31:41 ===
+    datasets    : uqv
+    index types : suco shg cspg hnsw32 hnsw48
+    k           : 10
+    eps         : 0.0 0.001 0.005 0.01 0.02 0.05 0.1
+    plateau     : 1
+
+############################################################
+# 2026-08-17 18:31:41  eps-recall: uqv
+############################################################
+
+######################################################################
+# Dataset: UQV
+######################################################################
+  nb=1000000 d=256 nq=10000 threads=32
+  exact gt distances: 3.0s
+  plateau k=10 (41.9s): eps=0.0:36.6  eps=0.001:38.1  eps=0.005:38.9  eps=0.01:40.0  eps=0.02:42.5  eps=0.05:53.7  eps=0.1:93.7
+
+  --- suco ---
+    loading SuCo from /leonardo_work/EUHPC_D32_102/dhm/indices/uqv_suco_ns8.idx
+    k=10   candidate_ratio=0.0005   R=0.4917  eps0.0=0.5926  eps0.01=0.6437  eps0.1=0.8739  (0.113 ms/q)
+    k=10   candidate_ratio=0.002    R=0.7262  eps0.0=0.8432  eps0.01=0.8909  eps0.1=0.9692  (0.140 ms/q)
+    k=10   candidate_ratio=0.005    R=0.8238  eps0.0=0.9423  eps0.01=0.9628  eps0.1=0.9862  (0.189 ms/q)
+    k=10   candidate_ratio=0.02     R=0.8759  eps0.0=0.9970  eps0.01=0.9987  eps0.1=0.9999  (0.354 ms/q)
+    k=10   candidate_ratio=0.05     R=0.8786  eps0.0=0.9996  eps0.01=0.9997  eps0.1=1.0000  (0.794 ms/q)
+    k=10   candidate_ratio=0.1      R=0.8787  eps0.0=0.9999  eps0.01=1.0000  eps0.1=1.0000  (1.475 ms/q)
+    k=10   candidate_ratio=0.2      R=0.8790  eps0.0=1.0000  eps0.01=1.0000  eps0.1=1.0000  (2.626 ms/q)
+    -> /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router/eps_recall_uqv.json
+
+  --- shg ---
+    loading SHG from /leonardo_work/EUHPC_D32_102/dhm/indices/uqv_shg.idx
+    k=10   efSearch=10       R=0.7825  eps0.0=0.9437  eps0.01=0.9692  eps0.1=0.9862  (0.006 ms/q)
+    k=10   efSearch=20       R=0.8060  eps0.0=0.9669  eps0.01=0.9790  eps0.1=0.9868  (0.009 ms/q)
+    k=10   efSearch=40       R=0.8186  eps0.0=0.9771  eps0.01=0.9822  eps0.1=0.9874  (0.013 ms/q)
+    k=10   efSearch=80       R=0.8245  eps0.0=0.9819  eps0.01=0.9843  eps0.1=0.9880  (0.023 ms/q)
+    k=10   efSearch=150      R=0.8299  eps0.0=0.9903  eps0.01=0.9919  eps0.1=0.9948  (0.037 ms/q)
+    k=10   efSearch=300      R=0.8351  eps0.0=0.9951  eps0.01=0.9959  eps0.1=0.9968  (0.067 ms/q)
+    k=10   efSearch=600      R=0.8361  eps0.0=0.9963  eps0.01=0.9969  eps0.1=0.9977  (0.117 ms/q)
+    k=10   efSearch=1000     R=0.8370  eps0.0=0.9972  eps0.01=0.9977  eps0.1=0.9987  (0.177 ms/q)
+    k=10   efSearch=2000     R=0.8388  eps0.0=0.9991  eps0.01=0.9995  eps0.1=0.9998  (0.321 ms/q)
+    -> /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router/eps_recall_uqv.json
+
+  --- cspg ---
+    loading CSPG from /leonardo_work/EUHPC_D32_102/dhm/indices/uqv_cspg.idx
+    k=10   efSearch=10       R=0.7515  eps0.0=0.9150  eps0.01=0.9529  eps0.1=0.9839  (0.004 ms/q)
+    k=10   efSearch=20       R=0.7855  eps0.0=0.9500  eps0.01=0.9707  eps0.1=0.9844  (0.006 ms/q)
+    k=10   efSearch=40       R=0.8097  eps0.0=0.9667  eps0.01=0.9758  eps0.1=0.9846  (0.011 ms/q)
+    k=10   efSearch=80       R=0.8108  eps0.0=0.9728  eps0.01=0.9776  eps0.1=0.9848  (0.019 ms/q)
+    k=10   efSearch=150      R=0.8170  eps0.0=0.9751  eps0.01=0.9785  eps0.1=0.9850  (0.036 ms/q)
+    k=10   efSearch=300      R=0.8215  eps0.0=0.9760  eps0.01=0.9789  eps0.1=0.9852  (0.068 ms/q)
+    k=10   efSearch=600      R=0.8191  eps0.0=0.9762  eps0.01=0.9789  eps0.1=0.9852  (0.126 ms/q)
+    k=10   efSearch=1000     R=0.8181  eps0.0=0.9762  eps0.01=0.9789  eps0.1=0.9852  (0.201 ms/q)
+    k=10   efSearch=2000     R=0.8163  eps0.0=0.9762  eps0.01=0.9789  eps0.1=0.9852  (0.391 ms/q)
+    -> /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router/eps_recall_uqv.json
+
+  --- hnsw32 ---
+    loading HNSW32 from /leonardo_work/EUHPC_D32_102/dhm/indices/uqv_hnsw32.idx
+    k=10   efSearch=10       R=0.7289  eps0.0=0.8928  eps0.01=0.9339  eps0.1=0.9789  (0.003 ms/q)
+    k=10   efSearch=20       R=0.7746  eps0.0=0.9352  eps0.01=0.9603  eps0.1=0.9806  (0.005 ms/q)
+    k=10   efSearch=40       R=0.7979  eps0.0=0.9574  eps0.01=0.9705  eps0.1=0.9815  (0.008 ms/q)
+    k=10   efSearch=80       R=0.8102  eps0.0=0.9686  eps0.01=0.9754  eps0.1=0.9824  (0.013 ms/q)
+    k=10   efSearch=150      R=0.8130  eps0.0=0.9711  eps0.01=0.9762  eps0.1=0.9825  (0.023 ms/q)
+    k=10   efSearch=300      R=0.8149  eps0.0=0.9728  eps0.01=0.9770  eps0.1=0.9827  (0.043 ms/q)
+    k=10   efSearch=600      R=0.8153  eps0.0=0.9731  eps0.01=0.9771  eps0.1=0.9828  (0.082 ms/q)
+    k=10   efSearch=1000     R=0.8153  eps0.0=0.9731  eps0.01=0.9771  eps0.1=0.9828  (0.132 ms/q)
+    k=10   efSearch=2000     R=0.8154  eps0.0=0.9732  eps0.01=0.9771  eps0.1=0.9828  (0.287 ms/q)
+    -> /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router/eps_recall_uqv.json
+
+  --- hnsw48 ---
+    loading HNSW48 from /leonardo_work/EUHPC_D32_102/dhm/indices/uqv_hnsw48.idx
+    k=10   efSearch=10       R=0.7784  eps0.0=0.9405  eps0.01=0.9665  eps0.1=0.9846  (0.005 ms/q)
+    k=10   efSearch=20       R=0.8035  eps0.0=0.9656  eps0.01=0.9784  eps0.1=0.9875  (0.008 ms/q)
+    k=10   efSearch=40       R=0.8152  eps0.0=0.9761  eps0.01=0.9816  eps0.1=0.9886  (0.014 ms/q)
+    k=10   efSearch=80       R=0.8197  eps0.0=0.9807  eps0.01=0.9835  eps0.1=0.9891  (0.022 ms/q)
+    k=10   efSearch=150      R=0.8277  eps0.0=0.9881  eps0.01=0.9901  eps0.1=0.9934  (0.038 ms/q)
+    k=10   efSearch=300      R=0.8331  eps0.0=0.9937  eps0.01=0.9951  eps0.1=0.9962  (0.071 ms/q)
+    k=10   efSearch=600      R=0.8344  eps0.0=0.9953  eps0.01=0.9966  eps0.1=0.9980  (0.128 ms/q)
+    k=10   efSearch=1000     R=0.8358  eps0.0=0.9967  eps0.01=0.9976  eps0.1=0.9989  (0.201 ms/q)
+    k=10   efSearch=2000     R=0.8381  eps0.0=0.9989  eps0.01=0.9995  eps0.1=0.9999  (0.405 ms/q)
+    -> /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router/eps_recall_uqv.json
+
+=== eps-recall run done 2026-08-17 18:34:30 ===
+    results: /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router/eps_recall_<dataset>.json

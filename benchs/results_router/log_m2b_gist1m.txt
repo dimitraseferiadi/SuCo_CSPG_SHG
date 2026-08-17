@@ -1,0 +1,59 @@
+threads=32
+
+E1: zero-padding ablation on gist1m (n=1000000, d=960, M=32, efC=128, efSearch=100)
+  d=  960  recall=0.8637  ndis/q=  2835.6  ms/q=  0.1634    66.65 GB/s  ok
+  d= 1920  recall=0.8637  ndis/q=  2835.6  ms/q=  0.3033    71.80 GB/s  ok
+  d= 3840  recall=0.8637  ndis/q=  2835.6  ms/q=  0.5827    74.75 GB/s  ok
+  d= 7680  recall=0.8637  ndis/q=  2835.6  ms/q=  1.1243    77.48 GB/s  ok
+
+  d(log t)/d(log d) = 0.929 (R^2=0.9998, 4 widths)
+  peak average achieved: 77.48 GB/s at d=7680
+
+  t = 28.99 us + 142.895 ns/dim   (R^2=0.99993)
+  d-independent share of query time: d=960:17%  d=1920:10%  d=3840:5%  d=7680:3%
+  MARGINAL bandwidth (the bandwidth-bound quantity), global fit: 79.38 GB/s
+      960 ->  1920:   77.81 GB/s
+     1920 ->  3840:   77.95 GB/s
+     3840 ->  7680:   80.42 GB/s
+  Compare each against BW_rand(4d) at the matching width, not against STREAM.
+wrote /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router/m2_padding_gist1m.csv
+
+C: thread sweep at fixed width on gist1m (widths=[960, 3840], nq=2000)
+  Rising GB/s at 32 threads => not saturated; a flat tail => a shared-resource ceiling.
+  d=  960  t=  1  ms/q=   0.5764  speedup=  1.00x  eta=1.000    18.90 GB/s
+  d=  960  t=  2  ms/q=   0.3025  speedup=  1.91x  eta=0.953    36.01 GB/s
+  d=  960  t=  4  ms/q=   0.1639  speedup=  3.52x  eta=0.879    66.47 GB/s
+  d=  960  t=  8  ms/q=   0.0997  speedup=  5.78x  eta=0.723   109.27 GB/s
+  d=  960  t= 16  ms/q=   0.0804  speedup=  7.17x  eta=0.448   135.49 GB/s
+  d=  960  t= 32  ms/q=   0.0818  speedup=  7.04x  eta=0.220   133.13 GB/s
+  d= 3840  t=  1  ms/q=   1.5044  speedup=  1.00x  eta=1.000    28.97 GB/s
+  d= 3840  t=  2  ms/q=   0.8052  speedup=  1.87x  eta=0.934    54.12 GB/s
+  d= 3840  t=  4  ms/q=   0.4652  speedup=  3.23x  eta=0.809    93.68 GB/s
+  d= 3840  t=  8  ms/q=   0.3200  speedup=  4.70x  eta=0.588   136.19 GB/s
+  d= 3840  t= 16  ms/q=   0.2890  speedup=  5.21x  eta=0.325   150.79 GB/s
+  d= 3840  t= 32  ms/q=   0.2918  speedup=  5.16x  eta=0.161   149.35 GB/s
+wrote /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router/m2_threadsweep_gist1m.csv
+
+D: efSearch sweep at native d=960 on gist1m (ndis and time, separate passes)
+  ef=   10  ndis/q=    645.0  recall=0.4631  ms/q=  0.03011
+  ef=   20  ndis/q=    939.4  recall=0.6064  ms/q=  0.04780
+  ef=   40  ndis/q=   1444.6  recall=0.7334  ms/q=  0.07808
+  ef=   60  ndis/q=   1922.4  recall=0.8028  ms/q=  0.10688
+  ef=   80  ndis/q=   2384.3  recall=0.8380  ms/q=  0.13611
+  ef=  100  ndis/q=   2833.6  recall=0.8640  ms/q=  0.16349
+  ef=  150  ndis/q=   3896.9  recall=0.9093  ms/q=  0.23015
+  ef=  200  ndis/q=   4898.2  recall=0.9325  ms/q=  0.29463
+  ef=  300  ndis/q=   6771.1  recall=0.9544  ms/q=  0.41580
+  ef=  400  ndis/q=   8508.0  recall=0.9676  ms/q=  0.53661
+  ef=  600  ndis/q=  11686.6  recall=0.9794  ms/q=  0.77005
+  ef=  800  ndis/q=  14595.2  recall=0.9840  ms/q=  0.97500
+  ef= 1000  ndis/q=  17299.4  recall=0.9865  ms/q=  1.19861
+  ef= 1500  ndis/q=  23479.8  recall=0.9914  ms/q=  1.78172
+  ef= 2000  ndis/q=  29046.3  recall=0.9931  ms/q=  2.49301
+  d(log t)/d(log ndis) [all] = 1.125 (R^2=0.9990, 15 points)
+  d(log t)/d(log ndis) [matched_recall_band] = 1.209 (R^2=0.9962, 7 points)
+  ~1.0 => removing a distance evaluation buys its full share of query time,
+         so a distance-count reduction that does not show up as speed did not
+         happen at the size claimed.
+wrote /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router/m2_efsweep_gist1m.csv
+wrote /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router/m2_bandwidth_gist1m.json

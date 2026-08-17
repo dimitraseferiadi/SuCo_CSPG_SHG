@@ -1,0 +1,357 @@
+{
+  "threads": 32,
+  "padding": {
+    "dataset": "gist1m",
+    "d0": 960,
+    "M": 32,
+    "efc": 128,
+    "ef": 100,
+    "k": 10,
+    "rows": [
+      {
+        "d": 960,
+        "build_s": 175.312,
+        "recall": 0.8637,
+        "ndis_per_query": 2835.6,
+        "ms_per_query": 0.163368,
+        "ms_std": 0.000158,
+        "qps": 6121.2,
+        "achieved_gbs": 66.65,
+        "invariant": true
+      },
+      {
+        "d": 1920,
+        "build_s": 0.0,
+        "recall": 0.8637,
+        "ndis_per_query": 2835.6,
+        "ms_per_query": 0.303309,
+        "ms_std": 0.000465,
+        "qps": 3297.0,
+        "achieved_gbs": 71.8,
+        "invariant": true
+      },
+      {
+        "d": 3840,
+        "build_s": 0.0,
+        "recall": 0.8637,
+        "ndis_per_query": 2835.6,
+        "ms_per_query": 0.582688,
+        "ms_std": 0.000887,
+        "qps": 1716.2,
+        "achieved_gbs": 74.75,
+        "invariant": true
+      },
+      {
+        "d": 7680,
+        "build_s": 0.0,
+        "recall": 0.8637,
+        "ndis_per_query": 2835.6,
+        "ms_per_query": 1.124302,
+        "ms_std": 0.001386,
+        "qps": 889.4,
+        "achieved_gbs": 77.48,
+        "invariant": true
+      }
+    ],
+    "fit": {
+      "slope": 0.9290432149745653,
+      "intercept": -8.202546839599716,
+      "r2": 0.999799749232071,
+      "n_points": 4
+    },
+    "affine": {
+      "fixed_s_per_query": 2.899465217391272e-05,
+      "per_dim_s_per_query": 1.4289502717391307e-07,
+      "r2": 0.9999313166495531,
+      "marginal_gbs_global": 79.37575032751504,
+      "fixed_fraction_at_d": {
+        "960": 0.17448381464862517,
+        "1920": 0.09558053554865667,
+        "3840": 0.05018880416462929,
+        "7680": 0.02574034053749833
+      },
+      "segments": [
+        {
+          "d_lo": 960,
+          "d_hi": 1920,
+          "marginal_gbs": 77.809
+        },
+        {
+          "d_lo": 1920,
+          "d_hi": 3840,
+          "marginal_gbs": 77.949
+        },
+        {
+          "d_lo": 3840,
+          "d_hi": 7680,
+          "marginal_gbs": 80.417
+        }
+      ]
+    },
+    "peak_achieved_gbs": 77.48
+  },
+  "thread_sweep": {
+    "dataset": "gist1m",
+    "rows": [
+      {
+        "d": 960,
+        "threads": 1,
+        "nq": 2000,
+        "recall": 0.8645,
+        "ndis_per_query": 2837.0,
+        "ms_per_query": 0.576352,
+        "speedup_vs_1t": 1.0,
+        "efficiency": 1.0,
+        "achieved_gbs": 18.9
+      },
+      {
+        "d": 960,
+        "threads": 2,
+        "nq": 2000,
+        "recall": 0.8645,
+        "ndis_per_query": 2837.0,
+        "ms_per_query": 0.302489,
+        "speedup_vs_1t": 1.905,
+        "efficiency": 0.9527,
+        "achieved_gbs": 36.01
+      },
+      {
+        "d": 960,
+        "threads": 4,
+        "nq": 2000,
+        "recall": 0.8645,
+        "ndis_per_query": 2837.0,
+        "ms_per_query": 0.163888,
+        "speedup_vs_1t": 3.517,
+        "efficiency": 0.8792,
+        "achieved_gbs": 66.47
+      },
+      {
+        "d": 960,
+        "threads": 8,
+        "nq": 2000,
+        "recall": 0.8645,
+        "ndis_per_query": 2837.0,
+        "ms_per_query": 0.099694,
+        "speedup_vs_1t": 5.781,
+        "efficiency": 0.7227,
+        "achieved_gbs": 109.27
+      },
+      {
+        "d": 960,
+        "threads": 16,
+        "nq": 2000,
+        "recall": 0.8645,
+        "ndis_per_query": 2837.0,
+        "ms_per_query": 0.080404,
+        "speedup_vs_1t": 7.168,
+        "efficiency": 0.448,
+        "achieved_gbs": 135.49
+      },
+      {
+        "d": 960,
+        "threads": 32,
+        "nq": 2000,
+        "recall": 0.8645,
+        "ndis_per_query": 2837.0,
+        "ms_per_query": 0.081828,
+        "speedup_vs_1t": 7.043,
+        "efficiency": 0.2201,
+        "achieved_gbs": 133.13
+      },
+      {
+        "d": 3840,
+        "threads": 1,
+        "nq": 2000,
+        "recall": 0.8645,
+        "ndis_per_query": 2837.0,
+        "ms_per_query": 1.504396,
+        "speedup_vs_1t": 1.0,
+        "efficiency": 1.0,
+        "achieved_gbs": 28.97
+      },
+      {
+        "d": 3840,
+        "threads": 2,
+        "nq": 2000,
+        "recall": 0.8645,
+        "ndis_per_query": 2837.0,
+        "ms_per_query": 0.805175,
+        "speedup_vs_1t": 1.868,
+        "efficiency": 0.9342,
+        "achieved_gbs": 54.12
+      },
+      {
+        "d": 3840,
+        "threads": 4,
+        "nq": 2000,
+        "recall": 0.8645,
+        "ndis_per_query": 2837.0,
+        "ms_per_query": 0.465168,
+        "speedup_vs_1t": 3.234,
+        "efficiency": 0.8085,
+        "achieved_gbs": 93.68
+      },
+      {
+        "d": 3840,
+        "threads": 8,
+        "nq": 2000,
+        "recall": 0.8645,
+        "ndis_per_query": 2837.0,
+        "ms_per_query": 0.319973,
+        "speedup_vs_1t": 4.702,
+        "efficiency": 0.5877,
+        "achieved_gbs": 136.19
+      },
+      {
+        "d": 3840,
+        "threads": 16,
+        "nq": 2000,
+        "recall": 0.8645,
+        "ndis_per_query": 2837.0,
+        "ms_per_query": 0.28898,
+        "speedup_vs_1t": 5.206,
+        "efficiency": 0.3254,
+        "achieved_gbs": 150.79
+      },
+      {
+        "d": 3840,
+        "threads": 32,
+        "nq": 2000,
+        "recall": 0.8645,
+        "ndis_per_query": 2837.0,
+        "ms_per_query": 0.291768,
+        "speedup_vs_1t": 5.156,
+        "efficiency": 0.1611,
+        "achieved_gbs": 149.35
+      }
+    ]
+  },
+  "ef_sweep": {
+    "dataset": "gist1m",
+    "d0": 960,
+    "rows": [
+      {
+        "ef": 10,
+        "ndis_per_query": 645.0,
+        "recall": 0.4631,
+        "ms_per_query": 0.030114,
+        "qps": 33207.5
+      },
+      {
+        "ef": 20,
+        "ndis_per_query": 939.4,
+        "recall": 0.6064,
+        "ms_per_query": 0.047804,
+        "qps": 20918.6
+      },
+      {
+        "ef": 40,
+        "ndis_per_query": 1444.6,
+        "recall": 0.7334,
+        "ms_per_query": 0.078078,
+        "qps": 12807.7
+      },
+      {
+        "ef": 60,
+        "ndis_per_query": 1922.4,
+        "recall": 0.8028,
+        "ms_per_query": 0.106883,
+        "qps": 9356.0
+      },
+      {
+        "ef": 80,
+        "ndis_per_query": 2384.3,
+        "recall": 0.838,
+        "ms_per_query": 0.136105,
+        "qps": 7347.3
+      },
+      {
+        "ef": 100,
+        "ndis_per_query": 2833.6,
+        "recall": 0.864,
+        "ms_per_query": 0.163488,
+        "qps": 6116.6
+      },
+      {
+        "ef": 150,
+        "ndis_per_query": 3896.9,
+        "recall": 0.9093,
+        "ms_per_query": 0.230146,
+        "qps": 4345.1
+      },
+      {
+        "ef": 200,
+        "ndis_per_query": 4898.2,
+        "recall": 0.9325,
+        "ms_per_query": 0.294628,
+        "qps": 3394.1
+      },
+      {
+        "ef": 300,
+        "ndis_per_query": 6771.1,
+        "recall": 0.9544,
+        "ms_per_query": 0.415797,
+        "qps": 2405.0
+      },
+      {
+        "ef": 400,
+        "ndis_per_query": 8508.0,
+        "recall": 0.9676,
+        "ms_per_query": 0.536606,
+        "qps": 1863.6
+      },
+      {
+        "ef": 600,
+        "ndis_per_query": 11686.6,
+        "recall": 0.9794,
+        "ms_per_query": 0.770049,
+        "qps": 1298.6
+      },
+      {
+        "ef": 800,
+        "ndis_per_query": 14595.2,
+        "recall": 0.984,
+        "ms_per_query": 0.974998,
+        "qps": 1025.6
+      },
+      {
+        "ef": 1000,
+        "ndis_per_query": 17299.4,
+        "recall": 0.9865,
+        "ms_per_query": 1.198613,
+        "qps": 834.3
+      },
+      {
+        "ef": 1500,
+        "ndis_per_query": 23479.8,
+        "recall": 0.9914,
+        "ms_per_query": 1.781719,
+        "qps": 561.3
+      },
+      {
+        "ef": 2000,
+        "ndis_per_query": 29046.3,
+        "recall": 0.9931,
+        "ms_per_query": 2.493011,
+        "qps": 401.1
+      }
+    ],
+    "elasticity": {
+      "all": {
+        "slope": 1.125137519730974,
+        "r2": 0.9990260490169725,
+        "n_points": 15
+      },
+      "matched_recall_band": {
+        "slope": 1.208815164360113,
+        "r2": 0.9961775282120479,
+        "n_points": 7
+      },
+      "band": [
+        0.95,
+        0.995
+      ]
+    }
+  }
+}
