@@ -1,0 +1,987 @@
+{
+  "dataset": "openai1m",
+  "n": 1000000,
+  "d": 1536,
+  "k": 10,
+  "targets": [
+    0.8,
+    0.95,
+    0.99
+  ],
+  "nq": 10000,
+  "count_threads": 32,
+  "indexes": {
+    "CSPG": {
+      "instrumented": true,
+      "kind": "cspg",
+      "baseline": "HNSW32",
+      "sweep": [
+        {
+          "param": 10,
+          "param_name": "efSearch",
+          "recall": 0.96636,
+          "counts": {
+            "full": 693.0731,
+            "stage1": 166.2518,
+            "floats_per_query": 1064560.2815999999,
+            "bytes_per_query": 4258241.1263999995
+          }
+        },
+        {
+          "param": 15,
+          "param_name": "efSearch",
+          "recall": 0.97694,
+          "counts": {
+            "full": 882.8794,
+            "stage1": 166.2518,
+            "floats_per_query": 1356102.7584000002,
+            "bytes_per_query": 5424411.033600001
+          }
+        },
+        {
+          "param": 20,
+          "param_name": "efSearch",
+          "recall": 0.98229,
+          "counts": {
+            "full": 1068.1612,
+            "stage1": 166.2518,
+            "floats_per_query": 1640695.6032,
+            "bytes_per_query": 6562782.4128
+          }
+        },
+        {
+          "param": 30,
+          "param_name": "efSearch",
+          "recall": 0.98758,
+          "counts": {
+            "full": 1422.1853,
+            "stage1": 166.2518,
+            "floats_per_query": 2184476.6208,
+            "bytes_per_query": 8737906.4832
+          }
+        },
+        {
+          "param": 40,
+          "param_name": "efSearch",
+          "recall": 0.99005,
+          "counts": {
+            "full": 1760.3014,
+            "stage1": 166.2518,
+            "floats_per_query": 2703822.9504,
+            "bytes_per_query": 10815291.8016
+          }
+        },
+        {
+          "param": 60,
+          "param_name": "efSearch",
+          "recall": 0.99216,
+          "counts": {
+            "full": 2403.429,
+            "stage1": 166.2518,
+            "floats_per_query": 3691666.944,
+            "bytes_per_query": 14766667.776
+          }
+        },
+        {
+          "param": 80,
+          "param_name": "efSearch",
+          "recall": 0.99328,
+          "counts": {
+            "full": 3008.7746,
+            "stage1": 166.2518,
+            "floats_per_query": 4621477.7856,
+            "bytes_per_query": 18485911.1424
+          }
+        },
+        {
+          "param": 100,
+          "param_name": "efSearch",
+          "recall": 0.99392,
+          "counts": {
+            "full": 3588.1617,
+            "stage1": 166.2518,
+            "floats_per_query": 5511416.3712,
+            "bytes_per_query": 22045665.4848
+          }
+        },
+        {
+          "param": 150,
+          "param_name": "efSearch",
+          "recall": 0.99475,
+          "counts": {
+            "full": 4944.7631,
+            "stage1": 166.2518,
+            "floats_per_query": 7595156.1216,
+            "bytes_per_query": 30380624.4864
+          }
+        },
+        {
+          "param": 200,
+          "param_name": "efSearch",
+          "recall": 0.99543,
+          "counts": {
+            "full": 6212.044,
+            "stage1": 166.2518,
+            "floats_per_query": 9541699.583999999,
+            "bytes_per_query": 38166798.335999995
+          }
+        },
+        {
+          "param": 300,
+          "param_name": "efSearch",
+          "recall": 0.99648,
+          "counts": {
+            "full": 8574.7447,
+            "stage1": 166.2518,
+            "floats_per_query": 13170807.859199999,
+            "bytes_per_query": 52683231.436799996
+          }
+        },
+        {
+          "param": 400,
+          "param_name": "efSearch",
+          "recall": 0.9971,
+          "counts": {
+            "full": 10776.8903,
+            "stage1": 166.2518,
+            "floats_per_query": 16553303.500799999,
+            "bytes_per_query": 66213214.003199995
+          }
+        },
+        {
+          "param": 600,
+          "param_name": "efSearch",
+          "recall": 0.99789,
+          "counts": {
+            "full": 14875.9594,
+            "stage1": 166.2518,
+            "floats_per_query": 22849473.6384,
+            "bytes_per_query": 91397894.5536
+          }
+        },
+        {
+          "param": 800,
+          "param_name": "efSearch",
+          "recall": 0.99833,
+          "counts": {
+            "full": 18700.6325,
+            "stage1": 166.2518,
+            "floats_per_query": 28724171.52,
+            "bytes_per_query": 114896686.08
+          }
+        },
+        {
+          "param": 1000,
+          "param_name": "efSearch",
+          "recall": 0.99866,
+          "counts": {
+            "full": 22337.0596,
+            "stage1": 166.2518,
+            "floats_per_query": 34309723.5456,
+            "bytes_per_query": 137238894.1824
+          }
+        },
+        {
+          "param": 1500,
+          "param_name": "efSearch",
+          "recall": 0.99911,
+          "counts": {
+            "full": 30886.7569,
+            "stage1": 166.2518,
+            "floats_per_query": 47442058.5984,
+            "bytes_per_query": 189768234.3936
+          }
+        },
+        {
+          "param": 2000,
+          "param_name": "efSearch",
+          "recall": 0.9994,
+          "counts": {
+            "full": 38910.8567,
+            "stage1": 166.2518,
+            "floats_per_query": 59767075.89119999,
+            "bytes_per_query": 239068303.56479996
+          }
+        }
+      ],
+      "recall_agreement_vs_timing": 0.0,
+      "at_target": {
+        "0.8": {
+          "dis_per_query": 693.0731,
+          "narrow_dis_per_query": null,
+          "floats_per_query": 1064560.2815999999,
+          "bytes_per_query": 4258241.1263999995,
+          "lb_pruned_per_query": null,
+          "stage1_dis_per_query": 166.2518,
+          "point_param": 10,
+          "point_recall": 0.96636,
+          "point_dis_per_query": 693.0731,
+          "ms_per_query": 0.049165
+        },
+        "0.95": {
+          "dis_per_query": 693.0731,
+          "narrow_dis_per_query": null,
+          "floats_per_query": 1064560.2815999999,
+          "bytes_per_query": 4258241.1263999995,
+          "lb_pruned_per_query": null,
+          "stage1_dis_per_query": 166.2518,
+          "point_param": 10,
+          "point_recall": 0.96636,
+          "point_dis_per_query": 693.0731,
+          "ms_per_query": 0.049165
+        },
+        "0.99": {
+          "dis_per_query": 1753.4569445344137,
+          "narrow_dis_per_query": null,
+          "floats_per_query": 2693309.866804859,
+          "bytes_per_query": 10773239.467219437,
+          "lb_pruned_per_query": null,
+          "stage1_dis_per_query": 166.2518,
+          "point_param": 40,
+          "point_recall": 0.99005,
+          "point_dis_per_query": 1760.3014,
+          "ms_per_query": 0.139034
+        }
+      },
+      "ratios": {
+        "0.8": {
+          "baseline": "HNSW32",
+          "dis_ratio": 1.2693,
+          "floats_ratio": 1.2693,
+          "qps_ratio": 0.7969
+        },
+        "0.95": {
+          "baseline": "HNSW32",
+          "dis_ratio": 1.2693,
+          "floats_ratio": 1.2693,
+          "qps_ratio": 0.7969
+        },
+        "0.99": {
+          "baseline": "HNSW32",
+          "dis_ratio": 0.9966,
+          "floats_ratio": 0.9966,
+          "qps_ratio": 1.1002
+        }
+      }
+    },
+    "SHG": {
+      "instrumented": true,
+      "kind": "shg",
+      "baseline": "HNSW48",
+      "sweep": [
+        {
+          "param": 10,
+          "param_name": "efSearch",
+          "recall": 0.97409,
+          "counts": {
+            "full": 532.4388,
+            "narrow": 714.1698,
+            "narrow_floats": 105156.4668,
+            "lb_pruned": 0.0,
+            "floats_per_query": 922982.4636000001,
+            "bytes_per_query": 3691929.8544000005
+          }
+        },
+        {
+          "param": 15,
+          "param_name": "efSearch",
+          "recall": 0.97973,
+          "counts": {
+            "full": 698.1318,
+            "narrow": 879.8628,
+            "narrow_floats": 105653.5458,
+            "lb_pruned": 0.0,
+            "floats_per_query": 1177983.9906,
+            "bytes_per_query": 4711935.9624
+          }
+        },
+        {
+          "param": 20,
+          "param_name": "efSearch",
+          "recall": 0.98241,
+          "counts": {
+            "full": 855.6818,
+            "narrow": 1037.4128,
+            "narrow_floats": 106126.1958,
+            "lb_pruned": 0.0,
+            "floats_per_query": 1420453.4406,
+            "bytes_per_query": 5681813.7624
+          }
+        },
+        {
+          "param": 30,
+          "param_name": "efSearch",
+          "recall": 0.98521,
+          "counts": {
+            "full": 1152.7034,
+            "narrow": 1334.4344,
+            "narrow_floats": 107017.2606,
+            "lb_pruned": 0.0,
+            "floats_per_query": 1877569.683,
+            "bytes_per_query": 7510278.732
+          }
+        },
+        {
+          "param": 40,
+          "param_name": "efSearch",
+          "recall": 0.98628,
+          "counts": {
+            "full": 1433.2346,
+            "narrow": 1614.9656,
+            "narrow_floats": 107858.8542,
+            "lb_pruned": 0.0,
+            "floats_per_query": 2309307.1998,
+            "bytes_per_query": 9237228.7992
+          }
+        },
+        {
+          "param": 60,
+          "param_name": "efSearch",
+          "recall": 0.98735,
+          "counts": {
+            "full": 1959.5481,
+            "narrow": 2141.2791,
+            "narrow_floats": 109437.7947,
+            "lb_pruned": 0.0,
+            "floats_per_query": 3119303.6763,
+            "bytes_per_query": 12477214.7052
+          }
+        },
+        {
+          "param": 80,
+          "param_name": "efSearch",
+          "recall": 0.98826,
+          "counts": {
+            "full": 2455.2307,
+            "narrow": 2636.9617,
+            "narrow_floats": 110924.8425,
+            "lb_pruned": 0.0,
+            "floats_per_query": 3882159.1977,
+            "bytes_per_query": 15528636.7908
+          }
+        },
+        {
+          "param": 100,
+          "param_name": "efSearch",
+          "recall": 0.98917,
+          "counts": {
+            "full": 2929.2178,
+            "narrow": 3110.9488,
+            "narrow_floats": 112346.8038,
+            "lb_pruned": 0.0,
+            "floats_per_query": 4611625.3445999995,
+            "bytes_per_query": 18446501.378399998
+          }
+        },
+        {
+          "param": 150,
+          "param_name": "efSearch",
+          "recall": 0.99118,
+          "counts": {
+            "full": 4047.8434,
+            "narrow": 4229.5744,
+            "narrow_floats": 115702.6806,
+            "lb_pruned": 0.0,
+            "floats_per_query": 6333190.143,
+            "bytes_per_query": 25332760.572
+          }
+        },
+        {
+          "param": 200,
+          "param_name": "efSearch",
+          "recall": 0.99245,
+          "counts": {
+            "full": 5096.6574,
+            "narrow": 5278.3884,
+            "narrow_floats": 118849.1226,
+            "lb_pruned": 0.0,
+            "floats_per_query": 7947314.889,
+            "bytes_per_query": 31789259.556
+          }
+        },
+        {
+          "param": 300,
+          "param_name": "efSearch",
+          "recall": 0.99426,
+          "counts": {
+            "full": 7055.9517,
+            "narrow": 7237.6827,
+            "narrow_floats": 124727.0055,
+            "lb_pruned": 0.0,
+            "floats_per_query": 10962668.8167,
+            "bytes_per_query": 43850675.2668
+          }
+        },
+        {
+          "param": 400,
+          "param_name": "efSearch",
+          "recall": 0.99528,
+          "counts": {
+            "full": 8891.7457,
+            "narrow": 9073.4767,
+            "narrow_floats": 130234.3875,
+            "lb_pruned": 0.0,
+            "floats_per_query": 13787955.782699998,
+            "bytes_per_query": 55151823.130799994
+          }
+        },
+        {
+          "param": 600,
+          "param_name": "efSearch",
+          "recall": 0.99658,
+          "counts": {
+            "full": 12317.7075,
+            "narrow": 12499.4385,
+            "narrow_floats": 140512.2729,
+            "lb_pruned": 0.0,
+            "floats_per_query": 19060510.9929,
+            "bytes_per_query": 76242043.9716
+          }
+        },
+        {
+          "param": 800,
+          "param_name": "efSearch",
+          "recall": 0.99735,
+          "counts": {
+            "full": 15527.5519,
+            "narrow": 15709.2829,
+            "narrow_floats": 150141.8061,
+            "lb_pruned": 0.0,
+            "floats_per_query": 24000461.5245,
+            "bytes_per_query": 96001846.098
+          }
+        },
+        {
+          "param": 1000,
+          "param_name": "efSearch",
+          "recall": 0.99779,
+          "counts": {
+            "full": 18586.7872,
+            "narrow": 18768.5182,
+            "narrow_floats": 159319.512,
+            "lb_pruned": 0.0,
+            "floats_per_query": 28708624.651199996,
+            "bytes_per_query": 114834498.60479999
+          }
+        },
+        {
+          "param": 1500,
+          "param_name": "efSearch",
+          "recall": 0.99854,
+          "counts": {
+            "full": 25805.7932,
+            "narrow": 25987.5242,
+            "narrow_floats": 180976.53,
+            "lb_pruned": 0.0,
+            "floats_per_query": 39818674.8852,
+            "bytes_per_query": 159274699.5408
+          }
+        },
+        {
+          "param": 2000,
+          "param_name": "efSearch",
+          "recall": 0.99891,
+          "counts": {
+            "full": 32608.7231,
+            "narrow": 32790.4541,
+            "narrow_floats": 201385.3197,
+            "lb_pruned": 0.0,
+            "floats_per_query": 50288384.0013,
+            "bytes_per_query": 201153536.0052
+          }
+        }
+      ],
+      "recall_agreement_vs_timing": 0.0,
+      "at_target": {
+        "0.8": {
+          "dis_per_query": 532.4388,
+          "narrow_dis_per_query": 714.1698,
+          "floats_per_query": 922982.4636000001,
+          "bytes_per_query": 3691929.8544000005,
+          "lb_pruned_per_query": 0.0,
+          "stage1_dis_per_query": null,
+          "point_param": 10,
+          "point_recall": 0.97409,
+          "point_dis_per_query": 532.4388,
+          "ms_per_query": 0.054971
+        },
+        "0.95": {
+          "dis_per_query": 532.4388,
+          "narrow_dis_per_query": 714.1698,
+          "floats_per_query": 922982.4636000001,
+          "bytes_per_query": 3691929.8544000005,
+          "lb_pruned_per_query": 0.0,
+          "stage1_dis_per_query": null,
+          "point_param": 10,
+          "point_recall": 0.97409,
+          "point_dis_per_query": 532.4388,
+          "ms_per_query": 0.054971
+        },
+        "0.99": {
+          "dis_per_query": 3391.1378238806055,
+          "narrow_dis_per_query": 3572.8688238806058,
+          "floats_per_query": 5322520.261352252,
+          "bytes_per_query": 21290081.04540901,
+          "lb_pruned_per_query": 0.0,
+          "stage1_dis_per_query": null,
+          "point_param": 150,
+          "point_recall": 0.99118,
+          "point_dis_per_query": 4047.8434,
+          "ms_per_query": 0.330702
+        }
+      },
+      "ratios": {
+        "0.8": {
+          "baseline": "HNSW48",
+          "dis_ratio": 0.7741,
+          "floats_ratio": 0.8737,
+          "qps_ratio": 0.9775
+        },
+        "0.95": {
+          "baseline": "HNSW48",
+          "dis_ratio": 0.7741,
+          "floats_ratio": 0.8737,
+          "qps_ratio": 0.9775
+        },
+        "0.99": {
+          "baseline": "HNSW48",
+          "dis_ratio": 0.9266,
+          "floats_ratio": 0.9468,
+          "qps_ratio": 1.0161
+        }
+      }
+    },
+    "HNSW32": {
+      "instrumented": true,
+      "kind": "hnsw32",
+      "baseline": null,
+      "sweep": [
+        {
+          "param": 10,
+          "param_name": "efSearch",
+          "recall": 0.97215,
+          "counts": {
+            "full": 546.0105,
+            "floats_per_query": 838672.128,
+            "bytes_per_query": 3354688.512
+          }
+        },
+        {
+          "param": 15,
+          "param_name": "efSearch",
+          "recall": 0.97922,
+          "counts": {
+            "full": 670.8423,
+            "floats_per_query": 1030413.7728,
+            "bytes_per_query": 4121655.0912
+          }
+        },
+        {
+          "param": 20,
+          "param_name": "efSearch",
+          "recall": 0.9832,
+          "counts": {
+            "full": 791.9856,
+            "floats_per_query": 1216489.8816,
+            "bytes_per_query": 4865959.5264
+          }
+        },
+        {
+          "param": 30,
+          "param_name": "efSearch",
+          "recall": 0.98659,
+          "counts": {
+            "full": 1023.4335,
+            "floats_per_query": 1571993.856,
+            "bytes_per_query": 6287975.424
+          }
+        },
+        {
+          "param": 40,
+          "param_name": "efSearch",
+          "recall": 0.98834,
+          "counts": {
+            "full": 1245.5341,
+            "floats_per_query": 1913140.3776000002,
+            "bytes_per_query": 7652561.510400001
+          }
+        },
+        {
+          "param": 60,
+          "param_name": "efSearch",
+          "recall": 0.98981,
+          "counts": {
+            "full": 1665.2519,
+            "floats_per_query": 2557826.9184,
+            "bytes_per_query": 10231307.6736
+          }
+        },
+        {
+          "param": 80,
+          "param_name": "efSearch",
+          "recall": 0.99061,
+          "counts": {
+            "full": 2061.6174,
+            "floats_per_query": 3166644.3264,
+            "bytes_per_query": 12666577.3056
+          }
+        },
+        {
+          "param": 100,
+          "param_name": "efSearch",
+          "recall": 0.99114,
+          "counts": {
+            "full": 2440.9097,
+            "floats_per_query": 3749237.2992000002,
+            "bytes_per_query": 14996949.196800001
+          }
+        },
+        {
+          "param": 150,
+          "param_name": "efSearch",
+          "recall": 0.99204,
+          "counts": {
+            "full": 3335.2608,
+            "floats_per_query": 5122960.5888,
+            "bytes_per_query": 20491842.3552
+          }
+        },
+        {
+          "param": 200,
+          "param_name": "efSearch",
+          "recall": 0.99324,
+          "counts": {
+            "full": 4173.7141,
+            "floats_per_query": 6410824.8576,
+            "bytes_per_query": 25643299.4304
+          }
+        },
+        {
+          "param": 300,
+          "param_name": "efSearch",
+          "recall": 0.99478,
+          "counts": {
+            "full": 5740.7046,
+            "floats_per_query": 8817722.2656,
+            "bytes_per_query": 35270889.0624
+          }
+        },
+        {
+          "param": 400,
+          "param_name": "efSearch",
+          "recall": 0.99569,
+          "counts": {
+            "full": 7208.343,
+            "floats_per_query": 11072014.848,
+            "bytes_per_query": 44288059.392
+          }
+        },
+        {
+          "param": 600,
+          "param_name": "efSearch",
+          "recall": 0.99688,
+          "counts": {
+            "full": 9945.4946,
+            "floats_per_query": 15276279.7056,
+            "bytes_per_query": 61105118.8224
+          }
+        },
+        {
+          "param": 800,
+          "param_name": "efSearch",
+          "recall": 0.99754,
+          "counts": {
+            "full": 12509.5915,
+            "floats_per_query": 19214732.544,
+            "bytes_per_query": 76858930.176
+          }
+        },
+        {
+          "param": 1000,
+          "param_name": "efSearch",
+          "recall": 0.99794,
+          "counts": {
+            "full": 14955.729,
+            "floats_per_query": 22971999.744,
+            "bytes_per_query": 91887998.976
+          }
+        },
+        {
+          "param": 1500,
+          "param_name": "efSearch",
+          "recall": 0.99861,
+          "counts": {
+            "full": 20721.2804,
+            "floats_per_query": 31827886.694399998,
+            "bytes_per_query": 127311546.77759999
+          }
+        },
+        {
+          "param": 2000,
+          "param_name": "efSearch",
+          "recall": 0.99905,
+          "counts": {
+            "full": 26154.3907,
+            "floats_per_query": 40173144.1152,
+            "bytes_per_query": 160692576.4608
+          }
+        }
+      ],
+      "recall_agreement_vs_timing": 0.0,
+      "at_target": {
+        "0.8": {
+          "dis_per_query": 546.0105,
+          "narrow_dis_per_query": null,
+          "floats_per_query": 838672.128,
+          "bytes_per_query": 3354688.512,
+          "lb_pruned_per_query": null,
+          "stage1_dis_per_query": null,
+          "point_param": 10,
+          "point_recall": 0.97215,
+          "point_dis_per_query": 546.0105,
+          "ms_per_query": 0.039182
+        },
+        "0.95": {
+          "dis_per_query": 546.0105,
+          "narrow_dis_per_query": null,
+          "floats_per_query": 838672.128,
+          "bytes_per_query": 3354688.512,
+          "lb_pruned_per_query": null,
+          "stage1_dis_per_query": null,
+          "point_param": 10,
+          "point_recall": 0.97215,
+          "point_dis_per_query": 546.0105,
+          "ms_per_query": 0.039182
+        },
+        "0.99": {
+          "dis_per_query": 1759.388706250009,
+          "narrow_dis_per_query": null,
+          "floats_per_query": 2702421.0528000137,
+          "bytes_per_query": 10809684.211200055,
+          "lb_pruned_per_query": null,
+          "stage1_dis_per_query": null,
+          "point_param": 80,
+          "point_recall": 0.99061,
+          "point_dis_per_query": 2061.6174,
+          "ms_per_query": 0.152964
+        }
+      }
+    },
+    "HNSW48": {
+      "instrumented": true,
+      "kind": "hnsw48",
+      "baseline": null,
+      "sweep": [
+        {
+          "param": 10,
+          "param_name": "efSearch",
+          "recall": 0.97319,
+          "counts": {
+            "full": 687.7985,
+            "floats_per_query": 1056458.496,
+            "bytes_per_query": 4225833.984
+          }
+        },
+        {
+          "param": 15,
+          "param_name": "efSearch",
+          "recall": 0.9796,
+          "counts": {
+            "full": 853.9326,
+            "floats_per_query": 1311640.4736,
+            "bytes_per_query": 5246561.8944
+          }
+        },
+        {
+          "param": 20,
+          "param_name": "efSearch",
+          "recall": 0.9821,
+          "counts": {
+            "full": 1011.5014,
+            "floats_per_query": 1553666.1504,
+            "bytes_per_query": 6214664.6016
+          }
+        },
+        {
+          "param": 30,
+          "param_name": "efSearch",
+          "recall": 0.98422,
+          "counts": {
+            "full": 1308.8368,
+            "floats_per_query": 2010373.3248,
+            "bytes_per_query": 8041493.2992
+          }
+        },
+        {
+          "param": 40,
+          "param_name": "efSearch",
+          "recall": 0.98578,
+          "counts": {
+            "full": 1590.1763,
+            "floats_per_query": 2442510.7968,
+            "bytes_per_query": 9770043.1872
+          }
+        },
+        {
+          "param": 60,
+          "param_name": "efSearch",
+          "recall": 0.98722,
+          "counts": {
+            "full": 2116.8591,
+            "floats_per_query": 3251495.5776000004,
+            "bytes_per_query": 13005982.310400002
+          }
+        },
+        {
+          "param": 80,
+          "param_name": "efSearch",
+          "recall": 0.98822,
+          "counts": {
+            "full": 2612.4377,
+            "floats_per_query": 4012704.3071999997,
+            "bytes_per_query": 16050817.228799999
+          }
+        },
+        {
+          "param": 100,
+          "param_name": "efSearch",
+          "recall": 0.98895,
+          "counts": {
+            "full": 3086.8281,
+            "floats_per_query": 4741367.9616,
+            "bytes_per_query": 18965471.8464
+          }
+        },
+        {
+          "param": 150,
+          "param_name": "efSearch",
+          "recall": 0.991,
+          "counts": {
+            "full": 4205.5806,
+            "floats_per_query": 6459771.8016,
+            "bytes_per_query": 25839087.2064
+          }
+        },
+        {
+          "param": 200,
+          "param_name": "efSearch",
+          "recall": 0.99235,
+          "counts": {
+            "full": 5254.8326,
+            "floats_per_query": 8071422.8736,
+            "bytes_per_query": 32285691.4944
+          }
+        },
+        {
+          "param": 300,
+          "param_name": "efSearch",
+          "recall": 0.99419,
+          "counts": {
+            "full": 7214.2435,
+            "floats_per_query": 11081078.015999999,
+            "bytes_per_query": 44324312.063999996
+          }
+        },
+        {
+          "param": 400,
+          "param_name": "efSearch",
+          "recall": 0.99528,
+          "counts": {
+            "full": 9050.0425,
+            "floats_per_query": 13900865.28,
+            "bytes_per_query": 55603461.12
+          }
+        },
+        {
+          "param": 600,
+          "param_name": "efSearch",
+          "recall": 0.99666,
+          "counts": {
+            "full": 12476.545,
+            "floats_per_query": 19163973.12,
+            "bytes_per_query": 76655892.48
+          }
+        },
+        {
+          "param": 800,
+          "param_name": "efSearch",
+          "recall": 0.99738,
+          "counts": {
+            "full": 15686.9622,
+            "floats_per_query": 24095173.9392,
+            "bytes_per_query": 96380695.7568
+          }
+        },
+        {
+          "param": 1000,
+          "param_name": "efSearch",
+          "recall": 0.99785,
+          "counts": {
+            "full": 18746.7536,
+            "floats_per_query": 28795013.529600002,
+            "bytes_per_query": 115180054.11840001
+          }
+        },
+        {
+          "param": 1500,
+          "param_name": "efSearch",
+          "recall": 0.99858,
+          "counts": {
+            "full": 25965.1341,
+            "floats_per_query": 39882445.9776,
+            "bytes_per_query": 159529783.9104
+          }
+        },
+        {
+          "param": 2000,
+          "param_name": "efSearch",
+          "recall": 0.99889,
+          "counts": {
+            "full": 32765.8759,
+            "floats_per_query": 50328385.3824,
+            "bytes_per_query": 201313541.5296
+          }
+        }
+      ],
+      "recall_agreement_vs_timing": 0.0,
+      "at_target": {
+        "0.8": {
+          "dis_per_query": 687.7985,
+          "narrow_dis_per_query": null,
+          "floats_per_query": 1056458.496,
+          "bytes_per_query": 4225833.984,
+          "lb_pruned_per_query": null,
+          "stage1_dis_per_query": null,
+          "point_param": 10,
+          "point_recall": 0.97319,
+          "point_dis_per_query": 687.7985,
+          "ms_per_query": 0.053732
+        },
+        "0.95": {
+          "dis_per_query": 687.7985,
+          "narrow_dis_per_query": null,
+          "floats_per_query": 1056458.496,
+          "bytes_per_query": 4225833.984,
+          "lb_pruned_per_query": null,
+          "stage1_dis_per_query": null,
+          "point_param": 10,
+          "point_recall": 0.97319,
+          "point_dis_per_query": 687.7985,
+          "ms_per_query": 0.053732
+        },
+        "0.99": {
+          "dis_per_query": 3659.8476731707306,
+          "narrow_dis_per_query": null,
+          "floats_per_query": 5621526.025990241,
+          "bytes_per_query": 22486104.103960965,
+          "lb_pruned_per_query": null,
+          "stage1_dis_per_query": null,
+          "point_param": 150,
+          "point_recall": 0.991,
+          "point_dis_per_query": 4205.5806,
+          "ms_per_query": 0.336019
+        }
+      }
+    }
+  }
+}

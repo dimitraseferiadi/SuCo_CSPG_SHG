@@ -4,21 +4,557 @@
   "d": 960,
   "k": 10,
   "targets": [
+    0.8,
     0.95,
     0.99
   ],
+  "nq": 1000,
+  "count_threads": 32,
   "indexes": {
-    "SuCo": {
-      "instrumented": false
+    "CSPG": {
+      "instrumented": true,
+      "kind": "cspg",
+      "baseline": "HNSW32",
+      "sweep": [
+        {
+          "param": 10,
+          "param_name": "efSearch",
+          "recall": 0.5233,
+          "counts": {
+            "full": 822.418,
+            "stage1": 146.777,
+            "floats_per_query": 789521.28,
+            "bytes_per_query": 3158085.12
+          }
+        },
+        {
+          "param": 15,
+          "param_name": "efSearch",
+          "recall": 0.609,
+          "counts": {
+            "full": 1049.886,
+            "stage1": 146.777,
+            "floats_per_query": 1007890.5599999999,
+            "bytes_per_query": 4031562.2399999998
+          }
+        },
+        {
+          "param": 20,
+          "param_name": "efSearch",
+          "recall": 0.6622,
+          "counts": {
+            "full": 1250.365,
+            "stage1": 146.777,
+            "floats_per_query": 1200350.4,
+            "bytes_per_query": 4801401.6
+          }
+        },
+        {
+          "param": 30,
+          "param_name": "efSearch",
+          "recall": 0.7377,
+          "counts": {
+            "full": 1636.323,
+            "stage1": 146.777,
+            "floats_per_query": 1570870.08,
+            "bytes_per_query": 6283480.32
+          }
+        },
+        {
+          "param": 40,
+          "param_name": "efSearch",
+          "recall": 0.7813,
+          "counts": {
+            "full": 2004.223,
+            "stage1": 146.777,
+            "floats_per_query": 1924054.08,
+            "bytes_per_query": 7696216.32
+          }
+        },
+        {
+          "param": 60,
+          "param_name": "efSearch",
+          "recall": 0.8445,
+          "counts": {
+            "full": 2718.575,
+            "stage1": 146.777,
+            "floats_per_query": 2609832.0,
+            "bytes_per_query": 10439328.0
+          }
+        },
+        {
+          "param": 80,
+          "param_name": "efSearch",
+          "recall": 0.8797,
+          "counts": {
+            "full": 3403.259,
+            "stage1": 146.777,
+            "floats_per_query": 3267128.64,
+            "bytes_per_query": 13068514.56
+          }
+        },
+        {
+          "param": 100,
+          "param_name": "efSearch",
+          "recall": 0.9041,
+          "counts": {
+            "full": 4064.454,
+            "stage1": 146.777,
+            "floats_per_query": 3901875.8400000003,
+            "bytes_per_query": 15607503.360000001
+          }
+        },
+        {
+          "param": 150,
+          "param_name": "efSearch",
+          "recall": 0.9372,
+          "counts": {
+            "full": 5625.077,
+            "stage1": 146.777,
+            "floats_per_query": 5400073.92,
+            "bytes_per_query": 21600295.68
+          }
+        },
+        {
+          "param": 200,
+          "param_name": "efSearch",
+          "recall": 0.9539,
+          "counts": {
+            "full": 7096.032,
+            "stage1": 146.777,
+            "floats_per_query": 6812190.72,
+            "bytes_per_query": 27248762.88
+          }
+        },
+        {
+          "param": 300,
+          "param_name": "efSearch",
+          "recall": 0.9708,
+          "counts": {
+            "full": 9842.701,
+            "stage1": 146.777,
+            "floats_per_query": 9448992.959999999,
+            "bytes_per_query": 37795971.839999996
+          }
+        },
+        {
+          "param": 400,
+          "param_name": "efSearch",
+          "recall": 0.9788,
+          "counts": {
+            "full": 12352.908,
+            "stage1": 146.777,
+            "floats_per_query": 11858791.68,
+            "bytes_per_query": 47435166.72
+          }
+        },
+        {
+          "param": 600,
+          "param_name": "efSearch",
+          "recall": 0.9863,
+          "counts": {
+            "full": 16971.312,
+            "stage1": 146.777,
+            "floats_per_query": 16292459.520000001,
+            "bytes_per_query": 65169838.080000006
+          }
+        },
+        {
+          "param": 800,
+          "param_name": "efSearch",
+          "recall": 0.9916,
+          "counts": {
+            "full": 21185.397,
+            "stage1": 146.777,
+            "floats_per_query": 20337981.12,
+            "bytes_per_query": 81351924.48
+          }
+        },
+        {
+          "param": 1000,
+          "param_name": "efSearch",
+          "recall": 0.9929,
+          "counts": {
+            "full": 25099.289,
+            "stage1": 146.777,
+            "floats_per_query": 24095317.44,
+            "bytes_per_query": 96381269.76
+          }
+        },
+        {
+          "param": 1500,
+          "param_name": "efSearch",
+          "recall": 0.9963,
+          "counts": {
+            "full": 33972.199,
+            "stage1": 146.777,
+            "floats_per_query": 32613311.04,
+            "bytes_per_query": 130453244.16
+          }
+        },
+        {
+          "param": 2000,
+          "param_name": "efSearch",
+          "recall": 0.9973,
+          "counts": {
+            "full": 41940.365,
+            "stage1": 146.777,
+            "floats_per_query": 40262750.4,
+            "bytes_per_query": 161051001.6
+          }
+        }
+      ],
+      "recall_agreement_vs_timing": 0.0,
+      "at_target": {
+        "0.8": {
+          "dis_per_query": 2215.5898101265825,
+          "narrow_dis_per_query": null,
+          "floats_per_query": 2126966.2177215195,
+          "bytes_per_query": 8507864.870886078,
+          "lb_pruned_per_query": null,
+          "stage1_dis_per_query": 146.777,
+          "point_param": 60,
+          "point_recall": 0.8445,
+          "point_dis_per_query": 2718.575,
+          "ms_per_query": 0.125106
+        },
+        "0.95": {
+          "dis_per_query": 6752.515562874249,
+          "narrow_dis_per_query": null,
+          "floats_per_query": 6482414.940359279,
+          "bytes_per_query": 25929659.761437114,
+          "lb_pruned_per_query": null,
+          "stage1_dis_per_query": 146.777,
+          "point_param": 200,
+          "point_recall": 0.9539,
+          "point_dis_per_query": 7096.032,
+          "ms_per_query": 0.449908
+        },
+        "0.99": {
+          "dis_per_query": 19913.2203962264,
+          "narrow_dis_per_query": null,
+          "floats_per_query": 19116691.580377344,
+          "bytes_per_query": 76466766.32150938,
+          "lb_pruned_per_query": null,
+          "stage1_dis_per_query": 146.777,
+          "point_param": 800,
+          "point_recall": 0.9916,
+          "point_dis_per_query": 21185.397,
+          "ms_per_query": 1.456387
+        }
+      },
+      "ratios": {
+        "0.8": {
+          "baseline": "HNSW32",
+          "dis_ratio": 1.1422,
+          "floats_ratio": 1.1422,
+          "qps_ratio": 0.8612
+        },
+        "0.95": {
+          "baseline": "HNSW32",
+          "dis_ratio": 1.0815,
+          "floats_ratio": 1.0815,
+          "qps_ratio": 0.8458
+        },
+        "0.99": {
+          "baseline": "HNSW32",
+          "dis_ratio": 1.0483,
+          "floats_ratio": 1.0483,
+          "qps_ratio": 0.9419
+        }
+      }
     },
     "SHG": {
-      "instrumented": false
-    },
-    "CSPG": {
-      "instrumented": false
+      "instrumented": true,
+      "kind": "shg",
+      "baseline": "HNSW48",
+      "sweep": [
+        {
+          "param": 10,
+          "param_name": "efSearch",
+          "recall": 0.5798,
+          "counts": {
+            "full": 1024.238,
+            "narrow": 1178.372,
+            "narrow_floats": 58184.694,
+            "lb_pruned": 0.149,
+            "floats_per_query": 1041453.1740000001,
+            "bytes_per_query": 4165812.6960000005
+          }
+        },
+        {
+          "param": 15,
+          "param_name": "efSearch",
+          "recall": 0.6541,
+          "counts": {
+            "full": 1329.294,
+            "narrow": 1483.479,
+            "narrow_floats": 58794.908,
+            "lb_pruned": 0.2,
+            "floats_per_query": 1334917.148,
+            "bytes_per_query": 5339668.592
+          }
+        },
+        {
+          "param": 20,
+          "param_name": "efSearch",
+          "recall": 0.7095,
+          "counts": {
+            "full": 1626.465,
+            "narrow": 1780.707,
+            "narrow_floats": 59389.364,
+            "lb_pruned": 0.257,
+            "floats_per_query": 1620795.764,
+            "bytes_per_query": 6483183.056
+          }
+        },
+        {
+          "param": 30,
+          "param_name": "efSearch",
+          "recall": 0.7833,
+          "counts": {
+            "full": 2171.196,
+            "narrow": 2325.548,
+            "narrow_floats": 60479.046,
+            "lb_pruned": 0.367,
+            "floats_per_query": 2144827.206,
+            "bytes_per_query": 8579308.824
+          }
+        },
+        {
+          "param": 40,
+          "param_name": "efSearch",
+          "recall": 0.8308,
+          "counts": {
+            "full": 2694.726,
+            "narrow": 2849.238,
+            "narrow_floats": 61526.426,
+            "lb_pruned": 0.527,
+            "floats_per_query": 2648463.386,
+            "bytes_per_query": 10593853.544
+          }
+        },
+        {
+          "param": 60,
+          "param_name": "efSearch",
+          "recall": 0.8886,
+          "counts": {
+            "full": 3722.58,
+            "narrow": 3877.506,
+            "narrow_floats": 63582.962,
+            "lb_pruned": 0.941,
+            "floats_per_query": 3637259.7619999996,
+            "bytes_per_query": 14549039.047999999
+          }
+        },
+        {
+          "param": 80,
+          "param_name": "efSearch",
+          "recall": 0.9209,
+          "counts": {
+            "full": 4709.961,
+            "narrow": 4865.221,
+            "narrow_floats": 65558.392,
+            "lb_pruned": 1.275,
+            "floats_per_query": 4587120.9520000005,
+            "bytes_per_query": 18348483.808000002
+          }
+        },
+        {
+          "param": 100,
+          "param_name": "efSearch",
+          "recall": 0.939,
+          "counts": {
+            "full": 5664.163,
+            "narrow": 5819.77,
+            "narrow_floats": 67467.49,
+            "lb_pruned": 1.622,
+            "floats_per_query": 5505063.97,
+            "bytes_per_query": 22020255.88
+          }
+        },
+        {
+          "param": 150,
+          "param_name": "efSearch",
+          "recall": 0.963,
+          "counts": {
+            "full": 7933.657,
+            "narrow": 8090.269,
+            "narrow_floats": 72008.488,
+            "lb_pruned": 2.627,
+            "floats_per_query": 7688319.208,
+            "bytes_per_query": 30753276.832
+          }
+        },
+        {
+          "param": 200,
+          "param_name": "efSearch",
+          "recall": 0.9761,
+          "counts": {
+            "full": 10055.811,
+            "narrow": 10213.531,
+            "narrow_floats": 76255.012,
+            "lb_pruned": 3.735,
+            "floats_per_query": 9729833.572,
+            "bytes_per_query": 38919334.288
+          }
+        },
+        {
+          "param": 300,
+          "param_name": "efSearch",
+          "recall": 0.987,
+          "counts": {
+            "full": 13972.407,
+            "narrow": 14132.488,
+            "narrow_floats": 84092.926,
+            "lb_pruned": 6.096,
+            "floats_per_query": 13497603.646,
+            "bytes_per_query": 53990414.584
+          }
+        },
+        {
+          "param": 400,
+          "param_name": "efSearch",
+          "recall": 0.9916,
+          "counts": {
+            "full": 17568.696,
+            "narrow": 17731.18,
+            "narrow_floats": 91290.31,
+            "lb_pruned": 8.499,
+            "floats_per_query": 16957238.47,
+            "bytes_per_query": 67828953.88
+          }
+        },
+        {
+          "param": 600,
+          "param_name": "efSearch",
+          "recall": 0.9959,
+          "counts": {
+            "full": 24098.057,
+            "narrow": 24265.894,
+            "narrow_floats": 104359.738,
+            "lb_pruned": 13.852,
+            "floats_per_query": 23238494.458,
+            "bytes_per_query": 92953977.832
+          }
+        },
+        {
+          "param": 800,
+          "param_name": "efSearch",
+          "recall": 0.9985,
+          "counts": {
+            "full": 29997.695,
+            "narrow": 30171.112,
+            "narrow_floats": 116170.174,
+            "lb_pruned": 19.432,
+            "floats_per_query": 28913957.373999998,
+            "bytes_per_query": 115655829.49599999
+          }
+        },
+        {
+          "param": 1000,
+          "param_name": "efSearch",
+          "recall": 0.9985,
+          "counts": {
+            "full": 35419.376,
+            "narrow": 35598.941,
+            "narrow_floats": 127025.832,
+            "lb_pruned": 25.58,
+            "floats_per_query": 34129626.791999996,
+            "bytes_per_query": 136518507.16799998
+          }
+        },
+        {
+          "param": 1500,
+          "param_name": "efSearch",
+          "recall": 0.9987,
+          "counts": {
+            "full": 47544.386,
+            "narrow": 47741.342,
+            "narrow_floats": 151310.634,
+            "lb_pruned": 42.971,
+            "floats_per_query": 45793921.194000006,
+            "bytes_per_query": 183175684.77600002
+          }
+        },
+        {
+          "param": 2000,
+          "param_name": "efSearch",
+          "recall": 0.999,
+          "counts": {
+            "full": 58230.383,
+            "narrow": 58447.644,
+            "narrow_floats": 172723.238,
+            "lb_pruned": 63.276,
+            "floats_per_query": 56073890.918,
+            "bytes_per_query": 224295563.672
+          }
+        }
+      ],
+      "recall_agreement_vs_timing": 0.0,
+      "at_target": {
+        "0.8": {
+          "dis_per_query": 2355.25812631579,
+          "narrow_dis_per_query": 2509.6663789473687,
+          "floats_per_query": 2321895.084021053,
+          "bytes_per_query": 9287580.336084211,
+          "lb_pruned_per_query": 0.42325263157894755,
+          "stage1_dis_per_query": null,
+          "point_param": 40,
+          "point_recall": 0.8308,
+          "point_dis_per_query": 2694.726,
+          "ms_per_query": 0.151467
+        },
+        "0.95": {
+          "dis_per_query": 6704.34775,
+          "narrow_dis_per_query": 6860.4153750000005,
+          "floats_per_query": 6505722.62075,
+          "bytes_per_query": 26022890.483,
+          "lb_pruned_per_query": 2.082625,
+          "stage1_dis_per_query": null,
+          "point_param": 150,
+          "point_recall": 0.963,
+          "point_dis_per_query": 7933.657,
+          "ms_per_query": 0.435338
+        },
+        "0.99": {
+          "dis_per_query": 16317.812869565194,
+          "narrow_dis_per_query": 16479.461043478237,
+          "floats_per_query": 15753887.226869542,
+          "bytes_per_query": 63015548.90747817,
+          "lb_pruned_per_query": 7.6631739130434635,
+          "stage1_dis_per_query": null,
+          "point_param": 400,
+          "point_recall": 0.9916,
+          "point_dis_per_query": 17568.696,
+          "ms_per_query": 1.068176
+        }
+      },
+      "ratios": {
+        "0.8": {
+          "baseline": "HNSW48",
+          "dis_ratio": 0.9713,
+          "floats_ratio": 0.9974,
+          "qps_ratio": 0.9293
+        },
+        "0.95": {
+          "baseline": "HNSW48",
+          "dis_ratio": 0.9905,
+          "floats_ratio": 1.0012,
+          "qps_ratio": 0.9474
+        },
+        "0.99": {
+          "baseline": "HNSW48",
+          "dis_ratio": 0.9524,
+          "floats_ratio": 0.9578,
+          "qps_ratio": 1.0222
+        }
+      }
     },
     "HNSW32": {
       "instrumented": true,
+      "kind": "hnsw32",
+      "baseline": null,
       "sweep": [
         {
           "param": 10,
@@ -26,6 +562,7 @@
           "recall": 0.4548,
           "counts": {
             "full": 641.827,
+            "floats_per_query": 616153.92,
             "bytes_per_query": 2464615.68
           }
         },
@@ -35,6 +572,7 @@
           "recall": 0.5407,
           "counts": {
             "full": 794.717,
+            "floats_per_query": 762928.32,
             "bytes_per_query": 3051713.28
           }
         },
@@ -44,6 +582,7 @@
           "recall": 0.5979,
           "counts": {
             "full": 935.43,
+            "floats_per_query": 898012.7999999999,
             "bytes_per_query": 3592051.1999999997
           }
         },
@@ -53,6 +592,7 @@
           "recall": 0.6795,
           "counts": {
             "full": 1198.595,
+            "floats_per_query": 1150651.2,
             "bytes_per_query": 4602604.8
           }
         },
@@ -62,6 +602,7 @@
           "recall": 0.729,
           "counts": {
             "full": 1438.29,
+            "floats_per_query": 1380758.4,
             "bytes_per_query": 5523033.6
           }
         },
@@ -71,6 +612,7 @@
           "recall": 0.798,
           "counts": {
             "full": 1916.988,
+            "floats_per_query": 1840308.48,
             "bytes_per_query": 7361233.92
           }
         },
@@ -80,6 +622,7 @@
           "recall": 0.8392,
           "counts": {
             "full": 2386.046,
+            "floats_per_query": 2290604.1599999997,
             "bytes_per_query": 9162416.639999999
           }
         },
@@ -89,6 +632,7 @@
           "recall": 0.8655,
           "counts": {
             "full": 2835.273,
+            "floats_per_query": 2721862.08,
             "bytes_per_query": 10887448.32
           }
         },
@@ -98,6 +642,7 @@
           "recall": 0.9116,
           "counts": {
             "full": 3896.806,
+            "floats_per_query": 3740933.7600000002,
             "bytes_per_query": 14963735.040000001
           }
         },
@@ -107,6 +652,7 @@
           "recall": 0.9325,
           "counts": {
             "full": 4898.477,
+            "floats_per_query": 4702537.92,
             "bytes_per_query": 18810151.68
           }
         },
@@ -116,6 +662,7 @@
           "recall": 0.9569,
           "counts": {
             "full": 6774.235,
+            "floats_per_query": 6503265.6,
             "bytes_per_query": 26013062.4
           }
         },
@@ -125,6 +672,7 @@
           "recall": 0.9714,
           "counts": {
             "full": 8506.733,
+            "floats_per_query": 8166463.68,
             "bytes_per_query": 32665854.72
           }
         },
@@ -134,6 +682,7 @@
           "recall": 0.9815,
           "counts": {
             "full": 11684.906,
+            "floats_per_query": 11217509.760000002,
             "bytes_per_query": 44870039.04000001
           }
         },
@@ -143,6 +692,7 @@
           "recall": 0.9865,
           "counts": {
             "full": 14593.804,
+            "floats_per_query": 14010051.84,
             "bytes_per_query": 56040207.36
           }
         },
@@ -152,6 +702,7 @@
           "recall": 0.9889,
           "counts": {
             "full": 17297.108,
+            "floats_per_query": 16605223.68,
             "bytes_per_query": 66420894.72
           }
         },
@@ -161,6 +712,7 @@
           "recall": 0.9929,
           "counts": {
             "full": 23471.967,
+            "floats_per_query": 22533088.32,
             "bytes_per_query": 90132353.28
           }
         },
@@ -170,31 +722,55 @@
           "recall": 0.9938,
           "counts": {
             "full": 29035.624,
+            "floats_per_query": 27874199.04,
             "bytes_per_query": 111496796.16
           }
         }
       ],
+      "recall_agreement_vs_timing": 0.0,
       "at_target": {
-        "0.95": {
-          "param": 300,
-          "recall": 0.9569,
-          "dis_per_query": 6774.235,
+        "0.8": {
+          "dis_per_query": 1939.757805825243,
           "narrow_dis_per_query": null,
-          "bytes_per_query": 26013062.4,
+          "floats_per_query": 1862167.493592233,
+          "bytes_per_query": 7448669.974368932,
+          "lb_pruned_per_query": null,
+          "stage1_dis_per_query": null,
+          "point_param": 80,
+          "point_recall": 0.8392,
+          "point_dis_per_query": 2386.046,
+          "ms_per_query": 0.107743
+        },
+        "0.95": {
+          "dis_per_query": 6243.795237704916,
+          "narrow_dis_per_query": null,
+          "floats_per_query": 5994043.428196719,
+          "bytes_per_query": 23976173.712786876,
+          "lb_pruned_per_query": null,
+          "stage1_dis_per_query": null,
+          "point_param": 300,
+          "point_recall": 0.9569,
+          "point_dis_per_query": 6774.235,
           "ms_per_query": 0.380525
         },
         "0.99": {
-          "param": 1500,
-          "recall": 0.9929,
-          "dis_per_query": 23471.967,
+          "dis_per_query": 18995.194224999985,
           "narrow_dis_per_query": null,
-          "bytes_per_query": 90132353.28,
+          "floats_per_query": 18235386.455999985,
+          "bytes_per_query": 72941545.82399994,
+          "lb_pruned_per_query": null,
+          "stage1_dis_per_query": null,
+          "point_param": 1500,
+          "point_recall": 0.9929,
+          "point_dis_per_query": 23471.967,
           "ms_per_query": 1.371758
         }
       }
     },
     "HNSW48": {
       "instrumented": true,
+      "kind": "hnsw48",
+      "baseline": null,
       "sweep": [
         {
           "param": 10,
@@ -202,6 +778,7 @@
           "recall": 0.5815,
           "counts": {
             "full": 1127.613,
+            "floats_per_query": 1082508.48,
             "bytes_per_query": 4330033.92
           }
         },
@@ -211,6 +788,7 @@
           "recall": 0.6605,
           "counts": {
             "full": 1441.608,
+            "floats_per_query": 1383943.68,
             "bytes_per_query": 5535774.72
           }
         },
@@ -220,6 +798,7 @@
           "recall": 0.7148,
           "counts": {
             "full": 1731.936,
+            "floats_per_query": 1662658.5599999998,
             "bytes_per_query": 6650634.239999999
           }
         },
@@ -229,6 +808,7 @@
           "recall": 0.7865,
           "counts": {
             "full": 2271.323,
+            "floats_per_query": 2180470.08,
             "bytes_per_query": 8721880.32
           }
         },
@@ -238,6 +818,7 @@
           "recall": 0.833,
           "counts": {
             "full": 2800.32,
+            "floats_per_query": 2688307.2,
             "bytes_per_query": 10753228.8
           }
         },
@@ -247,6 +828,7 @@
           "recall": 0.887,
           "counts": {
             "full": 3823.775,
+            "floats_per_query": 3670824.0,
             "bytes_per_query": 14683296.0
           }
         },
@@ -256,6 +838,7 @@
           "recall": 0.9179,
           "counts": {
             "full": 4814.545,
+            "floats_per_query": 4621963.2,
             "bytes_per_query": 18487852.8
           }
         },
@@ -265,6 +848,7 @@
           "recall": 0.9387,
           "counts": {
             "full": 5772.754,
+            "floats_per_query": 5541843.84,
             "bytes_per_query": 22167375.36
           }
         },
@@ -274,6 +858,7 @@
           "recall": 0.9645,
           "counts": {
             "full": 8047.095,
+            "floats_per_query": 7725211.2,
             "bytes_per_query": 30900844.8
           }
         },
@@ -283,6 +868,7 @@
           "recall": 0.9764,
           "counts": {
             "full": 10166.621,
+            "floats_per_query": 9759956.16,
             "bytes_per_query": 39039824.64
           }
         },
@@ -292,6 +878,7 @@
           "recall": 0.9862,
           "counts": {
             "full": 14092.131,
+            "floats_per_query": 13528445.76,
             "bytes_per_query": 54113783.04
           }
         },
@@ -301,6 +888,7 @@
           "recall": 0.9907,
           "counts": {
             "full": 17693.689,
+            "floats_per_query": 16985941.439999998,
             "bytes_per_query": 67943765.75999999
           }
         },
@@ -310,6 +898,7 @@
           "recall": 0.9954,
           "counts": {
             "full": 24230.608,
+            "floats_per_query": 23261383.68,
             "bytes_per_query": 93045534.72
           }
         },
@@ -319,6 +908,7 @@
           "recall": 0.9977,
           "counts": {
             "full": 30139.909,
+            "floats_per_query": 28934312.64,
             "bytes_per_query": 115737250.56
           }
         },
@@ -328,6 +918,7 @@
           "recall": 0.9979,
           "counts": {
             "full": 35571.824,
+            "floats_per_query": 34148951.04,
             "bytes_per_query": 136595804.16
           }
         },
@@ -337,6 +928,7 @@
           "recall": 0.9984,
           "counts": {
             "full": 47721.41,
+            "floats_per_query": 45812553.6,
             "bytes_per_query": 183250214.4
           }
         },
@@ -346,25 +938,47 @@
           "recall": 0.9987,
           "counts": {
             "full": 58427.661,
+            "floats_per_query": 56090554.56,
             "bytes_per_query": 224362218.24
           }
         }
       ],
+      "recall_agreement_vs_timing": 0.0,
       "at_target": {
-        "0.95": {
-          "param": 150,
-          "recall": 0.9645,
-          "dis_per_query": 8047.095,
+        "0.8": {
+          "dis_per_query": 2424.9027741935492,
           "narrow_dis_per_query": null,
-          "bytes_per_query": 30900844.8,
+          "floats_per_query": 2327906.6632258072,
+          "bytes_per_query": 9311626.652903229,
+          "lb_pruned_per_query": null,
+          "stage1_dis_per_query": null,
+          "point_param": 40,
+          "point_recall": 0.833,
+          "point_dis_per_query": 2800.32,
+          "ms_per_query": 0.140764
+        },
+        "0.95": {
+          "dis_per_query": 6768.880096899221,
+          "narrow_dis_per_query": null,
+          "floats_per_query": 6498124.8930232525,
+          "bytes_per_query": 25992499.57209301,
+          "lb_pruned_per_query": null,
+          "stage1_dis_per_query": null,
+          "point_param": 150,
+          "point_recall": 0.9645,
+          "point_dis_per_query": 8047.095,
           "ms_per_query": 0.412435
         },
         "0.99": {
-          "param": 400,
-          "recall": 0.9907,
-          "dis_per_query": 17693.689,
+          "dis_per_query": 17133.446644444422,
           "narrow_dis_per_query": null,
-          "bytes_per_query": 67943765.75999999,
+          "floats_per_query": 16448108.778666645,
+          "bytes_per_query": 65792435.11466658,
+          "lb_pruned_per_query": null,
+          "stage1_dis_per_query": null,
+          "point_param": 400,
+          "point_recall": 0.9907,
+          "point_dis_per_query": 17693.689,
           "ms_per_query": 1.091922
         }
       }

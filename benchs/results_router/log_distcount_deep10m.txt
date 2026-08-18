@@ -1,0 +1,111 @@
+
+=== deep10m ===
+  deep10m: d=96 nb=10,000,000 nq=10,000 metric=L2 (raw Deep1B chunks)
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/deep10m/base_00 (fvecs, 27,397,020 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/deep10m/deep1B_queries.fvecs (fvecs)
+    train : /leonardo_work/EUHPC_D32_102/dhm/data/deep10m/learn_00
+    gt    : /leonardo_work/EUHPC_D32_102/dhm/data/deep10m/deep10M_groundtruth.ivecs
+  CSPG: loading /leonardo_work/EUHPC_D32_102/dhm/indices/deep10m_cspg.idx
+    efSearch=10: recall@10=0.7171, dis/q=819.9, kB/q=307.5
+    efSearch=15: recall@10=0.7903, dis/q=1030.6, kB/q=386.5
+    efSearch=20: recall@10=0.8361, dis/q=1230.5, kB/q=461.4
+    efSearch=30: recall@10=0.8879, dis/q=1618.1, kB/q=606.8
+    efSearch=40: recall@10=0.9175, dis/q=1994.7, kB/q=748.0
+    efSearch=60: recall@10=0.9499, dis/q=2718.3, kB/q=1019.4
+    efSearch=80: recall@10=0.9648, dis/q=3408.5, kB/q=1278.2
+    efSearch=100: recall@10=0.9736, dis/q=4074.3, kB/q=1527.8
+    efSearch=150: recall@10=0.9854, dis/q=5651.2, kB/q=2119.2
+    efSearch=200: recall@10=0.9903, dis/q=7133.7, kB/q=2675.2
+    efSearch=300: recall@10=0.9948, dis/q=9901.2, kB/q=3712.9
+    efSearch=400: recall@10=0.9964, dis/q=12480.5, kB/q=4680.2
+    efSearch=600: recall@10=0.9980, dis/q=17266.1, kB/q=6474.8
+    efSearch=800: recall@10=0.9985, dis/q=21698.5, kB/q=8137.0
+    efSearch=1000: recall@10=0.9989, dis/q=25879.2, kB/q=9704.7
+    efSearch=1500: recall@10=0.9991, dis/q=35554.4, kB/q=13332.9
+    efSearch=2000: recall@10=0.9992, dis/q=44446.7, kB/q=16667.5
+  SHG: loading /leonardo_work/EUHPC_D32_102/dhm/indices/deep10m_shg.idx
+    efSearch=10: recall@10=0.7573, dis/q=781.7, narrow/q=1051.7, kB/q=334.9
+    efSearch=15: recall@10=0.8237, dis/q=1005.9, narrow/q=1276.0, kB/q=421.6
+    efSearch=20: recall@10=0.8634, dis/q=1221.3, narrow/q=1491.4, kB/q=504.9
+    efSearch=30: recall@10=0.9102, dis/q=1635.5, narrow/q=1905.8, kB/q=665.1
+    efSearch=40: recall@10=0.9357, dis/q=2034.1, narrow/q=2304.4, kB/q=819.2
+    efSearch=60: recall@10=0.9623, dis/q=2799.6, narrow/q=3070.2, kB/q=1115.3
+    efSearch=80: recall@10=0.9741, dis/q=3526.0, narrow/q=3796.8, kB/q=1396.1
+    efSearch=100: recall@10=0.9819, dis/q=4223.1, narrow/q=4494.4, kB/q=1665.8
+    efSearch=150: recall@10=0.9902, dis/q=5866.6, narrow/q=6139.3, kB/q=2301.3
+    efSearch=200: recall@10=0.9937, dis/q=7403.8, narrow/q=7677.9, kB/q=2895.8
+    efSearch=300: recall@10=0.9966, dis/q=10255.0, narrow/q=10531.8, kB/q=3998.4
+    efSearch=400: recall@10=0.9977, dis/q=12895.0, narrow/q=13176.1, kB/q=5019.5
+    efSearch=600: recall@10=0.9986, dis/q=17758.2, narrow/q=18046.0, kB/q=6900.2
+    efSearch=800: recall@10=0.9990, dis/q=22235.0, narrow/q=22529.9, kB/q=8631.6
+    efSearch=1000: recall@10=0.9992, dis/q=26438.9, narrow/q=26741.5, kB/q=10257.4
+    efSearch=1500: recall@10=0.9994, dis/q=36093.2, narrow/q=36415.1, kB/q=13991.1
+    efSearch=2000: recall@10=0.9994, dis/q=44901.1, narrow/q=45243.2, kB/q=17397.5
+  HNSW32: loading /leonardo_work/EUHPC_D32_102/dhm/indices/deep10m_hnsw32.idx
+    efSearch=10: recall@10=0.6848, dis/q=637.4, kB/q=239.0
+    efSearch=15: recall@10=0.7620, dis/q=780.3, kB/q=292.6
+    efSearch=20: recall@10=0.8096, dis/q=915.0, kB/q=343.1
+    efSearch=30: recall@10=0.8655, dis/q=1172.0, kB/q=439.5
+    efSearch=40: recall@10=0.8992, dis/q=1422.0, kB/q=533.2
+    efSearch=60: recall@10=0.9360, dis/q=1905.1, kB/q=714.4
+    efSearch=80: recall@10=0.9547, dis/q=2368.9, kB/q=888.3
+    efSearch=100: recall@10=0.9654, dis/q=2815.3, kB/q=1055.7
+    efSearch=150: recall@10=0.9799, dis/q=3876.9, kB/q=1453.8
+    efSearch=200: recall@10=0.9863, dis/q=4875.8, kB/q=1828.4
+    efSearch=300: recall@10=0.9923, dis/q=6746.0, kB/q=2529.8
+    efSearch=400: recall@10=0.9948, dis/q=8492.2, kB/q=3184.6
+    efSearch=600: recall@10=0.9969, dis/q=11739.5, kB/q=4402.3
+    efSearch=800: recall@10=0.9977, dis/q=14755.3, kB/q=5533.2
+    efSearch=1000: recall@10=0.9981, dis/q=17606.7, kB/q=6602.5
+    efSearch=1500: recall@10=0.9985, dis/q=24221.1, kB/q=9082.9
+    efSearch=2000: recall@10=0.9988, dis/q=30323.5, kB/q=11371.3
+  HNSW48: loading /leonardo_work/EUHPC_D32_102/dhm/indices/deep10m_hnsw48.idx
+    efSearch=10: recall@10=0.7582, dis/q=942.2, kB/q=353.3
+    efSearch=15: recall@10=0.8225, dis/q=1165.4, kB/q=437.0
+    efSearch=20: recall@10=0.8633, dis/q=1381.0, kB/q=517.9
+    efSearch=30: recall@10=0.9095, dis/q=1795.0, kB/q=673.1
+    efSearch=40: recall@10=0.9354, dis/q=2194.5, kB/q=822.9
+    efSearch=60: recall@10=0.9616, dis/q=2962.1, kB/q=1110.8
+    efSearch=80: recall@10=0.9739, dis/q=3690.1, kB/q=1383.8
+    efSearch=100: recall@10=0.9815, dis/q=4388.3, kB/q=1645.6
+    efSearch=150: recall@10=0.9903, dis/q=6035.3, kB/q=2263.3
+    efSearch=200: recall@10=0.9936, dis/q=7575.8, kB/q=2840.9
+    efSearch=300: recall@10=0.9966, dis/q=10432.8, kB/q=3912.3
+    efSearch=400: recall@10=0.9978, dis/q=13076.2, kB/q=4903.6
+    efSearch=600: recall@10=0.9987, dis/q=17949.9, kB/q=6731.2
+    efSearch=800: recall@10=0.9990, dis/q=22435.4, kB/q=8413.3
+    efSearch=1000: recall@10=0.9992, dis/q=26647.2, kB/q=9992.7
+    efSearch=1500: recall@10=0.9993, dis/q=36322.2, kB/q=13620.8
+    efSearch=2000: recall@10=0.9994, dis/q=45146.6, kB/q=16930.0
+  wrote /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router/m2_distcount_deep10m.json
+
+deep10m  (n=10000000, d=96, k=10, nq=10000)
+index            target        dis/q     narrow/q      kB/q      ms/q   ns/dis
+------------------------------------------------------------------------------
+CSPG               0.80       1072.8          0.0     402.3    0.0106     9.91
+CSPG               0.95       2721.5          0.0    1020.6    0.0301    11.04
+CSPG               0.99       7048.3          0.0    2643.1    0.1007    14.29
+SHG                0.80        925.9       1196.0     390.6    0.0133    14.38
+SHG                0.95       2445.6       2716.1     978.4    0.0357    14.59
+SHG                0.99       5825.2       6097.8    2285.3    0.0900    15.45
+HNSW32             0.80        887.9          0.0     332.9    0.0079     8.94
+HNSW32             0.95       2252.2          0.0     844.6    0.0228    10.11
+HNSW32             0.99       6027.2          0.0    2260.2    0.0692    11.48
+HNSW48             0.80       1087.4          0.0     407.8    0.0096     8.87
+HNSW48             0.95       2622.3          0.0     983.4    0.0262    10.00
+HNSW48             0.99       5982.9          0.0    2243.6    0.0665    11.11
+
+==============================================================================
+MATCHED-RECALL RATIOS AGAINST EACH METHOD'S OWN HNSW BASELINE
+  dis   = full-width distance evaluations per query, method / baseline
+  float = total float traffic per query, method / baseline
+  QPS   = throughput, method / baseline (Table II's quantity)
+==============================================================================
+dataset     index  base     target     dis   float     QPS
+----------------------------------------------------------
+deep10m     CSPG   HNSW32     0.80   1.208   1.208   0.747
+deep10m     CSPG   HNSW32     0.95   1.208   1.208   0.757
+deep10m     CSPG   HNSW32     0.99   1.169   1.169   0.687
+deep10m     SHG    HNSW48     0.80   0.852   0.958   0.724
+deep10m     SHG    HNSW48     0.95   0.933   0.995   0.735
+deep10m     SHG    HNSW48     0.99   0.974   1.019   0.739

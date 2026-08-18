@@ -1,0 +1,114 @@
+
+=== enron ===
+  enron: d=1369 nb=94,987 nq=200 metric=L2
+    base  : /leonardo_work/EUHPC_D32_102/dhm/data/enron/enron_base.fvecs (fvecs, 94,987 usable)
+    query : /leonardo_work/EUHPC_D32_102/dhm/data/enron/enron_query.fvecs (fvecs)
+    train : <sampled from base>
+    gt    : /leonardo_work/EUHPC_D32_102/dhm/data/enron/enron_groundtruth.ivecs
+  enron_groundtruth.ivecs has only 20 neighbours per query but k=100 was requested; computing a deeper groundtruth
+  groundtruth from cache: /leonardo_work/EUHPC_D32_102/dhm/indices/gt_enron_k100_2762d77dc557.npy
+  (computed groundtruth agrees with the shipped 20-NN file on 100.0% of top-1)
+  CSPG: loading /leonardo_work/EUHPC_D32_102/dhm/indices/enron_cspg.idx
+    efSearch=10: recall@10=0.8205, dis/q=499.4, kB/q=2670.7
+    efSearch=15: recall@10=0.8795, dis/q=615.9, kB/q=3293.5
+    efSearch=20: recall@10=0.9090, dis/q=725.6, kB/q=3880.2
+    efSearch=30: recall@10=0.9395, dis/q=942.4, kB/q=5039.6
+    efSearch=40: recall@10=0.9620, dis/q=1146.3, kB/q=6130.2
+    efSearch=60: recall@10=0.9775, dis/q=1517.0, kB/q=8112.2
+    efSearch=80: recall@10=0.9815, dis/q=1852.5, kB/q=9906.6
+    efSearch=100: recall@10=0.9855, dis/q=2159.8, kB/q=11549.9
+    efSearch=150: recall@10=0.9900, dis/q=2857.6, kB/q=15281.2
+    efSearch=200: recall@10=0.9955, dis/q=3479.9, kB/q=18609.3
+    efSearch=300: recall@10=0.9960, dis/q=4573.5, kB/q=24457.5
+    efSearch=400: recall@10=0.9965, dis/q=5522.5, kB/q=29532.7
+    efSearch=600: recall@10=0.9960, dis/q=7130.2, kB/q=38130.0
+    efSearch=800: recall@10=0.9955, dis/q=8443.0, kB/q=45150.0
+    efSearch=1000: recall@10=0.9970, dis/q=9616.8, kB/q=51427.1
+    efSearch=1500: recall@10=0.9950, dis/q=12286.9, kB/q=65706.2
+    efSearch=2000: recall@10=0.9965, dis/q=14414.1, kB/q=77081.9
+  SHG: loading /leonardo_work/EUHPC_D32_102/dhm/indices/enron_shg.idx
+    efSearch=10: recall@10=0.8870, dis/q=552.5, narrow/q=645.9, kB/q=3198.4
+    efSearch=15: recall@10=0.9120, dis/q=697.2, narrow/q=790.9, kB/q=3974.1
+    efSearch=20: recall@10=0.9365, dis/q=845.6, narrow/q=940.1, kB/q=4769.3
+    efSearch=30: recall@10=0.9620, dis/q=1126.5, narrow/q=1221.9, kB/q=6274.8
+    efSearch=40: recall@10=0.9750, dis/q=1374.4, narrow/q=1470.4, kB/q=7603.2
+    efSearch=60: recall@10=0.9845, dis/q=1848.2, narrow/q=1947.5, kB/q=10142.8
+    efSearch=80: recall@10=0.9880, dis/q=2260.7, narrow/q=2364.2, kB/q=12353.3
+    efSearch=100: recall@10=0.9895, dis/q=2641.0, narrow/q=2747.2, kB/q=14391.8
+    efSearch=150: recall@10=0.9945, dis/q=3498.9, narrow/q=3615.4, kB/q=18989.6
+    efSearch=200: recall@10=0.9970, dis/q=4249.3, narrow/q=4374.9, kB/q=23011.3
+    efSearch=300: recall@10=0.9975, dis/q=5552.5, narrow/q=5698.6, kB/q=29995.9
+    efSearch=400: recall@10=0.9975, dis/q=6646.1, narrow/q=6810.2, kB/q=35857.0
+    efSearch=600: recall@10=0.9985, dis/q=8414.3, narrow/q=8612.5, kB/q=45334.0
+    efSearch=800: recall@10=0.9985, dis/q=9842.8, narrow/q=10063.9, kB/q=52990.3
+    efSearch=1000: recall@10=0.9985, dis/q=11110.7, narrow/q=11354.9, kB/q=59785.7
+    efSearch=1500: recall@10=0.9985, dis/q=13949.0, narrow/q=14257.9, kB/q=74998.1
+    efSearch=2000: recall@10=0.9990, dis/q=16139.6, narrow/q=16505.2, kB/q=86738.7
+  HNSW32: loading /leonardo_work/EUHPC_D32_102/dhm/indices/enron_hnsw32.idx
+    efSearch=10: recall@10=0.7740, dis/q=351.6, kB/q=1880.5
+    efSearch=15: recall@10=0.8305, dis/q=432.1, kB/q=2310.8
+    efSearch=20: recall@10=0.8705, dis/q=509.3, kB/q=2723.5
+    efSearch=30: recall@10=0.9015, dis/q=655.9, kB/q=3507.3
+    efSearch=40: recall@10=0.9320, dis/q=792.1, kB/q=4235.8
+    efSearch=60: recall@10=0.9580, dis/q=1050.1, kB/q=5615.6
+    efSearch=80: recall@10=0.9715, dis/q=1282.5, kB/q=6858.5
+    efSearch=100: recall@10=0.9750, dis/q=1498.6, kB/q=8014.1
+    efSearch=150: recall@10=0.9855, dis/q=1981.9, kB/q=10598.6
+    efSearch=200: recall@10=0.9870, dis/q=2416.0, kB/q=12919.8
+    efSearch=300: recall@10=0.9905, dis/q=3193.3, kB/q=17076.7
+    efSearch=400: recall@10=0.9915, dis/q=3869.3, kB/q=20691.9
+    efSearch=600: recall@10=0.9950, dis/q=5028.4, kB/q=26890.3
+    efSearch=800: recall@10=0.9960, dis/q=6002.6, kB/q=32099.8
+    efSearch=1000: recall@10=0.9970, dis/q=6872.5, kB/q=36751.7
+    efSearch=1500: recall@10=0.9975, dis/q=8892.7, kB/q=47555.3
+    efSearch=2000: recall@10=0.9975, dis/q=10552.9, kB/q=56433.3
+  HNSW48: loading /leonardo_work/EUHPC_D32_102/dhm/indices/enron_hnsw48.idx
+    efSearch=10: recall@10=0.8915, dis/q=688.4, kB/q=3681.6
+    efSearch=15: recall@10=0.9190, dis/q=840.3, kB/q=4493.6
+    efSearch=20: recall@10=0.9405, dis/q=987.1, kB/q=5278.7
+    efSearch=30: recall@10=0.9660, dis/q=1270.1, kB/q=6792.1
+    efSearch=40: recall@10=0.9735, dis/q=1512.9, kB/q=8090.6
+    efSearch=60: recall@10=0.9830, dis/q=1988.2, kB/q=10632.3
+    efSearch=80: recall@10=0.9875, dis/q=2402.8, kB/q=12849.2
+    efSearch=100: recall@10=0.9905, dis/q=2785.9, kB/q=14897.9
+    efSearch=150: recall@10=0.9960, dis/q=3646.3, kB/q=19499.1
+    efSearch=200: recall@10=0.9980, dis/q=4405.6, kB/q=23559.4
+    efSearch=300: recall@10=0.9985, dis/q=5725.1, kB/q=30615.7
+    efSearch=400: recall@10=0.9985, dis/q=6836.4, kB/q=36558.7
+    efSearch=600: recall@10=0.9990, dis/q=8642.1, kB/q=46214.7
+    efSearch=800: recall@10=0.9990, dis/q=10100.8, kB/q=54015.5
+    efSearch=1000: recall@10=0.9990, dis/q=11392.9, kB/q=60925.5
+    efSearch=1500: recall@10=0.9990, dis/q=14301.4, kB/q=76479.2
+    efSearch=2000: recall@10=0.9990, dis/q=16552.2, kB/q=88515.3
+  wrote /leonardo_work/EUHPC_D32_102/dhm/SuCo_CSPG_SHG/benchs/results_router/m2_distcount_enron.json
+
+enron  (n=94987, d=1369, k=10, nq=200)
+index            target        dis/q     narrow/q      kB/q      ms/q   ns/dis
+------------------------------------------------------------------------------
+CSPG               0.80        499.4          0.0    2670.7    0.0694   138.91
+CSPG               0.95       1037.6          0.0    5548.5    0.1554   149.74
+CSPG               0.99       2857.6          0.0   15281.2    0.4654   162.88
+SHG                0.80        552.5        645.9    3198.4    0.0426    77.14
+SHG                0.95        994.3       1089.3    5566.3    0.0852    85.68
+SHG                0.99       2726.8       2834.0   14851.6    0.2159    79.18
+HNSW32             0.80        388.7          0.0    2078.5    0.0212    54.63
+HNSW32             0.95        970.7          0.0    5191.0    0.0602    62.06
+HNSW32             0.99       3082.3          0.0   16482.8    0.2120    68.79
+HNSW48             0.80        688.4          0.0    3681.6    0.0401    58.22
+HNSW48             0.95       1092.5          0.0    5842.5    0.0684    62.63
+HNSW48             0.99       2722.0          0.0   14556.5    0.1836    67.44
+
+==============================================================================
+MATCHED-RECALL RATIOS AGAINST EACH METHOD'S OWN HNSW BASELINE
+  dis   = full-width distance evaluations per query, method / baseline
+  float = total float traffic per query, method / baseline
+  QPS   = throughput, method / baseline (Table II's quantity)
+==============================================================================
+dataset     index  base     target     dis   float     QPS
+----------------------------------------------------------
+enron       CSPG   HNSW32     0.80   1.285   1.285   0.306
+enron       CSPG   HNSW32     0.95   1.069   1.069   0.388
+enron       CSPG   HNSW32     0.99   0.927   0.927   0.456
+enron       SHG    HNSW48     0.80   0.802   0.869   0.941
+enron       SHG    HNSW48     0.95   0.910   0.953   0.803
+enron       SHG    HNSW48     0.99   1.002   1.020   0.850
