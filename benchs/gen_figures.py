@@ -1038,7 +1038,7 @@ def main():
     # Columns: dataset  method  build_s  index_mb
     p.add_argument('--build-times', default=None,
                    help='TSV with fresh build times (dataset/method/build_s/index_mb)')
-    p.add_argument('--out',  default=os.path.join(here, 'figures'))
+    p.add_argument('--out',  default=os.path.join(here, 'figures_suco'))
     args = p.parse_args()
 
     print('Parsing log files …')
